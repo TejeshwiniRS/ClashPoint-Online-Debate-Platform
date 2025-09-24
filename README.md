@@ -4,15 +4,16 @@ CSCI 5117, Fall 2024, [assignment description](https://canvas.umn.edu/courses/46
 
 ## App Info:
 
-* Team Name: TODO
-* App Name: TODO
+* Team Name: FOUR LOOPS
+* App Name: ClashPoint
 * App Link: <https://TODO.com/>
 
 ### Students
 
-* First Last, x500@umn.edu
-* ...
-
+* Alexander Garduno Garcia, gardu022@umn.edu
+* Reshma Rao Chandukudlu Hosamane, chand950@umn.edu
+* Tejeshwini Ramesh Subasri, rames189@umn.edu
+* Shivank Sapra, sapra013@umn.edu
 
 ## Key Features
 
