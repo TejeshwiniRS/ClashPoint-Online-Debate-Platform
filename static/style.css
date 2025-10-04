@@ -1,3 +1,89 @@
-@import url('variables.css');
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
 
+body {
+    background: #f8f9fb;
+    color: #333;
+}
 
+/* Header */
+.header {
+    background: #314478;
+    padding: 5px 30px 15px 50px;
+}
+
+.header-container {
+    max-width: 1500px;
+    margin: auto;
+}
+
+/* Flex alignment for logo + menu */
+.pure-menu-horizontal {
+    display: flex;
+    justify-content: space-between; /* logo left, menu right */
+    align-items: flex-end;          /* align menu with brand text baseline */
+    width: 100%;
+}
+
+/* Brand */
+.brand {
+    display: flex;
+    align-items: flex-end; /* ensures logo + text align together */
+    text-decoration: none;
+}
+
+.logo-img {
+    height: 40px;   /* keep original size */
+    margin-right: 0.5rem;
+}
+
+.brand-text {
+    font-size: 1.2rem;
+    font-weight: 550;
+    color: #e8eaef;
+    line-height: 1; /* ensures text baseline matches nav links */
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+/* Links */
+.pure-menu-list {
+    display: flex;
+    align-items: flex-end; /* force nav links to align with brand text */
+    gap: 0.8rem;
+}
+
+.pure-menu-link {
+    color: #e8eaef;
+    padding: 0.6rem 0.8rem 0.2rem; 
+    transition: color 0.2s;
+}
+
+.pure-menu-link:hover {
+    background: none;  /* remove hover box */
+    color: #fff;       /* just change text color */
+}
+
+/* Dropdown */
+.pure-menu-children {
+    background: #fff;
+    border: 1px solid #ddd;
+}
+
+.pure-menu-children .pure-menu-link {
+    color: #314478;
+}
+
+.pure-menu-children .pure-menu-link:hover {
+    background: #f0f4ff;
+}
+
+/* Main Content */
+.main-content {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
