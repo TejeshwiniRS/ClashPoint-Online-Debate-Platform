@@ -8,12 +8,13 @@
 body {
     background: #f8f9fb;
     color: #333;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
-/* Header */
+/* Header Block*/
 .header {
     background: #314478;
-    padding: 5px 30px 15px 50px;
+    padding: 5px 30px 20px 50px;
 }
 
 .header-container {
@@ -21,23 +22,23 @@ body {
     margin: auto;
 }
 
-/* Flex alignment for logo + menu */
+/*NavBar Menu*/
 .pure-menu-horizontal {
     display: flex;
-    justify-content: space-between; /* logo left, menu right */
-    align-items: flex-end;          /* align menu with brand text baseline */
+    justify-content: space-between;
+    align-items: center;          
     width: 100%;
 }
 
-/* Brand */
+/*Logo and Website Name*/
 .brand {
     display: flex;
-    align-items: flex-end; /* ensures logo + text align together */
+    align-items: center; 
     text-decoration: none;
 }
 
 .logo-img {
-    height: 40px;   /* keep original size */
+    height: 50px;   
     margin-right: 0.5rem;
 }
 
@@ -45,29 +46,28 @@ body {
     font-size: 1.2rem;
     font-weight: 550;
     color: #e8eaef;
-    line-height: 1; /* ensures text baseline matches nav links */
+    line-height: 1; 
     font-family: Verdana, Geneva, Tahoma, sans-serif;
+    padding-top: 20px;
 }
 
-/* Links */
+/* Menu*/
 .pure-menu-list {
     display: flex;
-    align-items: flex-end; /* force nav links to align with brand text */
-    gap: 0.8rem;
+    align-items: flex-end; 
+    gap: 1.8rem;
 }
 
 .pure-menu-link {
     color: #e8eaef;
-    padding: 0.6rem 0.8rem 0.2rem; 
-    transition: color 0.2s;
+    padding: 1.5rem 1.2rem 0.2rem; 
 }
 
 .pure-menu-link:hover {
-    background: none;  /* remove hover box */
-    color: #fff;       /* just change text color */
+    color: #fff;       
 }
 
-/* Dropdown */
+/*Menu Dropdowns*/
 .pure-menu-children {
     background: #fff;
     border: 1px solid #ddd;
@@ -77,7 +77,7 @@ body {
     color: #314478;
 }
 
-.pure-menu-children .pure-menu-link:hover {
+.pure-menu-children {
     background: #f0f4ff;
 }
 
@@ -86,4 +86,10 @@ body {
     max-width: 1200px;
     margin: 2rem auto;
     padding: 0 2rem;
+}
+
+.pure-menu-link:hover,
+.pure-menu-link:focus {
+    color: #fff;               /* only text color changes */
+    background: transparent !important; /* remove PureCSS hover bg */
 }

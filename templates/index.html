@@ -3,22 +3,6 @@
 {% block title %}Welcome to ClashPoint{% endblock %}
 
 {% block content %}
-    <section class="hero">
-        <h1>Welcome to ClashPoint!</h1>
-        <p>One stop for your non-stop opinions.</p>
-    </section>
 
-    <!-- Debate Cards in a Grid -->
-    <section class="debates">
-        <h2>Just Dropped Clashes</h2>
-        <div class="pure-g debate-grid">
-            {% for debate in debates %}
-                <div class="pure-u-1 pure-u-md-1-3 debate-card">
-                    <h3>{{ debate.title }}</h3>
-                    <p>{{ debate.description }}</p>
-                    <a href="{{ url_for('debate_detail', id=debate.id) }}">View Debate</a>
-                </div>
-            {% endfor %}
-        </div>
-    </section>
+
 {% endblock %}

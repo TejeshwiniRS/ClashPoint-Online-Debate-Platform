@@ -3,17 +3,15 @@ from flask import Flask, render_template, redirect, url_for, session
 from authlib.integrations.flask_client import OAuth
 from urllib.parse import urlencode, quote_plus
 from dotenv import load_dotenv
-import db   # <-- import your db.py
+import db   
 
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET")
 
-# ----------------- Setup DB ----------------- #
 db.setup()
 
-# ----------------- Auth0 Setup ----------------- #
 oauth = OAuth(app)
 auth0 = oauth.register(
     "auth0",
@@ -23,19 +21,15 @@ auth0 = oauth.register(
     server_metadata_url=f"https://{os.environ.get('AUTH0_DOMAIN')}/.well-known/openid-configuration"
 )
 
-# ----------------- ROUTES ----------------- #
 @app.route("/")
 def index():
-    
     return render_template("index.html")
-
 
 @app.route("/login")
 def login():
     return auth0.authorize_redirect(
         redirect_uri=url_for("callback", _external=True)
     )
-
 
 @app.route("/signup")
 def signup():
@@ -47,10 +41,7 @@ def signup():
             "redirect_uri": url_for("callback", _external=True),
             "scope": "openid profile email",
             "screen_hint": "signup"
-        })
-    )
-
-
+        }))
 
 @app.route("/callback")
 def callback():
@@ -67,7 +58,6 @@ def callback():
 
     return redirect(url_for("index"))
 
-
 @app.route("/logout")
 def logout():
     session.clear()
@@ -77,26 +67,17 @@ def logout():
     }
     return redirect(f"https://{os.environ.get('AUTH0_DOMAIN')}/v2/logout?" + urlencode(params, quote_via=quote_plus))
 
-
-@app.route("/categories")
-def categories():
-    return render_template("categories.html")
-
-
 @app.route("/communities")
 def communities():
     return render_template("communities.html")
-
 
 @app.route("/terms")
 def terms():
     return "<h1>Terms & Conditions</h1>"
 
-
 @app.route("/contact")
 def contact():
     return "<h1>Contact Us</h1>"
 
-# ----------------- MAIN ----------------- #
 if __name__ == "__main__":
     app.run(debug=True)
