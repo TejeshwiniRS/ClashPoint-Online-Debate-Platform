@@ -1,3 +1,29 @@
-@import url('variables.css');
+body {
+  font-family: Arial, sans-serif;
+  background: #f7f7f7;
+  margin: 0;
+}
 
+.navbar {
+  background: #1E3A8A;
+  color: white;
+  padding: 0.5rem 1rem;
+}
 
+.navbar a {
+  color: white;
+  text-decoration: none;
+}
+
+.content {
+  max-width: 1200px;
+  margin: 1rem auto;
+  padding: 1rem;
+}
+
+.footer {
+  text-align: center;
+  padding: 1rem;
+  background: #1E3A8A;
+  color: white;
+}

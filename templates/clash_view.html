@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}{{ clash.title }} — Clash{% endblock %}
+
+{% block content %}
+<div class="pure-g clash-layout">
+
+  <!-- Left main area -->
+  <div class="pure-u-18-24">
+
+    <!-- Clash Header -->
+    <div class="pure-g card clash-header">
+      <div class="pure-u-1">
+        <h1>{{ clash.title }}</h1>
+        <p>{{ clash.description }}</p>
+        <p class="meta">By {{ clash.owner_name }}</p>
+
+        {% if user and user['id'] == clash.owner_id %}
+          <a href="#" class="pure-button edit-btn">✏️ Edit Clash</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Argument Form -->
+    <div class="pure-g card argument-input">
+      <div class="pure-u-1">
+        {% if user %}
+          <form method="POST" action="{{ url_for('post_argument', clash_id=clash.id) }}" class="pure-form pure-form-stacked">
+            <label for="argument">Add Argument:</label>
+            <textarea id="argument" name="content" rows="3" placeholder="Enter your argument..." required></textarea>
+            <div class="pure-g">
+              <div class="pure-u-1-2">
+                <button type="submit" name="stance" value="for" class="pure-button button-for">Post FOR</button>
+              </div>
+              <div class="pure-u-1-2">
+                <button type="submit" name="stance" value="against" class="pure-button button-against">Post AGAINST</button>
+              </div>
+            </div>
+          </form>
+        {% else %}
+          <textarea placeholder="Login to post your argument" disabled></textarea>
+          <div class="pure-g">
+            <div class="pure-u-1-2"><button class="pure-button" disabled>Post FOR</button></div>
+            <div class="pure-u-1-2"><button class="pure-button" disabled>Post AGAINST</button></div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- For/Against Columns -->
+    <div class="pure-g card arguments-grid">
+      <div class="pure-u-1-2 argument-col">
+        <h2>FOR Arguments</h2>
+        {% for arg in arguments if arg.argument_type == 'for' %}
+          {% include 'argument_card.html' %}
+        {% else %}
+          <p class="no-arguments">No FOR arguments yet.</p>
+        {% endfor %}
+      </div>
+      <div class="pure-u-1-2 argument-col">
+        <h2>AGAINST Arguments</h2>
+        {% for arg in arguments if arg.argument_type == 'against' %}
+          {% include 'argument_card.html' %}
+        {% else %}
+          <p class="no-arguments">No AGAINST arguments yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Sidebar -->
+  <div class="pure-u-6-24 sidebar">
+    <div class="card">
+      <h3>Related Debates</h3>
+      <ul>
+        <li>Should AI be regulated?</li>
+        <li>Is remote work sustainable?</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Trending Debates</h3>
+      <ul>
+        <li>Climate policy reform</li>
+        <li>Automation in education</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,17 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
-    <link rel="stylesheet" href="/static/style.css"">
-    <title>Survey</title>
+  <meta charset="UTF-8">
+  <title>{% block title %}ClashPoint{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Pure CSS core (no responsive grid needed) -->
+  <link rel="stylesheet" href="https://unpkg.com/purecss@3.0.0/build/pure-min.css">
+
+  <!-- Your custom styles -->
+   <link rel="stylesheet" href="/static/style.css">
+   <link rel="stylesheet" href="/static/clash.css">
+  
 </head>
 <body>
-    <div class="pure-g">
-        <div class="pure-u-1 pure-u-md-3-5" id="base_main_container">
-            
-        </div>
-    </div>
+
+  <!-- Navbar -->
+  <header class="pure-menu pure-menu-horizontal navbar">
+    <a href="/" class="pure-menu-heading">ClashPoint</a>
+    <ul class="pure-menu-list">
+      {% if user %}
+        <li class="pure-menu-item"><a href="#" class="pure-menu-link">{{ user['name'] }}</a></li>
+        <li class="pure-menu-item"><a href="/logout" class="pure-menu-link">Logout</a></li>
+      {% else %}
+        <li class="pure-menu-item"><a href="/login" class="pure-menu-link">Login</a></li>
+      {% endif %}
+    </ul>
+  </header>
+
+  <main class="content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2025 ClashPoint</p>
+  </footer>
+
 </body>
 </html>
