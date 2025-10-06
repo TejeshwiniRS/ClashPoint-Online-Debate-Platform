@@ -1,3 +1,4 @@
+/* Reset & Base Styles */
 * {
     margin: 0;
     padding: 0;
@@ -8,10 +9,9 @@
 body {
     background: #f8f9fb;
     color: #333;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
-/* Header Block*/
+/* Header Block */
 .header {
     background: #314478;
     padding: 5px 30px 20px 50px;
@@ -22,7 +22,7 @@ body {
     margin: auto;
 }
 
-/*NavBar Menu*/
+/* NavBar Menu */
 .pure-menu-horizontal {
     display: flex;
     justify-content: space-between;
@@ -30,7 +30,7 @@ body {
     width: 100%;
 }
 
-/*Logo and Website Name*/
+/* Logo and Website Name */
 .brand {
     display: flex;
     align-items: center; 
@@ -51,7 +51,7 @@ body {
     padding-top: 20px;
 }
 
-/* Menu*/
+/* Menu */
 .pure-menu-list {
     display: flex;
     align-items: flex-end; 
@@ -61,24 +61,79 @@ body {
 .pure-menu-link {
     color: #e8eaef;
     padding: 1.5rem 1.2rem 0.2rem; 
+    text-decoration: none;
 }
 
-.pure-menu-link:hover {
-    color: #fff;       
+.pure-menu-link:hover,
+.pure-menu-link:focus {
+    color: #fff;
+    background: transparent !important;
 }
 
-/*Menu Dropdowns*/
+/* Dropdown Styling (Shared by Categories & Profile) */
 .pure-menu-children {
-    background: #fff;
+    background: #f0f4ff;
     border: 1px solid #ddd;
+    min-width: 150px;
+    border-radius: 4px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 .pure-menu-children .pure-menu-link {
     color: #314478;
+    padding: 0.6rem 1rem;
 }
 
-.pure-menu-children {
-    background: #f0f4ff;
+.pure-menu-children .pure-menu-link:hover {
+    background: #dfe7ff;
+    color: #1f2d5a;
+}
+
+/* Profile Icon */
+.nav-profile-pic {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e8eaef;
+    vertical-align: middle;
+    transition: transform 0.15s ease-in-out;
+}
+
+.nav-profile-pic:hover {
+    transform: scale(1.05);
+}
+
+/* Hero Section (PureCSS Grid layout) */
+.hero {
+    display: grid;
+    place-items: center;
+    text-align: center;
+    margin: 3rem auto 2rem auto;
+    padding: 3rem 1rem;
+    max-width: 900px;
+    background: linear-gradient(135deg, #eef1fb, #f8f9fb);
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+    grid-template-rows: auto auto;
+    gap: 0.6rem;
+}
+
+.hero h1 {
+    font-size: 2rem;
+    color: #314478;
+    font-weight: 600;
+}
+
+.hero .highlight {
+    color: #23325a;
+    font-weight: 700;
+}
+
+.hero .tagline {
+    font-size: 1.1rem;
+    color: #555;
+    font-style: italic;
 }
 
 /* Main Content */
@@ -86,10 +141,4 @@ body {
     max-width: 1200px;
     margin: 2rem auto;
     padding: 0 2rem;
-}
-
-.pure-menu-link:hover,
-.pure-menu-link:focus {
-    color: #fff;               /* only text color changes */
-    background: transparent !important; /* remove PureCSS hover bg */
 }
