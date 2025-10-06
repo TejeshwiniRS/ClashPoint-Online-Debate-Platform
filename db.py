@@ -2,7 +2,8 @@ from contextlib import contextmanager
 import logging
 import os
 from datetime import datetime
-
+from dotenv import load_dotenv
+load_dotenv()
 from flask import current_app, g
 
 import psycopg2
@@ -14,7 +15,6 @@ pool = None
 def setup():
     global pool
     DATABASE_URL = os.environ['DATABASE_URL']
-    # current_app.logger.info(f"creating db connection pool")
     pool = ThreadedConnectionPool(1, 100, dsn=DATABASE_URL, sslmode='require')
 
 
@@ -39,6 +39,22 @@ def get_db_cursor(commit=False):
       finally:
           cursor.close()
 
+def upsert_user(auth0_id, name, email):
+    """Insert or update user, return user_id"""
+    with get_db_cursor(commit=True) as cur:
+        cur.execute("""
+            INSERT INTO users (auth0_id, name, email, created_at, updated_at)
+            VALUES (%s, %s, %s, NOW(), NOW())
+            ON CONFLICT (auth0_id) DO UPDATE
+            SET name = EXCLUDED.name,
+                email = EXCLUDED.email,
+                updated_at = NOW()
+            RETURNING id;
+        """, (auth0_id, name, email))
+        row = cur.fetchone()
+        return row["id"]
+
+
 
 def get_clash_details(clash_id):
     with get_db_cursor() as cur:
@@ -54,9 +70,9 @@ def get_arguments_by_clash_id(clash_id):
             ORDER BY a.created_at ASC """, (clash_id,))
         return cur.fetchall()
     
-def create_argument(clash_id, user_id, content, stance, parent_id=None):
+def create_argument(clash_id, user_id, content, argument_type, parent_id=None):
     with get_db_cursor(commit=True) as cur:
-        cur.execute(""" INSERT INTO arguments (clash_id, owner_id, content, argument_type, parent_id, created_at) VALUES (%s, %s, %s, %s, %s, %s)""", (clash_id, user_id, content, stance, parent_id, datetime.now()))
+        cur.execute(""" INSERT INTO arguments (clash_id, owner_id, content, argument_type, parent_id, created_at) VALUES (%s, %s, %s, %s, %s, %s)""", (clash_id, user_id, content, argument_type, parent_id, datetime.now()))
 
 def get_replies_by_clash_id(clash_id):
     with get_db_cursor() as cur:
@@ -68,19 +84,3 @@ def get_replies_by_clash_id(clash_id):
                         ORDER BY a.created_at ASC
                     """, (clash_id,))
         return cur.fetchall()
-
-
-# Will remove later
-# def vote_argument(arg_id, user_id, vote_value):
-#     with get_db_cursor(commit=True) as cur:
-#         cur.execute("""
-#             INSERT INTO votes (argument_id, user_id, vote_value)
-#             VALUES (%s, %s, %s)
-#             ON CONFLICT (argument_id, user_id)
-#             DO UPDATE SET vote_value = EXCLUDED.vote_value
-#         """, (arg_id, user_id, vote_value))
-
-#         # return clash id for redirect
-#         cur.execute("SELECT clash_id FROM arguments WHERE id = %s", (arg_id,))
-#         clash = cur.fetchone()
-#         return clash["clash_id"] if clash else None

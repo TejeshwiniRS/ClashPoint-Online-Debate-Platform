@@ -1,40 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>{% block title %}ClashPoint{% endblock %}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- Pure CSS core (no responsive grid needed) -->
-  <link rel="stylesheet" href="https://unpkg.com/purecss@3.0.0/build/pure-min.css">
-
-  <!-- Your custom styles -->
-   <link rel="stylesheet" href="/static/style.css">
-   <link rel="stylesheet" href="/static/clash.css">
-  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ClashPoint{% endblock %}</title>
+    <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.6/build/pure-min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="pure-menu pure-menu-horizontal">
+                
+                <!-- Brand Logo + Text -->
+                <a href="{{ url_for('index') }}" class="brand">
+                    <img src="{{ url_for('static', filename='ClashPoint_Logo.png') }}" 
+                         alt="ClashPoint Logo" class="logo-img">
+                    <span class="brand-text">ClashPoint</span>
+                </a>
 
-  <!-- Navbar -->
-  <header class="pure-menu pure-menu-horizontal navbar">
-    <a href="/" class="pure-menu-heading">ClashPoint</a>
-    <ul class="pure-menu-list">
-      {% if user %}
-        <li class="pure-menu-item"><a href="#" class="pure-menu-link">{{ user['name'] }}</a></li>
-        <li class="pure-menu-item"><a href="/logout" class="pure-menu-link">Logout</a></li>
-      {% else %}
-        <li class="pure-menu-item"><a href="/login" class="pure-menu-link">Login</a></li>
-      {% endif %}
-    </ul>
-  </header>
+                <!-- Menu -->
+                <ul class="pure-menu-list">
+                    <!-- Categories -->
+                    <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                        <a href="javascript:void(0)" class="pure-menu-link">Categories</a>
+                        <ul class="pure-menu-children">
+                            <li class="pure-menu-item"><a href="javascript:void(0)" class="pure-menu-link">Politics</a></li>
+                            <li class="pure-menu-item"><a href="javascript:void(0)" class="pure-menu-link">Technology</a></li>
+                            <li class="pure-menu-item"><a href="javascript:void(0)" class="pure-menu-link">Sports</a></li>
+                            <li class="pure-menu-item"><a href="javascript:void(0)" class="pure-menu-link">Science</a></li>
+                            <li class="pure-menu-item"><a href="javascript:void(0)" class="pure-menu-link">Entertainment</a></li>
+                            <li class="pure-menu-item"><a href="javascript:void(0)" class="pure-menu-link">Business</a></li>
+                            <li class="pure-menu-item"><a href="javascript:void(0)" class="pure-menu-link">Health</a></li>
+                            <li class="pure-menu-item"><a href="javascript:void(0)" class="pure-menu-link">Education</a></li>
+                        </ul>
+                    </li>
 
-  <main class="content">
-    {% block content %}{% endblock %}
-  </main>
+                    <!-- Communities -->
+                    <li class="pure-menu-item">
+                        <a href="{{ url_for('communities') }}" class="pure-menu-link">Communities</a>
+                    </li>
 
-  <footer class="footer">
-    <p>&copy; 2025 ClashPoint</p>
-  </footer>
+                    <!-- Auth Links -->
+                    {% if not session.get('user') %}
+                        <li class="pure-menu-item">
+                            <a href="{{ url_for('signup') }}" class="pure-menu-link">Sign Up</a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="{{ url_for('login') }}" class="pure-menu-link">Login</a>
+                        </li>
+                    {% else %}
+                        <li class="pure-menu-item">
+                            <span class="pure-menu-link">Welcome, {{ session['user']['name'] }}</span>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="{{ url_for('logout') }}" class="pure-menu-link">Logout</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </header>
 
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
 </body>
 </html>
