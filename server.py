@@ -85,9 +85,8 @@ def login():
 #             "screen_hint": "signup"
 #         }))
 def signup():
-    """Proper signup redirect through Authlib"""
     redirect_uri = url_for("callback", _external=True)
-    session.clear()  # clear any old state before new redirect
+    session.clear() 
     return auth0.authorize_redirect(
         redirect_uri=redirect_uri,
         screen_hint="signup"
