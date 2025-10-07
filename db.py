@@ -85,6 +85,37 @@ def get_replies_by_clash_id(clash_id):
                     """, (clash_id,))
         return cur.fetchall()
 
+def get_all_tags():
+    with get_db_cursor() as cur:
+        cur.execute("SELECT id, name FROM tags ORDER BY name;")
+        return [dict(row) for row in cur.fetchall()]
+
+
+def get_clashes_by_tag(tag_name, limit, offset):
+    with get_db_cursor() as cur:
+        # Get clashes linked to this tag
+        cur.execute("""
+            SELECT c.id, c.title, c.description, c.created_at, c.status
+            FROM clash_dump c
+            JOIN clash_tags_dump ct ON c.id = ct.clash_id
+            JOIN tags t ON ct.tag_id = t.id
+            WHERE t.name = %s
+            ORDER BY c.created_at DESC
+            LIMIT %s OFFSET %s;
+        """, (tag_name, limit, offset))
+        clashes = [dict(row) for row in cur.fetchall()]
+
+        # Count total for pagination
+        cur.execute("""
+            SELECT COUNT(*) FROM clash_dump c
+            JOIN clash_tags_dump ct ON c.id = ct.clash_id
+            JOIN tags t ON ct.tag_id = t.id
+            WHERE t.name = %s;
+        """, (tag_name,))
+        total = cur.fetchone()['count']
+
+    return clashes, total
+
 def vote_argument(arg_id, vote):
     print(arg_id, vote)
     column = "up_votes" if vote > 0 else "down_votes"

@@ -3,6 +3,91 @@
 {% block title %}Welcome to ClashPoint{% endblock %}
 
 {% block content %}
+<!-- Hero Section (unchanged) -->
+<div class="pure-g hero">
+    <div class="pure-u">
+        {% if not session.get('user') %}
+            <h1>Welcome to <span class="highlight">ClashPoint</span></h1>
+            <p class="tagline">One Stop for your non-stop opinions</p>
+        {% else %}
+            {% set display_name = session['user'].get('name') or session['user'].get('email') %}
+            {% if '@' in display_name %}
+                {% set display_name = display_name.split('@')[0] %}
+            {% endif %}
+            <h1>Hey, {{ display_name }}!</h1>
+            <p class="tagline">Ready for your next great debate?</p>
+        {% endif %}
+    </div>
+</div>
 
+<!-- Landing Section -->
+<section class="landing-section">
 
+    <!-- Search & Filters -->
+    <form class="pure-form landing-filters">
+        <input type="text" class="pure-input landing-search" placeholder="Type a topic, spark a clash...">
+        <input type="date" class="pure-input landing-date" placeholder="Debates From">
+        <input type="date" class="pure-input landing-date" placeholder="Debates Till">
+
+        <select class="pure-input landing-select">
+            <option>Most Voted</option>
+            <option>Least Voted</option>
+        </select>
+
+        <select class="pure-input landing-select">
+            <option>Open</option>
+            <option>Closed</option>
+        </select>
+
+        <button type="submit" class="pure-button pure-button-primary">Search</button>
+    </form>
+
+    <!-- Clashes Section -->
+    <section class="landing-clashes">
+        {% if selected_category %}
+            <h2 class="landing-title">Category: {{ selected_category }}</h2>
+        {% else %}
+            <h2 class="landing-title">Just Dropped Clashes</h2>
+        {% endif %}
+
+        <!-- Clash Grid -->
+        <div class="landing-grid">
+            {% for clash in clashes %}
+               <a href="{{ url_for('view_clash', clash_id=clash.id) }}" class="landing-card-link">
+                <div class="landing-card">
+                    <h3>{{ clash.title }}</h3>
+                    <p>{{ clash.description }}</p>
+                    <p class="meta">
+                    Status: {{ clash.status|capitalize }} | {{ clash.created_at.strftime('%b %d, %Y') }}
+                    </p>
+                </div>
+                </a>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <div class="landing-pagination">
+            {% if page > 1 %}
+            <a href="{{ url_for('index', page=page-1) }}" class="pure-button">&laquo; Prev</a>
+            {% else %}
+            <button class="pure-button" disabled>&laquo; Prev</button>
+            {% endif %}
+            <div class="page-numbers">
+                {% for p in range(1, total_pages + 1) %}
+                    {% if p == page %}
+                        <button class="pure-button pure-button-active">{{ p }}</button>
+                    {% else %}
+                        <a href="{{ url_for('index', page=p) }}" class="pure-button">{{ p }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            {% if page < total_pages %}
+            <a href="{{ url_for('index', page=page+1) }}" class="pure-button">Next &raquo;</a>
+            {% else %}
+            <button class="pure-button" disabled>Next &raquo;</button>
+            {% endif %}
+        </div>
+    </section>
+</section>
 {% endblock %}
