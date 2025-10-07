@@ -6,7 +6,7 @@ CSCI 5117, Fall 2024, [assignment description](https://canvas.umn.edu/courses/46
 
 * Team Name: FOUR LOOPS
 * App Name: ClashPoint
-* App Link: <https://TODO.com/>
+* App Link: (https://clashpoint.onrender.com/)
 
 ### Students
 
