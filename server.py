@@ -22,6 +22,11 @@ auth0 = oauth.register(
     server_metadata_url=f"https://{os.environ.get('AUTH0_DOMAIN')}/.well-known/openid-configuration"
 )
 
+@app.context_processor
+def inject_tags():
+    tags = db.get_all_tags()
+    return dict(tags=tags)
+
 def current_user():
     return session.get('user')
 
@@ -29,30 +34,38 @@ def current_user():
 @app.route("/index")
 def index():
     page = int(request.args.get("page", 1))
+    category = request.args.get("category")
     limit = 6
     offset = (page - 1) * limit
 
-    # Fetch clashes ordered by created_at DESC
-    with db.get_db_cursor() as cur:
-        cur.execute("""
-            SELECT id, title, description, created_at, status
-            FROM clash_dump
-            WHERE owner_id is NULL
-            ORDER BY created_at DESC
-            LIMIT %s OFFSET %s;
-        """, (limit, offset))
-        clashes = [dict(row) for row in cur.fetchall()] 
+    if category:
+        clashes, total = db.get_clashes_by_tag(category, limit, offset)
+    else:
 
-        cur.execute("SELECT COUNT(*) FROM clash_dump;")
-        total = cur.fetchone()['count']
+        # Fetch clashes ordered by created_at DESC
+        with db.get_db_cursor() as cur:
+            cur.execute("""
+                SELECT id, title, description, created_at, status
+                FROM clash_dump
+                WHERE owner_id is NULL
+                ORDER BY created_at DESC
+                LIMIT %s OFFSET %s;
+            """, (limit, offset))
+            clashes = [dict(row) for row in cur.fetchall()] 
+
+            cur.execute("SELECT COUNT(*) FROM clash_dump;")
+            total = cur.fetchone()['count']
 
     total_pages = (total + limit - 1) // limit
+    tags = db.get_all_tags()
 
     return render_template(
         "index.html",
         clashes=clashes,
         page=page,
-        total_pages=total_pages
+        total_pages=total_pages,
+        tags=tags,
+        selected_category=category
     )
 
 @app.route("/login")

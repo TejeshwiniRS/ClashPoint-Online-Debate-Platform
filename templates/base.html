@@ -28,16 +28,17 @@
                     <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
                         <a href="javascript:void(0)" class="pure-menu-link">Categories</a>
                         <ul class="pure-menu-children">
-                            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Politics</a></li>
-                            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Technology</a></li>
-                            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Sports</a></li>
-                            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Science</a></li>
-                            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Entertainment</a></li>
-                            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Business</a></li>
-                            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Health</a></li>
-                            <li class="pure-menu-item"><a href="#" class="pure-menu-link">Education</a></li>
+                            {% for tag in tags %}
+                                <li class="pure-menu-item">
+                                    <a href="{{ url_for('index', category=tag.name) }}" class="pure-menu-link">
+                                        {{ tag.name }}
+                                    </a>
+                                </li>
+                            {% endfor %}
                         </ul>
                     </li>
+
+                    
 
                     <!-- Communities -->
                     <li class="pure-menu-item">

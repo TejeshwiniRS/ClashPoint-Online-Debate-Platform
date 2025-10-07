@@ -44,7 +44,11 @@
 
     <!-- Clashes Section -->
     <section class="landing-clashes">
-        <h2 class="landing-title">Just Dropped Clashes</h2>
+        {% if selected_category %}
+            <h2 class="landing-title">Category: {{ selected_category }}</h2>
+        {% else %}
+            <h2 class="landing-title">Just Dropped Clashes</h2>
+        {% endif %}
 
         <!-- Clash Grid -->
         <div class="landing-grid">
