@@ -54,21 +54,19 @@ def index():
 
 @app.route("/login")
 def login():
-    return auth0.authorize_redirect(
-        redirect_uri=url_for("callback", _external=True)
-    )
+    redirect_uri = url_for("callback", _external=True)
+    return auth0.authorize_redirect(redirect_uri=redirect_uri)
 
 @app.route("/signup")
 def signup():
-    return redirect(
-        "https://" + os.environ["AUTH0_DOMAIN"] + "/authorize?"
-        + urlencode({
-            "response_type": "code",
-            "client_id": os.environ["AUTH0_CLIENT_ID"],
-            "redirect_uri": url_for("callback", _external=True),
-            "scope": "openid profile email",
-            "screen_hint": "signup"
-        }))
+    """Proper signup redirect through Authlib"""
+    redirect_uri = url_for("callback", _external=True)
+    session.clear()  # clear any old state before new redirect
+    return auth0.authorize_redirect(
+        redirect_uri=redirect_uri,
+        screen_hint="signup"
+    )
+
 
 @app.route("/callback")
 def callback():
