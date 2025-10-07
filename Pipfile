@@ -8,8 +8,8 @@ gunicorn = "*"
 psycopg2 = "*"
 psycopg2-binary = "*"
 python-dotenv = "*"
-authlib = "*"
 flask = "*"
+authlib = "*"
 requests = "*"
 
 [dev-packages]

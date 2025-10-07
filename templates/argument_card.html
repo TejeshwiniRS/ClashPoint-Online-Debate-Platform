@@ -1,0 +1,36 @@
+<div class="pure-g argument-card">
+  <div class="pure-u-1">
+    <p class="argument-text">{{ arg.content }}</p>
+    <p class="argument-meta">
+      By <strong>{{ arg.username }}</strong> · Score: <strong>{{ arg.score }}</strong>
+    </p>
+
+    {% if user %}
+      <form method="POST" action="{{ url_for('vote_argument', arg_id=arg.id) }}" class="pure-form inline-form">
+        <button name="vote" value="up" class="pure-button button-for small-btn">⬆</button>
+        <button name="vote" value="down" class="pure-button button-against small-btn">⬇</button>
+      </form>
+      <button class="pure-button reply-toggle"
+              onclick="this.nextElementSibling.classList.toggle('hidden')">💬 Reply</button>
+    {% else %}
+      <p class="muted">Login to vote or reply.</p>
+    {% endif %}
+  </div>
+
+  {% if user %}
+  <div class="pure-u-1 reply-form hidden">
+    <form method="POST" action="{{ url_for('post_argument', clash_id=clash.id) }}" class="pure-form pure-form-stacked">
+      <input type="hidden" name="parent_id" value="{{ arg.id }}">
+      <textarea name="content" rows="2" placeholder="Write a reply..." required></textarea>
+      <button type="submit" class="pure-button button-secondary small-btn">Reply</button>
+    </form>
+  </div>
+  {% endif %}
+
+  {% for reply in arg.replies %}
+  <div class="pure-u-1 reply-block">
+    {% set arg = reply %}
+    {% include 'argument_card.html' %}
+  </div>
+  {% endfor %}
+</div>
