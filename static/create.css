@@ -1,0 +1,7 @@
+.parent-container {
+  display: flex;
+  justify-content: center; /* Centers horizontally */
+  align-items: center; /* Centers vertically */
+  /* Add height to the parent if you want to center vertically within a specific area */
+  height: 100vh; /* Example: center within the viewport height */
+}
