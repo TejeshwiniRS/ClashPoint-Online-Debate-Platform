@@ -132,3 +132,22 @@ def vote_argument(arg_id, vote):
             return result["clash_id"]
         else:
             return None
+        
+def add_clash(owner_id, title, description, tags, close_date):
+    print( owner_id, title, description, tags, close_date )
+    with get_db_cursor(commit=True) as cur:
+
+        cur.execute("""
+            INSERT INTO clash (
+                start_time,
+                end_time,
+                status,
+                title,
+                description,
+                owner_id
+            ) VALUES
+                    (%s,%s,%s,%s,%s,%s )
+            """, 
+            (datetime.now(), close_date, "open", title, description, owner_id)
+            )
+    return None

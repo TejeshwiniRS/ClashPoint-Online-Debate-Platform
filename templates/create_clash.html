@@ -8,17 +8,19 @@
 <div class="parent-container">
     <form action="/new_clash" method="POST" class="pure-form pure-form-stacked">
         <label for="title">Title</label>
-        <input type="text" name="" id="title" placeholder="">
+        <input type="text" name="title" id="title" placeholder="">
         <label for="description">Description</label>
-        <input type="textarea" name="" id="description">
+        <input type="textarea" name="description" id="description">
         <label for="tags">Choose a tag:</label>
         <select id="tags" name="tags" multiple>
             <option value="soccer">soccer</option>
             <option value="football">football</option>
             <option value="golf">golf</option>
         </select>
-        <label for="open_date">How long do you want to keep it open for?</label>
-        <input type="text" name="" id="open_date">
+
+
+        <label for="close_date">How long do you want to keep it open for?</label>
+        <input type="date" name="close_date" id="close_date">
         <button type="submit" class="pure-button pure-button-primary">Create</button>
         <a href="{{ url_for('index') }}" class="pure-button pure-button-primary">Cancel</a>
         

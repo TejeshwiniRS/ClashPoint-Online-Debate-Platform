@@ -193,7 +193,16 @@ def create_clash():
 
 @app.post("/new_clash")
 def new_clash():
-    #add the stuff the db
+   
+    owner_id = current_user()
+    title = request.form.get("title")
+    description = request.form.get("description")
+    tags = request.form.getlist("tags")  # use getlist for multi-select
+    close_date = request.form.get("close_date")
+
+    db.add_clash(owner_id, title, description, tags, close_date)
+    
+    # Now you can use these values to insert into the database, etc.
     return redirect(url_for("index"))
 
 @app.route("/create_community")
