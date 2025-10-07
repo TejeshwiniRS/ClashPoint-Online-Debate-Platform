@@ -1,0 +1,7 @@
+:root {
+  --color-primary: #314478;   /* header-blue */
+  --color-secondary: #4A90E2; /* bright blue */
+  --color-accent: #E53E3E;    /* red */
+  --color-bg: #F7FAFC;        /* light gray background */
+  --color-text: #2D3748;      /* main text */
+}

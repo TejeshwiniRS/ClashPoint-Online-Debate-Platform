@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Clash - Clash Point{% endblock %}
+
+{% block content %}
+<div class="clash-detail-container">
+  <h1 class="clash-title">{{ clash.title }}</h1>
+  <p class="clash-meta">
+    Status: <strong>{{ clash.status|capitalize }}</strong> <br>
+    Created on: {{ clash.created_at.strftime('%b %d, %Y %I:%M %p') }}
+  </p>
+  
+  <div class="clash-desc">
+    <p>{{ clash.description }}</p>
+  </div>
+
+  <a href="{{ url_for('index') }}" class="pure-button">← Back to Clashes</a>
+</div>
+{% endblock %}

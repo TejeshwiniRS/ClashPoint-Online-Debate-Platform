@@ -1,0 +1,433 @@
+/* ============================= */
+/*      GLOBAL / RESET           */
+/* ============================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+body {
+    background: #f8f9fb;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    flex: 1;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+/* ============================= */
+/*          HEADER               */
+/* ============================= */
+.header {
+    background: #314478;
+    padding: 5px 30px 20px 50px;
+}
+
+.header-container {
+    max-width: 1500px;
+    margin: auto;
+}
+
+/* NavBar Menu */
+.pure-menu-horizontal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+/* Logo and Website Name */
+.brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.logo-img {
+    height: 50px;
+    margin-right: 0.5rem;
+}
+
+.brand-text {
+    font-size: 1.2rem;
+    font-weight: 550;
+    color: #e8eaef;
+    line-height: 1;
+    padding-top: 20px;
+}
+
+/* Menu */
+.pure-menu-list {
+    display: flex;
+    align-items: flex-end;
+    gap: 1.8rem;
+}
+
+.pure-menu-link {
+    color: #e8eaef;
+    padding: 1.5rem 1.2rem 0.2rem;
+    text-decoration: none;
+}
+
+.pure-menu-link:hover,
+.pure-menu-link:focus {
+    color: #fff;
+    background: transparent !important;
+}
+
+/* Dropdown Styling (Shared by Categories & Profile) */
+.pure-menu-children {
+    background: #f0f4ff;
+    border: 1px solid #ddd;
+    min-width: 150px;
+    border-radius: 4px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.pure-menu-children .pure-menu-link {
+    color: #314478;
+    padding: 0.6rem 1rem;
+}
+
+.pure-menu-children .pure-menu-link:hover {
+    background: #dfe7ff;
+    color: #1f2d5a;
+}
+
+/* Profile Icon */
+.nav-profile-pic {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e8eaef;
+    vertical-align: middle;
+    transition: transform 0.15s ease-in-out;
+}
+
+.nav-profile-pic:hover {
+    transform: scale(1.05);
+}
+
+/* ============================= */
+/*          HERO SECTION         */
+/* ============================= */
+.hero {
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 2rem 1rem;
+    background: linear-gradient(135deg, #eef1fb, #f8f9fb);
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+    grid-template-rows: auto auto;
+    gap: 0.1rem;
+}
+
+.hero h1 {
+    font-size: 2rem;
+    color: #314478;
+    font-weight: 600;
+}
+
+.hero .highlight {
+    color: #C33635;
+    font-weight: 700;
+}
+
+.hero .tagline {
+    font-size: 1.1rem;
+    color: #C33635;
+    font-weight: 600;
+}
+
+/* ============================= */
+/*           FOOTER              */
+/* ============================= */
+.footer {
+    background: #e9ecf5;
+    border-top: 1px solid #c9cde0;
+    padding-top: 0.5rem;
+    padding-bottom: 0.2rem;
+    color: #2c365d;
+    font-size: 0.7rem;
+    margin-top: auto;
+}
+
+.footer-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+/* Footer Columns */
+.footer-left,
+.footer-center,
+.footer-right {
+    flex: 1;
+    padding: 0.5rem 0;
+    min-width: 200px;
+}
+
+.footer-left {
+    text-align: left;
+}
+
+.footer-center {
+    text-align: center;
+    padding-top: 3.8rem;
+}
+
+.footer-right {
+    text-align: right;
+}
+
+/* Footer Logo */
+.footer-logo img {
+    height: 45px;
+    vertical-align: middle;
+    margin-bottom: 0.3rem;
+}
+
+.footer-left p {
+    color: #3b3e4f;
+    line-height: 1.4;
+    font-size: 0.7rem;
+    max-width: 280px;
+}
+
+/* Tagline Center */
+.footer-tagline {
+    font-weight: 600;
+    color: #23325a;
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Right Column Header */
+.footer-right h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    color: #23325a;
+    border-bottom: 2px solid #b6bbd4;
+    display: inline-block;
+    padding-bottom: 0.1rem;
+}
+
+/* Footer Links (stacked) */
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    align-items: flex-end;
+    margin-top: 0.3rem;
+}
+
+.footer-right a {
+    color: #1b3fa5;
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+
+.footer-right a:hover {
+    text-decoration: underline;
+    color: #C33635; /* ClashPoint red accent on hover */
+}
+
+/* Responsive Footer Alignment */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+    }
+
+    .footer-left,
+    .footer-center,
+    .footer-right {
+        text-align: center;
+        padding: 0.8rem 0;
+    }
+
+    .footer-links {
+        align-items: center;
+    }
+}
+
+
+.landing-container {
+  text-align: center;
+  padding: 2em;
+}
+
+/* .hero {
+  margin-top: 3em;
+} */
+
+.highlight {
+  color: #0078e7;
+}
+
+.tagline {
+  color: #555;
+  margin-bottom: 2em;
+}
+
+/* -------------------------------------------- */
+/* ClashPoint Landing Page - Full Width Version */
+/* -------------------------------------------- */
+
+.landing-section {
+  width: 100%;
+  background-color: #f8f9fb;
+  padding: 2rem 0;
+}
+
+/* 🔹 Search + Filters Full Width */
+.landing-filters {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 1rem 2rem;
+  margin: 0;
+  background: #ffffff;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.landing-filters .landing-search {
+  flex: 2;
+  max-width: 600px;
+  padding: 0.7rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.landing-filters .landing-date,
+.landing-filters .landing-select {
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.landing-filters input:hover,
+.landing-filters select:hover {
+  border-color: #0078e7;
+  background-color: #f0f6ff;
+}
+
+.landing-filters input:focus,
+.landing-filters select:focus {
+  border-color: #0078e7;
+  box-shadow: 0 0 0 2px rgba(0,120,231,0.2);
+  outline: none;
+  background-color: #fff;
+}
+
+.landing-filters .pure-button-primary {
+  background-color: #0078e7;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+
+.landing-filters .pure-button-primary:hover {
+  background-color: #005bb5;
+  transform: translateY(-1px);
+}
+
+/* 🔹 Clash Section Stretched Full Width */
+.landing-clashes {
+  width: 100%;
+  margin-top: 3rem;
+  padding: 0 2rem;
+}
+
+.landing-title {
+  text-align: left;
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0 0 1.5rem 1rem;
+}
+
+/* 🔹 Clash Grid: use full width of screen */
+.landing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  width: 100%;
+  padding: 0 2rem;
+}
+
+.landing-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 1.5rem;
+  height: 250px;
+  text-align: left;
+  transition: all 0.25s ease-in-out;
+}
+
+.landing-card:hover {
+  border-color: #0078e7;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+  transform: translateY(-4px);
+}
+
+/* 🔹 Pagination centered below full-width grid */
+.landing-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 3rem 0 0 0;
+}
+
+.landing-pagination .pure-button {
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.landing-pagination .pure-button:hover {
+  background-color: #0078e7;
+  color: #fff;
+}
+
+.landing-pagination .page-numbers .pure-button-active {
+  background-color: #0078e7;
+  color: #fff;
+  font-weight: bold;
+}
+
+.landing-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.landing-card-link:hover .landing-card {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: all 0.2s ease-in-out;
+}
