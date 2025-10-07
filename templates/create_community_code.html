@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to ClashPoint{% endblock %}
+
+{% block content %}
+
+<div>
+    <p>
+        You will be able to create a community only on generation of the secret code. 
+        People can enter the community only using this code. 
+    </p>
+    <button class="pure-button pure-button-primary">Generate</button>
+    <a href="{{ url_for('index') }}" class="pure-button pure-button-primary">Cancel</a>
+</div>
+
+
+{% endblock %}

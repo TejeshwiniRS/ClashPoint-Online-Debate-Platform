@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to ClashPoint{% endblock %}
+
+{% block content %}
+
+<div>
+    <form action="/create_community_code" method="GET" class="pure-form pure-form-stacked">
+        <label for="title">chicken</label>
+        <input type="text" name="" id="title" placeholder="">
+        <label for="description">Description</label>
+        <input type="textarea" name="" id="description">
+        <label for="tags">Choose a fruit:</label>
+        <select id="tags" name="tags" multiple>
+            <option value="soccer">soccer</option>
+            <option value="football">football</option>
+            <option value="golf">golf</option>
+        </select>
+        <label for="open_date">How long do you want to keep it open for?</label>
+        <input type="text" name="" id="open_date">
+        <button type="submit" class="pure-button pure-button-primary">Create</button>
+        <a href="{{ url_for('index') }}" class="pure-button pure-button-primary">Cancel</a>
+        
+    </form>
+</div>
+
+{% endblock %}

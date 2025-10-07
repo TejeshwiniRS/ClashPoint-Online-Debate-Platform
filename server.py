@@ -186,6 +186,23 @@ def vote_argument(arg_id):
 
     return redirect(url_for("view_clash", clash_id=clash_id))
 
+# creating a clash
+@app.route("/create_clash")
+def create_clash():
+    return render_template("create_clash.html")
+
+@app.post("/new_clash")
+def new_clash():
+    #add the stuff the db
+    return redirect(url_for("index"))
+
+@app.route("/create_community")
+def create_community():
+    return render_template("create_community.html")
+
+@app.route("/create_community_code")
+def create_community_code():
+    return render_template("create_community_code.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
