@@ -33,17 +33,24 @@ def login():
     )
 
 @app.route("/signup")
+# def signup():
+#     return redirect(
+#         "https://" + os.environ["AUTH0_DOMAIN"] + "/authorize?"
+#         + urlencode({
+#             "response_type": "code",
+#             "client_id": os.environ["AUTH0_CLIENT_ID"],
+#             "redirect_uri": url_for("callback", _external=True),
+#             "scope": "openid profile email",
+#             "screen_hint": "signup"
+#         }))
 def signup():
-    return redirect(
-        "https://" + os.environ["AUTH0_DOMAIN"] + "/authorize?"
-        + urlencode({
-            "response_type": "code",
-            "client_id": os.environ["AUTH0_CLIENT_ID"],
-            "redirect_uri": url_for("callback", _external=True),
-            "scope": "openid profile email",
-            "screen_hint": "signup"
-        }))
-
+    """Proper signup redirect through Authlib"""
+    redirect_uri = url_for("callback", _external=True)
+    session.clear()  # clear any old state before new redirect
+    return auth0.authorize_redirect(
+        redirect_uri=redirect_uri,
+        screen_hint="signup"
+    )
 @app.route("/callback")
 def callback():
     token = auth0.authorize_access_token()
@@ -86,13 +93,13 @@ def contact():
 
 
 def current_user():
-    return session.get('user')
+    return session.get('user_id')
 
 @app.route('/clash/<int:clash_id>')
 def view_clash(clash_id):
     user = current_user()
     clash = db.get_clash_details(clash_id)
-    print(clash)
+    # print(clash)
     if not clash:
         abort(404)
 
@@ -114,16 +121,15 @@ def post_argument(clash_id):
         abort(401)
 
     content = request.form.get("content", "").strip()
-    stance = request.form.get("stance", "")
+    argument_type = request.form.get("argument_type", "")
     parent_id = request.form.get("parent_id")
 
     if not content:
         abort(400, 'Content cannot be empty')
-
-    db.create_argument(clash_id=clash_id, user_id=user["id"], content=content, stance=stance, parent_id=parent_id)
+    print(user)
+    db.create_argument(clash_id=clash_id, user_id=user, content=content, argument_type=argument_type, parent_id=parent_id)
     return redirect(url_for('view_clash', clash_id=clash_id))
 
-# May remove or edit later
 @app.route("/argument/<int:arg_id>/vote", methods=["POST"])
 def vote_argument(arg_id):
     user = current_user()
@@ -131,8 +137,10 @@ def vote_argument(arg_id):
         abort(401)
 
     vote = request.form.get("vote")
+    if vote not in ["up", "down"]:
+        abort(400, "Invalid vote")
     value = 1 if vote == "up" else -1
-    clash_id = db.vote_argument(arg_id, user["id"], value)
+    clash_id = db.vote_argument(arg_id, value)
 
     return redirect(url_for("view_clash", clash_id=clash_id))
 

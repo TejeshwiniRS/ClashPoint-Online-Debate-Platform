@@ -84,3 +84,20 @@ def get_replies_by_clash_id(clash_id):
                         ORDER BY a.created_at ASC
                     """, (clash_id,))
         return cur.fetchall()
+
+def vote_argument(arg_id, vote):
+    print(arg_id, vote)
+    column = "up_votes" if vote > 0 else "down_votes"
+    print(column)
+    with get_db_cursor(commit=True) as cur:
+        cur.execute(f"""
+            UPDATE arguments 
+            SET {column} = {column} + 1
+            WHERE id = {arg_id}
+            RETURNING clash_id;
+        """)
+        result = cur.fetchone()
+        if result:
+            return result["clash_id"]
+        else:
+            return None
