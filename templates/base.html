@@ -66,21 +66,6 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        {% if not session.get('user') %}
-            <h1>Welcome to <span class="highlight">ClashPoint</span></h1>
-            <p class="tagline">One stop for your non-stop opinions! </p>
-        {% else %}
-            {% set display_name = session['user'].get('name') or session['user'].get('email') %}
-            {% if '@' in display_name %}
-                {% set display_name = display_name.split('@')[0] %}
-            {% endif %}
-            <h1>Hey, {{ display_name }}!</h1>
-            <p class="tagline">Ready for your next clash?</p>
-        {% endif %}
-    </section>
-
     <!-- Main Content -->
     <main class="main-content">
         {% block content %}{% endblock %}

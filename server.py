@@ -23,8 +23,34 @@ auth0 = oauth.register(
 )
 
 @app.route("/")
+@app.route("/index")
 def index():
-    return render_template("index.html")
+    page = int(request.args.get("page", 1))
+    limit = 6
+    offset = (page - 1) * limit
+
+    # Fetch clashes ordered by created_at DESC
+    with db.get_db_cursor() as cur:
+        cur.execute("""
+            SELECT id, title, description, created_at, status
+            FROM clash_dump
+            WHERE owner_id is NULL
+            ORDER BY created_at DESC
+            LIMIT %s OFFSET %s;
+        """, (limit, offset))
+        clashes = [dict(row) for row in cur.fetchall()] 
+
+        cur.execute("SELECT COUNT(*) FROM clash_dump;")
+        total = cur.fetchone()['count']
+
+    total_pages = (total + limit - 1) // limit
+
+    return render_template(
+        "index.html",
+        clashes=clashes,
+        page=page,
+        total_pages=total_pages
+    )
 
 @app.route("/login")
 def login():
@@ -71,6 +97,22 @@ def logout():
 @app.route("/communities")
 def communities():
     return render_template("communities.html")
+
+@app.route("/clash/<int:id>")
+def clash(id):
+    with db.get_db_cursor() as cur:
+        cur.execute("""
+            SELECT id, title, description, status, start_time, end_time, created_at
+            FROM clash_dump
+            WHERE id = %s;
+        """, (id,))
+        clash = cur.fetchone()
+
+    if not clash:
+        return render_template("404.html", message="Clash not found"), 404
+
+    return render_template("clash.html", clash=clash)
+
 
 @app.route("/terms")
 def terms():
