@@ -22,6 +22,9 @@ auth0 = oauth.register(
     server_metadata_url=f"https://{os.environ.get('AUTH0_DOMAIN')}/.well-known/openid-configuration"
 )
 
+def current_user():
+    return session.get('user')
+
 @app.route("/")
 @app.route("/index")
 def index():
@@ -95,21 +98,6 @@ def logout():
 @app.route("/communities")
 def communities():
     return render_template("communities.html")
-
-@app.route("/clash/<int:id>")
-def clash(id):
-    with db.get_db_cursor() as cur:
-        cur.execute("""
-            SELECT id, title, description, status, start_time, end_time, created_at
-            FROM clash_dump
-            WHERE id = %s;
-        """, (id,))
-        clash = cur.fetchone()
-
-    if not clash:
-        return render_template("404.html", message="Clash not found"), 404
-
-    return render_template("clash.html", clash=clash)
 
 
 @app.route("/terms")

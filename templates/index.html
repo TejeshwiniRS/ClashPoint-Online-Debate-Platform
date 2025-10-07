@@ -49,7 +49,7 @@
         <!-- Clash Grid -->
         <div class="landing-grid">
             {% for clash in clashes %}
-                <a href="{{ url_for('clash', id=clash.id) }}" class="landing-card-link">
+               <a href="{{ url_for('view_clash', clash_id=clash.id) }}" class="landing-card-link">
                 <div class="landing-card">
                     <h3>{{ clash.title }}</h3>
                     <p>{{ clash.description }}</p>
