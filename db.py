@@ -151,3 +151,69 @@ def add_clash(owner_id, title, description, tags, close_date):
             (datetime.now(), close_date, "open", title, description, owner_id)
             )
     return None
+
+
+def search_clashes(query, sort_by, status, start_date, end_date, limit, offset, category=None):
+    with get_db_cursor() as cur:
+        conditions = []
+        params = []
+        order_clause = "ORDER BY created_at DESC"
+
+        # Full-text search
+        if query:
+            conditions.append("search_vector @@ plainto_tsquery('english', %s)")
+            params.append(query)
+
+        # Status filter
+        if status in ["open", "closed"]:
+            conditions.append("status = %s")
+            params.append(status)
+
+        # Date filter (both mandatory)
+        if start_date and end_date:
+            conditions.append("(start_time >= %s AND end_time <= %s)")
+            params.extend([start_date, end_date])
+        elif start_date or end_date:
+            # only one provided -> ignore filter
+            pass
+
+        if category:
+            conditions.append("""
+                id IN (
+                    SELECT ct.clash_id
+                    FROM clash_tags_dump ct
+                    JOIN tags t ON t.id = ct.tag_id
+                    WHERE t.name = %s
+                )
+            """)
+            params.append(category)
+
+        # Sorting
+        if sort_by == "most_voted":
+            order_clause = "ORDER BY up_votes DESC"
+        elif sort_by == "least_voted":
+            order_clause = "ORDER BY up_votes ASC"
+
+        # Build WHERE
+        where_clause = "WHERE " + " AND ".join(conditions) if conditions else ""
+
+        # Main query
+        cur.execute(f"""
+            SELECT id, title, description, status, created_at,
+                   ts_rank_cd(search_vector, plainto_tsquery('english', %s)) AS rank
+            FROM clash_dump
+            {where_clause}
+            {order_clause}
+            LIMIT %s OFFSET %s;
+        """, [query or ""] + params + [limit, offset])
+        clashes = [dict(row) for row in cur.fetchall()]
+
+        # Count total
+        cur.execute(f"""
+            SELECT COUNT(*) AS count
+            FROM clash_dump
+            {where_clause};
+        """, params)
+        total = cur.fetchone()["count"]
+
+        return clashes, total

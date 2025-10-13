@@ -24,23 +24,42 @@
 <section class="landing-section">
 
     <!-- Search & Filters -->
-    <form class="pure-form landing-filters">
-        <input type="text" class="pure-input landing-search" placeholder="Type a topic, spark a clash...">
-        <input type="date" class="pure-input landing-date" placeholder="Debates From">
-        <input type="date" class="pure-input landing-date" placeholder="Debates Till">
+    <form class="pure-form landing-filters" method="get" action="{{ url_for('index') }}">
+        {% if selected_category %}
+            <input type="hidden" name="category" value="{{ selected_category }}">
+        {% endif %}
+        <input type="text" name="query" class="pure-input landing-search"
+            placeholder="Type a topic, spark a clash..."
+            value="{{ query or '' }}">
 
-        <select class="pure-input landing-select">
-            <option>Most Voted</option>
-            <option>Least Voted</option>
+        <div class="landing-date-group">
+            <div class="landing-date-row">
+                <input type="date" name="start_date" id="start_date"
+                    class="pure-input landing-date" value="{{ start_date or '' }}">
+                <input type="date" name="end_date" id="end_date"
+                    class="pure-input landing-date" value="{{ end_date or '' }}">
+            </div>
+
+            <!-- ⚠️ Error message appears right below -->
+            <div id="date-warning" class="form-help is-hidden" role="alert"></div>
+        </div>
+
+        <select name="sort" class="pure-input landing-select">
+            <option value="">Sort By</option>
+            <option value="most_voted" {% if sort_by == 'most_voted' %}selected{% endif %}>Most Voted</option>
+            <option value="least_voted" {% if sort_by == 'least_voted' %}selected{% endif %}>Least Voted</option>
         </select>
 
-        <select class="pure-input landing-select">
-            <option>Open</option>
-            <option>Closed</option>
+        <select name="status" class="pure-input landing-select">
+            <option value="">All Status</option>
+            <option value="open" {% if status == 'open' %}selected{% endif %}>Open</option>
+            <option value="closed" {% if status == 'closed' %}selected{% endif %}>Closed</option>
         </select>
 
-        <button type="submit" class="pure-button pure-button-primary">Search</button>
+        <button type="submit" class="pure-button pure-button-primary" id="search-btn" disabled>Search</button>
+        <a class="pure-button" href="{{ url_for('index') }}">Reset</a>
     </form>
+
 
     <!-- Clashes Section -->
     <section class="landing-clashes">
@@ -68,24 +87,48 @@
         <!-- Pagination -->
         <div class="landing-pagination">
             {% if page > 1 %}
-            <a href="{{ url_for('index', page=page-1) }}" class="pure-button">&laquo; Prev</a>
+                <a href="{{ url_for('index', page=page-1,
+                                    query=query,
+                                    sort=sort_by,
+                                    status=status,
+                                    start_date=start_date,
+                                    end_date=end_date,
+                                    category=selected_category) }}" 
+                class="pure-button">&laquo; Prev</a>
             {% else %}
-            <button class="pure-button" disabled>&laquo; Prev</button>
+                <button class="pure-button" disabled>&laquo; Prev</button>
             {% endif %}
+
             <div class="page-numbers">
                 {% for p in range(1, total_pages + 1) %}
                     {% if p == page %}
                         <button class="pure-button pure-button-active">{{ p }}</button>
                     {% else %}
-                        <a href="{{ url_for('index', page=p) }}" class="pure-button">{{ p }}</a>
+                        <a href="{{ url_for('index',
+                                            page=p,
+                                            query=query,
+                                            sort=sort_by,
+                                            status=status,
+                                            start_date=start_date,
+                                            end_date=end_date,
+                                            category=selected_category) }}"
+                        class="pure-button">{{ p }}</a>
                     {% endif %}
                 {% endfor %}
             </div>
 
             {% if page < total_pages %}
-            <a href="{{ url_for('index', page=page+1) }}" class="pure-button">Next &raquo;</a>
+                <a href="{{ url_for('index',
+                                    page=page+1,
+                                    query=query,
+                                    sort=sort_by,
+                                    status=status,
+                                    start_date=start_date,
+                                    end_date=end_date,
+                                    category=selected_category) }}"
+                class="pure-button">Next &raquo;</a>
             {% else %}
-            <button class="pure-button" disabled>Next &raquo;</button>
+                <button class="pure-button" disabled>Next &raquo;</button>
             {% endif %}
         </div>
     </section>

@@ -4,7 +4,6 @@
     padding: 0;
     box-sizing: border-box;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
-    
 }
 
 body {
@@ -123,7 +122,6 @@ body {
     padding-top: 2rem;
     background: #fdfffc;
     border-radius: 12px;
-    /* box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05); */
     grid-template-rows: auto auto;
     gap: 0.1rem;
 }
@@ -260,15 +258,10 @@ body {
     }
 }
 
-
 .landing-container {
   text-align: center;
   padding: 2em;
 }
-
-/* .hero {
-  margin-top: 3em;
-} */
 
 .highlight {
   color: #314478;
@@ -291,10 +284,12 @@ body {
 }
 
 /* 🔹 Search + Filters Full Width */
+
 .landing-filters {
   display: flex;
   justify-content: space-evenly;
-  align-items: center;
+  /* Change this line */
+  align-items: baseline; /* Was: align-items: center; */
   gap: 1rem;
   width: 100%;
   padding: 1rem 2rem;
@@ -322,7 +317,7 @@ body {
 
 .landing-filters input:hover,
 .landing-filters select:hover {
-  border-color: #314478;;
+  border-color: #314478;
   background-color: #f0f6ff;
 }
 
@@ -365,7 +360,7 @@ body {
   color: #314478;
 }
 
-/* 🔹 Clash Grid: use full width of screen */
+/* 🔹 Clash Grid */
 .landing-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -391,7 +386,7 @@ body {
   transform: translateY(-4px);
 }
 
-/* 🔹 Pagination centered below full-width grid */
+/* 🔹 Pagination */
 .landing-pagination {
   display: flex;
   justify-content: center;
@@ -429,3 +424,49 @@ body {
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
   transition: all 0.2s ease-in-out;
 }
+
+/* 🔹 Date wrapper alignment fix */
+.landing-date-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+
+.landing-date-row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+#date-warning {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  color: #C33635;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  white-space: nowrap;
+}
+
+.landing-date-group .landing-date {
+  height: 2.6rem;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  color: #314478;
+}
+
+.landing-date.invalid {
+  border-color: #C33635 !important;
+  background-color: #fff5f5 !important;
+}
+
+
+#date-warning.is-hidden {
+  display: none;
+}
+  

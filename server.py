@@ -34,25 +34,36 @@ def current_user():
 @app.route("/index")
 def index():
     page = int(request.args.get("page", 1))
+    query = request.args.get("query", "").strip()
+    sort_by = request.args.get("sort")
+    status = request.args.get("status")
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
     category = request.args.get("category")
+
     limit = 6
     offset = (page - 1) * limit
 
-    if category:
+    if category and (query or sort_by or status or (start_date and end_date)):
+        # Category + Search combo
+        clashes, total = db.search_clashes(query, sort_by, status, start_date, end_date, limit, offset, category)
+    elif query or sort_by or status or (start_date and end_date):
+        # Regular search without category
+        clashes, total = db.search_clashes(query, sort_by, status, start_date, end_date, limit, offset)
+    elif category:
+        # Only category
         clashes, total = db.get_clashes_by_tag(category, limit, offset)
     else:
-
-        # Fetch clashes ordered by created_at DESC
+        # Default
         with db.get_db_cursor() as cur:
             cur.execute("""
                 SELECT id, title, description, created_at, status
                 FROM clash_dump
-                WHERE owner_id is NULL
+                WHERE owner_id IS NULL
                 ORDER BY created_at DESC
                 LIMIT %s OFFSET %s;
             """, (limit, offset))
-            clashes = [dict(row) for row in cur.fetchall()] 
-
+            clashes = [dict(row) for row in cur.fetchall()]
             cur.execute("SELECT COUNT(*) FROM clash_dump;")
             total = cur.fetchone()['count']
 
@@ -65,7 +76,12 @@ def index():
         page=page,
         total_pages=total_pages,
         tags=tags,
-        selected_category=category
+        selected_category=category,
+        query=query,
+        sort_by=sort_by,
+        status=status,
+        start_date=start_date,
+        end_date=end_date
     )
 
 @app.route("/login")
