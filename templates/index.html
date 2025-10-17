@@ -3,20 +3,24 @@
 {% block title %}ClashPoint{% endblock %}
 
 {% block content %}
-<!-- Hero Section (unchanged) -->
+
 <div class="pure-g hero">
     <div class="pure-u">
         {% if not session.get('user') %}
             <h1>Welcome to <span class="highlight">ClashPoint</span></h1>
             <p class="tagline">One Stop for your non-stop opinions</p>
         {% else %}
-            {% set display_name = session['user'].get('name') or session['user'].get('email') %}
-            {% if '@' in display_name %}
-                {% set display_name = display_name.split('@')[0] %}
-            {% endif %}
-            <h1>Hey, {{ display_name }}!</h1>
-            <p class="tagline">Ready for your next great debate?</p>
-        {% endif %}
+        {% set display_name =
+           session['user'].get('display_name')
+           or session['user'].get('https://clashpoint.app/username')
+           or session['user'].get('username')
+           or session['user'].get('nickname')
+           or session['user'].get('name')
+           or session['user'].get('email', '').split('@')[0]
+        %}
+        <h1>Hey, {{ display_name }}!</h1>
+        <p class="tagline">Ready for your next clash?</p>
+       {% endif %}
     </div>
 </div>
 

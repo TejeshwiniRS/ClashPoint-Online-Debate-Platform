@@ -52,8 +52,39 @@ function checkFormValidity() {
   searchBtn.disabled = !anyValue;
 }
 
-["query","sort","status","start_date","end_date"].forEach(name => {
-  form.querySelector(`[name='${name}']`).addEventListener("input", checkFormValidity);
-});
+if (form) {
+  ["query","sort","status","start_date","end_date"].forEach(name => {
+    const input = form.querySelector(`[name='${name}']`);
+    if (input) input.addEventListener("input", checkFormValidity);
+  });
 
-checkFormValidity();
+  checkFormValidity();
+}
+
+
+
+// ============================
+// PROFILE PAGE INTERACTIONS
+// ============================
+document.addEventListener("DOMContentLoaded", () => {
+  const deleteBtn = document.getElementById("deleteBtn");
+  const cancelDelete = document.getElementById("cancelDelete");
+  const deleteModal = document.getElementById("deleteModal");
+
+  if (deleteBtn && cancelDelete && deleteModal) {
+    deleteBtn.addEventListener("click", () => {
+      deleteModal.style.display = "flex";
+    });
+
+    cancelDelete.addEventListener("click", () => {
+      deleteModal.style.display = "none";
+    });
+
+    // Optional: close modal when clicking outside
+    deleteModal.addEventListener("click", (e) => {
+      if (e.target === deleteModal) {
+        deleteModal.style.display = "none";
+      }
+    });
+  }
+});

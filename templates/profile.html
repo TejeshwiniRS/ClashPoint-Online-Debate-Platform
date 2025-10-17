@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}My Profile - ClashPoint{% endblock %}
+{% block content %}
+
+<section class="profile-container">
+  <h2 class="profile-title">My Profile</h2>
+
+  <form method="POST" action="{{ url_for('update_profile') }}" class="profile-form">
+    <div class="form-group">
+      <label>User Name</label>
+      <div class="edit-field">
+        <input 
+          type="text" 
+          name="username" 
+          id="username" 
+          value="{{ user.display_name or user.username or user.nickname or user.name or user.email.split('@')[0] }}" 
+          required>
+        <button type="submit" class="btn-save">Save</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" value="{{ user.email }}" disabled>
+    </div>
+
+    <hr class="divider">
+
+    <div class="delete-section">
+      <p>One last clash: you vs the delete button!</p>
+      <button type="button" id="deleteBtn" class="btn-delete">Delete Account</button>
+    </div>
+  </form>
+</section>
+
+<!-- ✅ Delete Confirmation Modal -->
+<div id="deleteModal" class="modal-overlay">
+  <div class="modal">
+    <p>Are you sure you want to leave ClashPoint?</p>
+    <div class="modal-buttons">
+      <form method="POST" action="{{ url_for('delete_account') }}">
+        <button type="submit" id="confirmDelete" class="btn-yes">Yes</button>
+      </form>
+      <button id="cancelDelete" class="btn-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

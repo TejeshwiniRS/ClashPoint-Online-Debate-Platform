@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Terms & Conditions — ClashPoint{% endblock %}
+
+{% block content %}
+<section class="terms-container">
+    <h1 class="terms-title">Terms & Conditions</h1>
+    <p>Welcome to ClashPoint! By using our platform, you agree to the following terms and conditions. Please read them carefully before participating in discussions or creating content.</p>
+
+    <h2>1. Acceptance of Terms</h2>
+    <p>By registering or accessing ClashPoint, you agree to comply with these Terms and our Privacy Policy. If you do not agree, please discontinue use of the site immediately.</p>
+
+    <h2>2. Use of the Platform</h2>
+    <p>ClashPoint is designed for open and respectful discussion. You agree to:</p>
+    <ul>
+        <li>Post content that is lawful, respectful, and appropriate.</li>
+        <li>Refrain from harassment, hate speech, or spam.</li>
+        <li>Respect intellectual property and only post content you have rights to share.</li>
+    </ul>
+
+    <h2>3. User Accounts</h2>
+    <p>You are responsible for maintaining the confidentiality of your account and password. You agree to notify us immediately if you suspect unauthorized access to your account.</p>
+
+    <h2>4. Content Ownership</h2>
+    <p>Users retain ownership of the content they post. However, by posting, you grant ClashPoint a non-exclusive, royalty-free, worldwide license to display, distribute, and promote your content on our platform.</p>
+
+    <h2>5. Moderation</h2>
+    <p>ClashPoint reserves the right to remove or restrict content or users that violate our community standards or legal requirements.</p>
+
+    <h2>6. Limitation of Liability</h2>
+    <p>ClashPoint and its team are not responsible for damages resulting from the use or inability to use our services. We provide the platform “as is” without warranties of any kind.</p>
+
+    <h2>7. Changes to Terms</h2>
+    <p>We may update these Terms from time to time. Any significant changes will be communicated on this page, and your continued use of ClashPoint constitutes acceptance of those changes.</p>
+
+    <h2>8. Contact Us</h2>
+    <p>
+        If you have any questions or concerns about these Terms, please reach out to us through our 
+        <a href="{{ url_for('contact') }}" class="terms-contact-link">Contact Us</a> page.
+    </p>
+
+    <p class="terms-updated">Last updated: {{ now().strftime('%B %d, %Y') if now else 'October 2025' }}</p>
+</section>
+{% endblock %}
