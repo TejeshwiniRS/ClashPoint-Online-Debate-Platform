@@ -1,6 +1,5 @@
 import os
-import requests
-from flask import Flask, render_template, redirect, url_for, session, abort, request, flash
+from flask import Flask, render_template, redirect, url_for, session, abort, request, flash, jsonify
 from authlib.integrations.flask_client import OAuth
 from urllib.parse import urlencode, quote_plus
 from dotenv import load_dotenv
@@ -345,5 +344,22 @@ def delete_account():
     return redirect(url_for("index"))
 
 # ---------- Run ----------
+
+# Cron Job to close the clashes
+@app.route("/internal/close-expired", methods=["POST"])
+def close_expired():
+    secret = os.environ.get("CRON_SECRET")
+    if secret and request.headers.get("X-CRON-SECRET") != secret:
+        return jsonify({"ok": False, "error": "unauthorized"}), 401
+
+    closed_clashes, closed_communities = db.close_expired_items()
+
+    return jsonify({
+        "ok": True,
+        "closed_clashes": closed_clashes,
+        "closed_communities": closed_communities
+    })
+
+
 if __name__ == "__main__":
     app.run(debug=True)

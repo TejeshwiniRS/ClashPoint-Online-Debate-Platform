@@ -1,6 +1,6 @@
 from contextlib import contextmanager
 import os
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -226,3 +226,26 @@ def delete_user(user_id):
         except Exception as e:
             print(f"⚠️ Delete failed for user {user_id}: {e}")
             return False
+    
+def close_expired_items():
+    now_utc = datetime.now(timezone.utc)
+    # today_chicago = (now_utc - timedelta(hours=5)).date()
+    with get_db_cursor as cur:
+        cur.execute(
+            """
+                UPDATE clash_dump
+                SET status = 'closed'
+                WHERE close_date = %s AND status != 'closed';
+            """,(now_utc,)
+        )
+        closed_clashes = cur.rowcount
+
+        cur.execute("""
+            UPDATE community
+            SET status = 'closed'
+            WHERE end_time = %s AND status != 'closed';
+        """, (now_utc,))
+        closed_communities = cur.rowcount
+
+    return closed_clashes, closed_communities
+
