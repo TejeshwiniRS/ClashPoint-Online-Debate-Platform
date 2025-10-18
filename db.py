@@ -98,6 +98,18 @@ def get_all_tags():
     with get_db_cursor() as cur:
         cur.execute("SELECT id, name FROM tags ORDER BY name;")
         return [dict(row) for row in cur.fetchall()]
+    
+def add_new_tag(new_tag):
+    with get_db_cursor(commit=True) as cur:
+        cur.execute("INSERT INTO tags (name) VALUES (%s) RETURNING id;", 
+                    (new_tag,)
+                    )
+        row = cur.fetchone()
+        if row is None:
+            raise Exception("Failed to insert new tag")
+        # returning the id of the new tag so that I can add it to 
+        new_tag_id = row['id']
+    return new_tag_id
 
 def get_clashes_by_tag(tag_name, limit, offset):
     with get_db_cursor() as cur:
@@ -134,13 +146,24 @@ def vote_argument(arg_id, vote):
         result = cur.fetchone()
         return result["clash_id"] if result else None
 
-def add_clash(owner_id, title, description, tags, close_date):
+def add_clash(owner_id, title, description, close_date):
     with get_db_cursor(commit=True) as cur:
         cur.execute("""
             INSERT INTO clash (start_time, end_time, status, title, description, owner_id)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s) 
+            RETURNING id;
         """, (datetime.now(), close_date, "open", title, description, owner_id))
-    return None
+        # have to do this to fetch the id of this new 
+        row = cur.fetchone()
+        if row is None:
+            raise Exception("Failed to insert clash!")
+        new_clash_id = row['id']
+    return new_clash_id
+
+def add_clash_tag(tag_id, clash_id):
+    with get_db_cursor(commit=True) as cur:
+        cur.execute("INSERT INTO clash_tag (tag_id, clash_id) VALUES (%s, %s);", (tag_id, clash_id))
+        return None
 
 def search_clashes(query, sort_by, status, start_date, end_date, limit, offset, category=None):
     with get_db_cursor() as cur:
