@@ -269,6 +269,7 @@ def vote_argument(arg_id):
 # ---------- Create ----------
 @app.route("/create_clash")
 def create_clash():
+    tags = db.get_all_tags() 
     return render_template("create_clash.html")
 
 @app.post("/new_clash")
@@ -276,10 +277,21 @@ def new_clash():
     owner_id = current_user_id()
     title = request.form.get("title")
     description = request.form.get("description")
-    tags = request.form.getlist("tags")
-    close_date = request.form.get("close_date")
+    tag_id = request.form.get("tags")
 
-    db.add_clash(owner_id, title, description, tags, close_date)
+    # user wants to add a new tag. 
+    new_tag = request.form.get("newTag")
+    if new_tag:
+        tag_id = db.add_new_tag(new_tag)
+        # how can I make this new tag, the tag that pairs with the new clash???
+        # come back to this. 
+        # make it so that the function returns the new id of the tag. 
+    
+    close_date = request.form.get("close_date")
+    close_date = datetime.strptime(close_date, "%Y-%m-%d")
+    new_clash_id = db.add_clash(owner_id, title, description, close_date)
+    db.add_clash_tag(tag_id, new_clash_id)
+    # where do I redirect after this? 
     return redirect(url_for("index"))
 
 @app.route("/create_community")

@@ -1,7 +1,59 @@
+/* create.css */
+
 .parent-container {
-  display: flex;
-  justify-content: center; /* Centers horizontally */
-  align-items: center; /* Centers vertically */
-  /* Add height to the parent if you want to center vertically within a specific area */
-  height: 100vh; /* Example: center within the viewport height */
+    background-color: var(--color-nav);
+    padding: 30px;
+    max-width: 500px;
+    margin: 50px auto;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    color: var(--color-text-primary);
+    font-family: Arial, sans-serif;
+}
+
+.parent-container label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--color-text-primary);
+    font-weight: bold;
+}
+
+.parent-container input,
+.parent-container select,
+.parent-container textarea {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 15px;
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    background-color: var(--color-nav);
+    color: var(--color-text-primary);
+}
+
+.parent-container input:focus,
+.parent-container select:focus,
+.parent-container textarea:focus {
+    outline: none;
+    border-color: var(--color-text-tertiary);
+    box-shadow: 0 0 5px var(--color-text-tertiary);
+}
+
+.pure-button-primary {
+    background-color: var(--color-text-tertiary);
+    color: var(--button-text);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.pure-button-primary:hover {
+    background-color: var(--color-text-secondary);
+}
+
+.pure-button-primary:active {
+    background-color: var(--color-text-red);
 }
