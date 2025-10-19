@@ -153,7 +153,7 @@ def add_clash(owner_id, title, description, clash_close_date):
             VALUES (%s, %s, %s, %s, %s, %s) 
             RETURNING id;
         """, (datetime.now(), clash_close_date, "open", title, description, owner_id))
-        # have to do this to fetch the id of this new 
+        # have to do this to fetch the id of this new clash
         row = cur.fetchone()
         if row is None:
             raise Exception("Failed to insert clash!")
@@ -177,10 +177,16 @@ def add_community(community_close_date, title, description, encoded_code, owner_
                     secret_code_hash, 
                     owner_id, 
                     search_vector
-                    ) VALUES (%s,%s,%s,%s,%s,%s,%s, to_tsvector('english', %s || ' ' || %s) );""",
+                    ) VALUES (%s,%s,%s,%s,%s,%s,%s, to_tsvector('english', %s || ' ' || %s) )
+                    RETURNING ID
+                    ;""",
                       (datetime.now(), community_close_date, "open", title, description, encoded_code, owner_id, title, description)
                     )
-    return None
+        row = cur.fetchone()
+        if row is None:
+            raise Exception("Failed to insert clash!")
+        new_community_id = row['id']
+    return new_community_id
     
 
 def search_clashes(query, sort_by, status, start_date, end_date, limit, offset, category=None, owner_id=None):
