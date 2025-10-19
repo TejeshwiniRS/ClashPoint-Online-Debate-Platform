@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 import db
 from datetime import datetime
 from flask_mail import Mail, Message
+import secrets
+import string
+import base64
 
 # ---------------- Environment & Setup ----------------
 load_dotenv()
@@ -287,9 +290,9 @@ def new_clash():
         # come back to this. 
         # make it so that the function returns the new id of the tag. 
     
-    close_date = request.form.get("close_date")
-    close_date = datetime.strptime(close_date, "%Y-%m-%d")
-    new_clash_id = db.add_clash(owner_id, title, description, close_date)
+    clash_close_date = request.form.get("close_date")
+    clash_close_date = datetime.strptime(clash_close_date, "%Y-%m-%d")
+    new_clash_id = db.add_clash(owner_id, title, description, clash_close_date)
     db.add_clash_tag(tag_id, new_clash_id)
     # where do I redirect after this? 
     return redirect(url_for("index"))
@@ -298,9 +301,22 @@ def new_clash():
 def create_community():
     return render_template("create_community.html")
 
-@app.route("/create_community_code")
-def create_community_code():
-    return render_template("create_community_code.html")
+@app.post("/new_community")
+def new_community():
+    owner_id = current_user_id()
+    title = request.form.get("title")
+    description = request.form.get("description")
+    community_close_date = request.form.get("close_date")
+    community_close_date = datetime.strptime(community_close_date, "%Y-%m-%d")
+
+    # Generating and Encoding the community code
+
+    options = string.ascii_letters + string.digits
+    code = ''.join(secrets.choice(options) for _ in range(7))
+    encoded_code = base64.b64encode(code.encode()).decode()
+
+    db.add_community(community_close_date, title, description, encoded_code, owner_id)
+    return render_template("create_community.html", code = code)
 
 # ---------- Profile ----------
 @app.route("/profile")
