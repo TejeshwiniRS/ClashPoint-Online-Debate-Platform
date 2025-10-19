@@ -57,3 +57,8 @@
 .pure-button-primary:active {
     background-color: var(--color-text-red);
 }
+
+.form-description {
+    margin-bottom: 1em; /* spacing between text and buttons */
+    font-size: 1rem;    /* adjust as needed */  
+}

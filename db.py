@@ -146,13 +146,13 @@ def vote_argument(arg_id, vote):
         result = cur.fetchone()
         return result["clash_id"] if result else None
 
-def add_clash(owner_id, title, description, close_date):
+def add_clash(owner_id, title, description, clash_close_date):
     with get_db_cursor(commit=True) as cur:
         cur.execute("""
             INSERT INTO clash (start_time, end_time, status, title, description, owner_id)
             VALUES (%s, %s, %s, %s, %s, %s) 
             RETURNING id;
-        """, (datetime.now(), close_date, "open", title, description, owner_id))
+        """, (datetime.now(), clash_close_date, "open", title, description, owner_id))
         # have to do this to fetch the id of this new 
         row = cur.fetchone()
         if row is None:
@@ -164,6 +164,23 @@ def add_clash_tag(tag_id, clash_id):
     with get_db_cursor(commit=True) as cur:
         cur.execute("INSERT INTO clash_tag (tag_id, clash_id) VALUES (%s, %s);", (tag_id, clash_id))
         return None
+
+# community CRUD operations 
+def add_community(community_close_date, title, description, encoded_code, owner_id):
+    with get_db_cursor(commit=True) as cur:
+        cur.execute("""INSERT INTO community 
+                    (start_time, 
+                    end_time, 
+                    status, 
+                    title, 
+                    description, 
+                    secret_code_hash, 
+                    owner_id, 
+                    search_vector
+                    ) VALUES (%s,%s,%s,%s,%s,%s,%s, to_tsvector('english', %s || ' ' || %s) );""",
+                      (datetime.now(), community_close_date, "open", title, description, encoded_code, owner_id, title, description)
+                    )
+    return None
 
 def search_clashes(query, sort_by, status, start_date, end_date, limit, offset, category=None):
     with get_db_cursor() as cur:
