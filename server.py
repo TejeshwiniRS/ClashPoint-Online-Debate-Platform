@@ -285,7 +285,7 @@ def new_clash():
     new_clash_id = db.add_clash(owner_id, title, description, clash_close_date)
     db.add_clash_tag(tag_id, new_clash_id)
     # where do I redirect after this? 
-    return redirect(url_for("clashes"))
+    return redirect(url_for("view_clash", clash_id=new_clash_id))
 
 @app.route("/create_community")
 def create_community():
@@ -305,8 +305,8 @@ def new_community():
     code = ''.join(secrets.choice(options) for _ in range(7))
     encoded_code = base64.b64encode(code.encode()).decode()
 
-    db.add_community(community_close_date, title, description, encoded_code, owner_id)
-    return render_template("create_community.html", code = code)
+    new_community_id = db.add_community(community_close_date, title, description, encoded_code, owner_id)
+    return render_template("create_community.html", code = code, new_community_id = new_community_id)
 
 # ---------- Profile ----------
 @app.route("/profile")
