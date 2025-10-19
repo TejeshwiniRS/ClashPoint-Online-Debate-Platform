@@ -433,9 +433,55 @@ def close_expired():
     })
 
 # ---------- Community Views ----------
-@app.route('/clash/<int:community_id>')
+@app.route("/community/<int:community_id>")
 def view_community(community_id):
-    pass
+    print("came here")
+    user_id = current_user_id()
+    community = db.get_community_details(community_id)
+    if not community:
+        abort(404)
+
+    members = db.get_community_members(community_id)
+    clashes = db.get_clashes_by_community(community_id)
+    is_owner = (user_id == community["owner_id"])
+
+    return render_template(
+        "community_view.html",
+        community=community,
+        members=members,
+        clashes=clashes,
+        is_owner=is_owner,
+        user=current_user_info()
+    )
+
+@app.get("/community/<int:community_id>/search_clashes")
+def search_community_clashes(community_id):
+    query = request.args.get("query", "").strip()
+    results = db.search_clashes_in_community(community_id, query)
+    return jsonify(results)
+
+@app.post("/community/<int:community_id>/remove_member")
+def remove_member(community_id):
+    user_id = current_user_id()
+    if not user_id:
+        abort(401)
+    community = db.get_community_details(community_id)
+    if not community or community["owner_id"] != user_id:
+        abort(403)
+
+    email = request.form.get("email", "").strip()
+    if not email:
+        flash("Please enter an email address.", "error")
+        return redirect(url_for("view_community", community_id=community_id))
+    
+    success = db.remove_community_member(community_id, email)
+    if success:
+        flash(f"Removed member with email: {email}", "success")
+    else:
+        flash("No member found with that email.", "error")
+
+    return redirect(url_for("view_community", community_id=community_id))
+    
 
 
 if __name__ == "__main__":

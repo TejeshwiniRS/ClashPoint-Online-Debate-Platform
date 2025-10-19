@@ -44,8 +44,10 @@
         <option value="closed" {% if status == 'closed' %}selected{% endif %}>Closed</option>
     </select>
 
-    <button type="submit" class="pure-button pure-button-primary">Search</button>
-    <a class="pure-button" href="{{ url_for('communities',scope=scope) }}">Reset </a>
+    <div class="button-row">
+        <button type="submit" class="pure-button pure-button-primary">Search</button>
+        <a class="pure-button" href="{{ url_for('communities',scope=scope) }}">Reset </a>
+    </div>
   </form>
 
   <!-- Communities Grid -->
@@ -61,7 +63,7 @@
         {% for c in communities %}
             <div class="landing-card">
             {% if scope == 'mine' %}
-                <a href="{{ url_for('view_community', community_id=c.id) }}" class="landing-card-link"></a>
+                <a href="{{ url_for('view_community', community_id=c.id) }}" class="landing-card-link">
             {% endif %}
                 <h3>{{ c.title }}</h3>
                 <p>{{ c.description }}</p>

@@ -71,10 +71,10 @@
             <option value="closed" {% if status == 'closed' %}selected{% endif %}>Closed</option>
         </select>
 
-        <button type="submit" class="pure-button pure-button-primary" id="search-btn" disabled>Search</button>
-        <a class="pure-button"
-            href="{{ url_for('clashes',scope=scope) }}">Reset
-        </a>
+        <div class="button-row">
+            <button type="submit" class="pure-button pure-button-primary" id="search-btn" disabled>Search</button>
+            <a class="pure-button" href="{{ url_for('clashes', scope=scope) }}">Reset</a>
+        </div>
     </form>
 
 

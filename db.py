@@ -320,7 +320,7 @@ def search_communities(query, status, start_date, end_date, user_id=None):
             params.extend([start_date, end_date])
 
         if user_id:
-            conditions.append("id IN (SELECT community_id FROM community_users WHERE user_id = %s)")
+            conditions.append("id IN (SELECT community_id FROM community_users WHERE user_id = %s AND is_active_member=true)")
             params.append(user_id)
 
         if status in ["open", "closed"]:
@@ -360,3 +360,57 @@ def verify_community_code(community_id, entered_code):
 
         stored_code = (row.get("secret_code_hash") or "").strip()
         return stored_code == entered_code.strip()
+    
+
+def get_community_details(community_id):
+    with get_db_cursor() as cur:
+        cur.execute("""
+            SELECT id, title, description, owner_id, start_time, end_time, status
+            FROM community
+            WHERE id = %s;
+        """, (community_id,))
+        return cur.fetchone()
+    
+def get_community_members(community_id):
+    with get_db_cursor() as cur:
+        cur.execute("""
+            SELECT u.id, u.name, u.email
+            FROM community_users cu
+            JOIN users u ON cu.user_id = u.id
+            WHERE cu.community_id = %s AND cu.is_active_member = true
+            ORDER BY u.name ASC;
+        """, (community_id,))
+        return cur.fetchall()
+    
+def get_clashes_by_community(community_id):
+    with get_db_cursor() as cur:
+        cur.execute("""
+            SELECT id, title, description, status, created_at
+            FROM clash
+            WHERE community_id = %s
+            ORDER BY created_at DESC;
+        """, (community_id,))
+        return cur.fetchall()
+    
+
+def remove_community_member(community_id, email):
+    with get_db_cursor(commit=True) as cur:
+        cur.execute("""
+            UPDATE community_users
+            SET is_active_member = false
+            WHERE community_id = %s
+                AND  user_id = (SELECT id from users WHERE email=%s)
+                AND is_active_member = true;
+        """, (community_id, email))
+        return cur.rowcount > 0
+    
+def search_clashes_in_community(community_id, query):
+    with get_db_cursor() as cur:
+        cur.execute("""
+            SELECT  id, title, description, status, created_at
+            FROM clash
+            WHERE community_id =  %s
+                AND (title ILIKE %s OR description ILIKE %s)
+            ORDER BY created_at DESC;
+        """, (community_id, query))
+        return [dict(row) for row in cur.fetchall()]

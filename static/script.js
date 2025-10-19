@@ -109,4 +109,61 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }, 4000);
   });
+  // --- Confirm Remove Member Modal ---
+  window.openRemoveModal = function () {
+    const email = document.getElementById('removeEmail').value.trim();
+    if (!email) {
+      alert("Please enter a valid email address before proceeding.");
+      return;
+    }
+
+    const modal = document.getElementById('removeModal');
+    modal.classList.add('active');
+  };
+
+  window.closeRemoveModal = function () {
+    const modal = document.getElementById('removeModal');
+    if (modal) modal.classList.remove('active');
+  };
+
+  const confirmRemoveBtn = document.getElementById('confirmRemove');
+  if (confirmRemoveBtn) {
+    confirmRemoveBtn.addEventListener('click', () => {
+      const form = document.getElementById('removeMemberForm');
+      if (form) form.submit();
+    });
+  }
+
+  // --- Search Clashes within a Community ---
+  const clashSearchInput = document.getElementById('clashSearch');
+  if (clashSearchInput) {
+    clashSearchInput.addEventListener('input', async (e) => {
+      const query = e.target.value.trim();
+      const communityId = window.location.pathname.split('/').pop(); // extract ID from URL
+
+      const res = await fetch(`/community/${communityId}/search_clashes?query=${encodeURIComponent(query)}`);
+      const data = await res.json();
+
+      const clashList = document.getElementById('clashList');
+      if (!clashList) return;
+
+      clashList.innerHTML = '';
+
+      if (data.length === 0) {
+        clashList.innerHTML = '<p>No matches found.</p>';
+        return;
+      }
+
+      data.forEach(c => {
+        const created = new Date(c.created_at).toLocaleDateString();
+        clashList.innerHTML += `
+          <div class="landing-card" style="margin-bottom: 1rem;">
+            <h4>${c.title}</h4>
+            <p>${c.description}</p>
+            <p>Status: ${c.status.charAt(0).toUpperCase() + c.status.slice(1)} | ${created}</p>
+          </div>
+        `;
+      });
+    });
+  }
 });
