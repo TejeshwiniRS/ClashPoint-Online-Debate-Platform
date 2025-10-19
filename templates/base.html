@@ -20,7 +20,7 @@
         <div class="header-container">
             <div class="pure-menu pure-menu-horizontal">
                 <!-- Brand -->
-                <a href="{{ url_for('index') }}" class="brand">
+                <a href="{{ url_for('clashes') }}" class="brand">
                     <img src="{{ url_for('static', filename='ClashPoint_Logo.PNG') }}" 
                          alt="ClashPoint Logo" class="logo-img">
                     <span class="brand-text">ClashPoint</span>
@@ -43,12 +43,17 @@
                         <ul class="pure-menu-children">
                             {% for tag in tags %}
                                 <li class="pure-menu-item">
-                                    <a href="{{ url_for('index', category=tag.name) }}" class="pure-menu-link">
+                                    <a href="{{ url_for('clashes', category=tag.name) }}" class="pure-menu-link">
                                         {{ tag.name }}
                                     </a>
                                 </li>
                             {% endfor %}
                         </ul>
+                    </li>
+
+                    <!-- Clashes -->
+                    <li class="pure-menu-item">
+                        <a href="{{ url_for('clashes') }}" class="pure-menu-link">Clashes</a>
                     </li>
 
                     <!-- Communities -->
@@ -86,6 +91,15 @@
          MAIN CONTENT
     ============================= -->
     <main class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
         {% block content %}{% endblock %}
     </main>
 

@@ -115,8 +115,8 @@ def get_clashes_by_tag(tag_name, limit, offset):
     with get_db_cursor() as cur:
         cur.execute("""
             SELECT c.id, c.title, c.description, c.created_at, c.status
-            FROM clash_dump c
-            JOIN clash_tags_dump ct ON c.id = ct.clash_id
+            FROM clash c
+            JOIN clash_tag ct ON c.id = ct.clash_id
             JOIN tags t ON ct.tag_id = t.id
             WHERE t.name = %s
             ORDER BY c.created_at DESC
@@ -125,8 +125,8 @@ def get_clashes_by_tag(tag_name, limit, offset):
         clashes = [dict(row) for row in cur.fetchall()]
 
         cur.execute("""
-            SELECT COUNT(*) FROM clash_dump c
-            JOIN clash_tags_dump ct ON c.id = ct.clash_id
+            SELECT COUNT(*) FROM clash c
+            JOIN clash_tag ct ON c.id = ct.clash_id
             JOIN tags t ON ct.tag_id = t.id
             WHERE t.name = %s;
         """, (tag_name,))
@@ -181,58 +181,75 @@ def add_community(community_close_date, title, description, encoded_code, owner_
                       (datetime.now(), community_close_date, "open", title, description, encoded_code, owner_id, title, description)
                     )
     return None
+    
 
-def search_clashes(query, sort_by, status, start_date, end_date, limit, offset, category=None):
+def search_clashes(query, sort_by, status, start_date, end_date, limit, offset, category=None, owner_id=None):
     with get_db_cursor() as cur:
         conditions = []
         params = []
-        order_clause = "ORDER BY created_at DESC"
+        joins = ""
+        order_clause = "ORDER BY c.created_at DESC"
 
         if query:
-            conditions.append("search_vector @@ plainto_tsquery('english', %s)")
+            conditions.append("c.search_vector @@ plainto_tsquery('english', %s)")
             params.append(query)
 
         if status in ["open", "closed"]:
-            conditions.append("status = %s")
+            conditions.append("c.status = %s")
             params.append(status)
 
         if start_date and end_date:
-            conditions.append("(start_time >= %s AND end_time <= %s)")
+            conditions.append("(c.start_time >= %s AND c.end_time <= %s)")
             params.extend([start_date, end_date])
 
         if category:
             conditions.append("""
-                id IN (
+                c.id IN (
                     SELECT ct.clash_id
-                    FROM clash_tags_dump ct
+                    FROM clash_tag ct
                     JOIN tags t ON t.id = ct.tag_id
                     WHERE t.name = %s
                 )
             """)
             params.append(category)
 
-        if sort_by == "most_voted":
-            order_clause = "ORDER BY up_votes DESC"
-        elif sort_by == "least_voted":
-            order_clause = "ORDER BY up_votes ASC"
+        if owner_id:
+            conditions.append("c.owner_id = %s")
+            params.append(owner_id)
+
+        if sort_by in ["most_voted", "least_voted"]:
+            joins = """
+                LEFT JOIN (
+                    SELECT clash_id, COALESCE(SUM(up_votes), 0) AS total_up_votes
+                    FROM arguments
+                    GROUP BY clash_id
+                ) AS a ON a.clash_id = c.id
+            """
+            direction = "DESC" if sort_by == "most_voted" else "ASC"
+            order_clause = f"ORDER BY a.total_up_votes {direction}, c.created_at DESC"
+        else:
+            joins = "" 
+            order_clause = "ORDER BY c.created_at DESC"
 
         where_clause = "WHERE " + " AND ".join(conditions) if conditions else ""
 
-        cur.execute(f"""
-            SELECT id, title, description, status, created_at,
-                   ts_rank_cd(search_vector, plainto_tsquery('english', %s)) AS rank
-            FROM clash_dump
+        vote_select = "COALESCE(a.total_up_votes, 0)" if joins else "0"
+        query_sql = f"""
+            SELECT c.id, c.title, c.description, c.status, c.created_at,
+                   {vote_select} AS total_up_votes,
+                   ts_rank_cd(c.search_vector, plainto_tsquery('english', %s)) AS rank
+            FROM clash c
+            {joins}
             {where_clause}
             {order_clause}
             LIMIT %s OFFSET %s;
-        """, [query or ""] + params + [limit, offset])
+        """
+
+        cur.execute(query_sql, [query or ""] + params + [limit, offset])
         clashes = [dict(row) for row in cur.fetchall()]
 
-        cur.execute(f"""
-            SELECT COUNT(*) AS count
-            FROM clash_dump
-            {where_clause};
-        """, params)
+        count_sql = f"SELECT COUNT(*) AS count FROM clash c {where_clause};"
+        cur.execute(count_sql, params)
         total = cur.fetchone()["count"]
 
         return clashes, total
@@ -255,7 +272,7 @@ def delete_user(user_id):
 
             # Delete clashes created by user (and their tag mappings if any)
             cur.execute("""
-                DELETE FROM clash_tags_dump
+                DELETE FROM clash_tag
                 WHERE clash_id IN (SELECT id FROM clash WHERE owner_id = %s);
             """, (user_id,))
             cur.execute("DELETE FROM clash WHERE owner_id = %s;", (user_id,))
@@ -273,9 +290,9 @@ def close_expired_items():
     with get_db_cursor as cur:
         cur.execute(
             """
-                UPDATE clash_dump
+                UPDATE clash
                 SET status = 'closed'
-                WHERE close_date = %s AND status != 'closed';
+                WHERE end_time = %s AND status != 'closed';
             """,(now_utc,)
         )
         closed_clashes = cur.rowcount
@@ -289,3 +306,57 @@ def close_expired_items():
 
     return closed_clashes, closed_communities
 
+def search_communities(query, status, start_date, end_date, user_id=None):
+    with get_db_cursor() as cur:
+        conditions = []
+        params = []
+
+        if query:
+            conditions.append("search_vector @@ plainto_tsquery('english', %s)")
+            params.append(query)
+
+        if start_date and end_date:
+            conditions.append("(start_time >= %s AND end_time <= %s)")
+            params.extend([start_date, end_date])
+
+        if user_id:
+            conditions.append("id IN (SELECT community_id FROM community_users WHERE user_id = %s)")
+            params.append(user_id)
+
+        if status in ["open", "closed"]:
+            conditions.append("status = %s")
+            params.append(status)
+
+        where_clause = "WHERE " + " AND ".join(conditions) if conditions else ""
+        sql = f"SELECT * FROM community {where_clause} ORDER BY created_at DESC;"
+        cur.execute(sql, params)
+        return [dict(row) for row in cur.fetchall()]
+
+    
+def get_user_community_ids(user_id):
+    with get_db_cursor() as cur:
+        cur.execute("SELECT community_id FROM community_users WHERE user_id = %s", (user_id,))
+        return [r['community_id'] for r in cur.fetchall()]
+    
+def add_user_to_community(user_id, community_id):
+    with get_db_cursor(commit=True) as cur:
+        cur.execute("""
+            INSERT INTO community_users (community_id, user_id, is_active_member, role, joined_at)
+            VALUES (%s, %s, TRUE, 'member', NOW())
+            ON CONFLICT DO NOTHING;
+        """, (community_id, user_id))
+
+def verify_community_code(community_id, entered_code):
+    with get_db_cursor() as cur:
+        cur.execute("""
+            SELECT secret_code_hash
+            FROM community
+            WHERE id = %s
+            LIMIT 1;
+        """, (community_id,))
+        row = cur.fetchone()
+        if not row:
+            return False
+
+        stored_code = (row.get("secret_code_hash") or "").strip()
+        return stored_code == entered_code.strip()

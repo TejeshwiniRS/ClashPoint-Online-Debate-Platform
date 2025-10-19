@@ -27,8 +27,19 @@
 <!-- Landing Section -->
 <section class="landing-section">
 
+    <div class="tabs">
+        <a href="{{ url_for('clashes', scope='all', query=query, sort=sort_by, status=status, start_date=start_date, end_date=end_date, category=selected_category) }}"
+            class="tab {% if scope == 'all' %}active{% endif %}">All Clashes</a>
+        {% if session.get('user') %}
+        <a href="{{ url_for('clashes', scope='mine', query=query, sort=sort_by, status=status, start_date=start_date, end_date=end_date, category=selected_category) }}"
+            class="tab {% if scope == 'mine' %}active{% endif %}">My Clashes</a>
+        {% endif %}
+    </div>
+
+
     <!-- Search & Filters -->
-    <form class="pure-form landing-filters" method="get" action="{{ url_for('index') }}">
+    <form class="pure-form landing-filters" method="get" action="{{ url_for('clashes') }}">
+        <input type="hidden" name="scope" value="{{ scope }}">
         {% if selected_category %}
             <input type="hidden" name="category" value="{{ selected_category }}">
         {% endif %}
@@ -61,7 +72,9 @@
         </select>
 
         <button type="submit" class="pure-button pure-button-primary" id="search-btn" disabled>Search</button>
-        <a class="pure-button" href="{{ url_for('index') }}">Reset</a>
+        <a class="pure-button"
+            href="{{ url_for('clashes',scope=scope) }}">Reset
+        </a>
     </form>
 
 
@@ -91,13 +104,14 @@
         <!-- Pagination -->
         <div class="landing-pagination">
             {% if page > 1 %}
-                <a href="{{ url_for('index', page=page-1,
+                <a href="{{ url_for('clashes', page=page-1,
                                     query=query,
                                     sort=sort_by,
                                     status=status,
                                     start_date=start_date,
                                     end_date=end_date,
-                                    category=selected_category) }}" 
+                                    category=selected_category,
+                                    scope=scope) }}" 
                 class="pure-button">&laquo; Prev</a>
             {% else %}
                 <button class="pure-button" disabled>&laquo; Prev</button>
@@ -108,28 +122,30 @@
                     {% if p == page %}
                         <button class="pure-button pure-button-active">{{ p }}</button>
                     {% else %}
-                        <a href="{{ url_for('index',
+                        <a href="{{ url_for('clashes',
                                             page=p,
                                             query=query,
                                             sort=sort_by,
                                             status=status,
                                             start_date=start_date,
                                             end_date=end_date,
-                                            category=selected_category) }}"
+                                            category=selected_category,
+                                            scope=scope) }}"
                         class="pure-button">{{ p }}</a>
                     {% endif %}
                 {% endfor %}
             </div>
 
             {% if page < total_pages %}
-                <a href="{{ url_for('index',
+                <a href="{{ url_for('clashes',
                                     page=page+1,
                                     query=query,
                                     sort=sort_by,
                                     status=status,
                                     start_date=start_date,
                                     end_date=end_date,
-                                    category=selected_category) }}"
+                                    category=selected_category,
+                                    scope=scope) }}"
                 class="pure-button">Next &raquo;</a>
             {% else %}
                 <button class="pure-button" disabled>Next &raquo;</button>

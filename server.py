@@ -70,8 +70,10 @@ def get_auth0_mgmt_token():
 
 # ---------------- Routes ----------------
 @app.route("/")
-@app.route("/index")
-def index():
+@app.route("/clashes")
+def clashes():
+    user_id = current_user_id()
+    scope = request.args.get("scope", "all")
     page = int(request.args.get("page", 1))
     query = request.args.get("query", "").strip()
     sort_by = request.args.get("sort")
@@ -83,30 +85,21 @@ def index():
     limit = 6
     offset = (page - 1) * limit
 
-    if category and (query or sort_by or status or (start_date and end_date)):
-        clashes, total = db.search_clashes(query, sort_by, status, start_date, end_date, limit, offset, category)
-    elif query or sort_by or status or (start_date and end_date):
-        clashes, total = db.search_clashes(query, sort_by, status, start_date, end_date, limit, offset)
-    elif category:
-        clashes, total = db.get_clashes_by_tag(category, limit, offset)
+    if scope == "mine" and user_id:
+        clashes, total = db.search_clashes(
+            query, sort_by, status, start_date, end_date, limit, offset,
+            category=category, owner_id=user_id
+        )
     else:
-        with db.get_db_cursor() as cur:
-            cur.execute("""
-                SELECT id, title, description, created_at, status
-                FROM clash_dump
-                WHERE owner_id IS NULL
-                ORDER BY created_at DESC
-                LIMIT %s OFFSET %s;
-            """, (limit, offset))
-            clashes = [dict(row) for row in cur.fetchall()]
-            cur.execute("SELECT COUNT(*) FROM clash_dump;")
-            total = cur.fetchone()['count']
+        clashes, total = db.search_clashes(
+            query, sort_by, status, start_date, end_date, limit, offset, category
+        )
 
     total_pages = (total + limit - 1) // limit
     tags = db.get_all_tags()
 
     return render_template(
-        "index.html",
+        "clashes.html",
         clashes=clashes,
         page=page,
         total_pages=total_pages,
@@ -116,7 +109,8 @@ def index():
         sort_by=sort_by,
         status=status,
         start_date=start_date,
-        end_date=end_date
+        end_date=end_date,
+        scope=scope
     )
 
 # ---------- Auth ----------
@@ -159,22 +153,18 @@ def callback():
     session["user"] = user_info
     session["user_id"] = user_id
 
-    return redirect(url_for("index"))
+    return redirect(url_for("clashes"))
 
 @app.route("/logout")
 def logout():
     session.clear()
     params = {
-        "returnTo": url_for("index", _external=True),
+        "returnTo": url_for("clashes", _external=True),
         "client_id": os.environ.get("AUTH0_CLIENT_ID")
     }
     return redirect(f"https://{os.environ.get('AUTH0_DOMAIN')}/v2/logout?" + urlencode(params, quote_via=quote_plus))
 
 # ---------- Static Pages ----------
-@app.route("/communities")
-def communities():
-    return render_template("communities.html")
-
 @app.route("/terms")
 def terms():
     return render_template("terms.html", now=datetime.utcnow)
@@ -295,7 +285,7 @@ def new_clash():
     new_clash_id = db.add_clash(owner_id, title, description, clash_close_date)
     db.add_clash_tag(tag_id, new_clash_id)
     # where do I redirect after this? 
-    return redirect(url_for("index"))
+    return redirect(url_for("clashes"))
 
 @app.route("/create_community")
 def create_community():
@@ -351,7 +341,7 @@ def delete_account():
     auth0_user = session.get("user", {}).get("sub")
 
     if not user_id:
-        return redirect(url_for("index"))
+        return redirect(url_for("clashes"))
 
     db.delete_user(user_id)
 
@@ -369,7 +359,61 @@ def delete_account():
 
     session.clear()
     flash("Your account was deleted from ClashPoint and Auth0.", "success")
-    return redirect(url_for("index"))
+    return redirect(url_for("clashes"))
+
+@app.route("/communities")
+def communities():
+    user_id = current_user_id()
+    scope = request.args.get("scope", "all")  # all | mine
+    query = request.args.get("query", "").strip()
+    status = request.args.get("status")
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
+
+    if scope == "mine" and user_id:
+        communities = db.search_communities(query, status, start_date, end_date, user_id=user_id)
+    else:
+        communities = db.search_communities(query, status, start_date, end_date)
+
+    user_community_ids = db.get_user_community_ids(user_id) if user_id else []
+    return render_template("communities.html",
+                           communities=communities,
+                           user_community_ids=user_community_ids,
+                           query=query, status=status,
+                           start_date=start_date, end_date=end_date,
+                           scope=scope)
+
+# To Join a community
+@app.post("/join_community/<int:community_id>")
+def join_community(community_id):
+    user_id = current_user_id()
+    if not user_id:
+        flash("Please log in to join a community.", "error")
+        return redirect(url_for("login"))
+
+    entered_code = request.form.get("secret_code", "").strip()
+    if not entered_code:
+        flash("Please enter the community code.", "error")
+        return redirect(url_for("communities"))
+
+    # --- Check if already a member ---
+    joined_ids = db.get_user_community_ids(user_id)
+    if community_id in joined_ids:
+        flash("You are already a member of this community.", "info")
+        return redirect(url_for("communities"))
+
+    # --- Fetch and verify only that community's code ---
+    is_valid = db.verify_community_code(community_id, entered_code)
+    if not is_valid:
+        flash("Invalid code for this community.", "error")
+        return redirect(url_for("communities"))
+
+    # --- If valid, add membership ---
+    db.add_user_to_community(user_id, community_id)
+    flash("Welcome! You've successfully joined the community.", "success")
+    return redirect(url_for("communities"))
+
+
 
 # ---------- Run ----------
 
@@ -387,6 +431,11 @@ def close_expired():
         "closed_clashes": closed_clashes,
         "closed_communities": closed_communities
     })
+
+# ---------- Community Views ----------
+@app.route('/clash/<int:community_id>')
+def view_community(community_id):
+    pass
 
 
 if __name__ == "__main__":
