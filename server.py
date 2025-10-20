@@ -1,12 +1,3 @@
-import os
-from flask import Flask, render_template, redirect, url_for, session, abort, request, jsonify, flash
-from authlib.integrations.flask_client import OAuth
-from urllib.parse import urlencode, quote_plus
-from dotenv import load_dotenv
-import db   
-import json
-
-
 from flask import Flask, render_template, redirect, url_for, session, abort, request, flash, jsonify
 from authlib.integrations.flask_client import OAuth
 from urllib.parse import urlencode, quote_plus
@@ -17,6 +8,8 @@ from flask_mail import Mail, Message
 import secrets
 import string
 import base64
+import os
+import json
 
 # ---------------- Environment & Setup ----------------
 load_dotenv()
@@ -221,7 +214,7 @@ def contact_submit():
 # ---------- Clash Views ----------
 @app.route('/clash/<int:clash_id>')
 def view_clash(clash_id):
-    user_id = current_user_id()
+    user_id = current_user_info()
     clash = db.get_clash_details(clash_id)
     if not clash:
         abort(404)
