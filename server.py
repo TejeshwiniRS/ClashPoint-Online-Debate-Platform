@@ -251,7 +251,7 @@ def view_clash(clash_id):
         # print(arguments)
         # print(json.dumps(arguments, indent=2, default=str))
         # print(user)
-    return render_template("clash_view.html", clash=clash, arguments=arguments, user=user, trending_clashes=trending_clashes, related_clashes=related_clashes)
+    return render_template("clash_view.html", clash=clash, arguments=arguments, user=user_id, trending_clashes=trending_clashes, related_clashes=related_clashes)
 
 @app.route('/clash/<int:clash_id>/post', methods=['POST'])
 def post_argument(clash_id):
@@ -500,14 +500,15 @@ def close_expired():
 # ---------- Community Views ----------
 @app.route("/community/<int:community_id>")
 def view_community(community_id):
-    print("came here")
     user_id = current_user_id()
     community = db.get_community_details(community_id)
     if not community:
         abort(404)
 
     members = db.get_community_members(community_id)
+    num_members = len(members)
     clashes = db.get_clashes_by_community(community_id)
+    num_clashes = len(clashes)
     is_owner = (user_id == community["owner_id"])
 
     return render_template(
@@ -516,7 +517,9 @@ def view_community(community_id):
         members=members,
         clashes=clashes,
         is_owner=is_owner,
-        user=current_user_info()
+        user=current_user_info(),
+        num_members=num_members,
+        num_clashes=num_clashes
     )
 
 @app.get("/community/<int:community_id>/search_clashes")
