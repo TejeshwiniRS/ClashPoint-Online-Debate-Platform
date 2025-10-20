@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}{{ community.title }} — Community{% endblock %}
+
+{% block content %}
+{% if is_owner %}
+<div class="owner-section">
+  <h3>Manage Members</h3>
+  <form id="removeMemberForm" method="POST"
+        action="{{ url_for('remove_member', community_id=community.id) }}"
+        class="pure-form">
+    <input type="email" name="email" id="removeEmail"
+           placeholder="Enter member's email to remove"
+           required
+           style="padding: 0.5rem; border-radius: 6px; border: 1px solid #ccc; width: 300px;">
+    <button type="button" class="pure-button pure-button-primary"
+            onclick="openRemoveModal()">Remove Member</button>
+  </form>
+</div>
+{% endif %}
+
+<hr>
+
+<div class="community-clashes">
+  <h3>Clashes in this Community</h3>
+
+  <!-- Search bar -->
+  <input type="text" id="clashSearch" placeholder="Search clashes..."
+         style="padding: 0.6rem 1rem; border-radius: 20px; width: 300px; margin-bottom: 1rem;">
+
+  <div id="clashList">
+    {% for clash in clashes %}
+      <div class="landing-card" style="margin-bottom: 1rem;">
+        <h4>{{ clash.title }}</h4>
+        <p>{{ clash.description }}</p>
+        <p>Status: {{ clash.status|capitalize }} | {{ clash.created_at.strftime('%b %d, %Y') }}</p>
+      </div>
+    {% else %}
+      <p>No clashes yet in this community.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Confirm Removal Modal -->
+<div id="removeModal" class="modal-overlay">
+  <div class="modal">
+    <p>Are you sure you want to remove this member?</p>
+    <div class="modal-buttons">
+      <button id="confirmRemove" class="btn-yes">Yes, Remove</button>
+      <button class="btn-cancel" onclick="closeRemoveModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

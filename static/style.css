@@ -8,7 +8,6 @@
 }
 body {
     background: var(--color-nav);
-    color: #333;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -23,6 +22,7 @@ body {
 }
 
 /* HEADER */
+
 .header {
     background: var(--color-nav);
     padding: 5px 30px 10px 50px;
@@ -30,14 +30,6 @@ body {
 }
 .header-container {
     margin: auto;  
-}
-
-/* NavBar Menu */
-.pure-menu-horizontal {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
 }
 
 /* Logo and Website Name */
@@ -58,27 +50,61 @@ body {
     padding-top: 20px;
 }
 
-/* Tabs for all and mine */
+/* ==========================================
+   TABS (All Clashes / My Clashes)
+   Matches ClashPoint dark theme aesthetics
+
 .tabs {
   display: flex;
-  justify-content: flex-start;
+  /* justify-content: center;              Center horizontally */
+  /* align-items: center; */
   gap: 1rem;
-  margin: 1.5rem 0;
-}
-.tab {
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  text-decoration: none;
-  color: var(--color-text-primary);
-}
-.tab.active {
-  background-color: var(--color-text-secondary);
-  color: var(--button-text);
-  font-weight: bold;
+  margin: 1.8rem 0 2.5rem 8rem;
+  background: var(--color-nav);             /* subtle container background */
+  border: 1px dotted var(--color-border);
+  padding: 0.4rem 0.6rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  /* width: fit-content; */
+  margin-left: 2rem;
+  margin-right: 2rem;
 }
 
+.tab {
+  padding: 0.6rem 1.4rem;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--color-text-primary);
+  background: transparent;
+  border: none;
+  transition: all 0.25s ease;
+  border-radius: 8px;
+}
+
+.tab:hover {
+  background: var(--hover-red);
+  color: var(--button-text);
+  transform: translateY(-1px);
+}
+
+.tab.active {
+  background: var(--color-text-secondary); /* highlight */
+  color: var(--button-text);
+  box-shadow: 0 2px 6px rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+
+}
+
+
 /* Menu */
+/* NavBar Menu */
+
+.pure-menu-horizontal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
 .pure-menu-list {
     display: flex;
     align-items: flex-end;
@@ -91,11 +117,12 @@ body {
 }
 .pure-menu-link:hover,
 .pure-menu-link:focus {
-    color: var(--button-text);
+    color: var(--color-text-tertiary);
     background: transparent !important;
 }
 
 /* Dropdown Styling (Shared by Categories & Profile) */
+
 .pure-menu-children {
     background: var(--color-nav);
     border: 1px solid var(--color-border);
@@ -112,20 +139,24 @@ body {
 }
 
 /* Profile Icon */
+
 .nav-profile-pic {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    object-fit: cover;
+    object-fit: fill;
     color: var(--color-text-secondary);
-    border: 2px solid var(--color-text-secondary);
+    border: 3px solid var(--color-text-secondary);
     vertical-align: middle;
     transition: transform 0.15s ease-in-out;
 }
 .nav-profile-pic:hover {
     transform: scale(1.05);
+    color: var(--color-text-tertiary);
 }
-/* hero/welcome section    */
+
+/* hero section  */
+
 .hero {
     display: grid;
     place-items: center;
@@ -147,10 +178,11 @@ body {
 }
 .hero .tagline {
     font-size: 1.1rem;
-    color: var(--color-text-tertiary);
+    color: var(--hover-red);
     font-weight: 600;
 }
 /*Footer*/
+
 .footer {
     background:var(--color-nav);
     border-top: 1px solid var(--color-border);
@@ -169,6 +201,7 @@ body {
     flex-wrap: wrap;
 }
 /* Footer Columns */
+
 .footer-left,
 .footer-center,
 .footer-right {
@@ -187,6 +220,7 @@ body {
     text-align: right;
 }
 /* Footer Logo */
+
 .footer-logo img {
     height: 45px;
     vertical-align: middle;
@@ -199,6 +233,7 @@ body {
     max-width: 280px;
 }
 /* Tagline Center */
+
 .footer-tagline {
     font-weight: 600;
     color: var(--color-text-tertiary);
@@ -206,6 +241,7 @@ body {
     margin: 0;
 }
 /* Right Column Header */
+
 .footer-right h4 {
     font-size: 0.9rem;
     font-weight: 600;
@@ -215,7 +251,8 @@ body {
     display: inline-block;
     padding-bottom: 0.1rem;
 }
-/* Footer Links (stacked) */
+/* Footer Links*/
+
 .footer-links {
     display: flex;
     flex-direction: column;
@@ -230,9 +267,10 @@ body {
 }
 .footer-right a:hover {
     text-decoration: underline;
-    color:  #fff; /* ClashPoint red accent on hover */
+    color: var(--color-text-tertiary);
 }
 /* Responsive Footer Alignment */
+
 @media (max-width: 768px) {
     .footer-container {
         flex-direction: column;
@@ -243,7 +281,7 @@ body {
     .footer-center,
     .footer-right {
         text-align: center;
-        padding: 0.8rem 0;
+        padding: 0.4rem 0;
     }
     .footer-links {
         align-items: center;
@@ -263,6 +301,9 @@ body {
   margin-bottom: 2em;
 }
 
+
+/* ClashPoint Landing Page */
+
 .landing-section {
   background-color: var(--color-nav);
   padding-left: 3rem;
@@ -270,15 +311,16 @@ body {
   border-radius: 12px;
 }
 
-/* --- Two-row layout for filters --- */
+/* Search + Filters */
+
 .landing-filters {
   display: flex;
   flex-wrap: wrap; /* allows wrapping to new line */
   align-items: center;
-  justify-content: flex-start;
-  gap: 1rem;
+  justify-content: center;   /* 🔹 Centered the entire row */
+  gap: 0.7rem;               /* 🔹 Reduced gap for tighter alignment */
   width: 100%;
-  padding: 1rem 2rem;
+  padding: 1rem 1.5rem;  
   background: var(--color-nav);
   border-radius: 12px;
 }
@@ -307,6 +349,7 @@ body {
   color: var(--button-text);
   border: none;
   transition: background 0.2s ease-in-out;
+  height: 0.6rem;
 }
 
 .landing-filters .pure-button-primary:hover {
@@ -317,45 +360,78 @@ body {
 
 .landing-filters .landing-search {
   flex: 1;
-  min-width: 350px;     /* base width */
+  min-width: 360px;     /* base width */
   position: relative;
   padding-right: 2.5rem;
   border: 1px solid #ccc;
-  border-radius: 20px; /* ⬅️ smoother rounded corners */
+  flex: 2;
+  padding: 0.7rem;
+  border-radius: 8px;
   height: 2.6rem;
-  color: var(--color-nav);
+  color: var(--color-border);
   background-color: var(--color-text-primary);
   background-image: url('data:image/svg+xml;utf8,<svg fill="%23444" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"><path d="M9.5 3A6.5 6.5 0 1 1 3 9.5 6.507 6.507 0 0 1 9.5 3m0-2a8.5 8.5 0 1 0 5.94 14.44l5.66 5.66 1.41-1.41-5.66-5.66A8.5 8.5 0 0 0 9.5 1z"/></svg>');
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 18px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  padding-left: 0.2rem;
 }
 
 
 .landing-filters .landing-date,
 .landing-filters .landing-select {
   padding: 0.6rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
+  padding-right: 0.8rem;
+  border-radius: 8px;
   height: 2.6rem;
   color: var(--color-nav);
   background-color: var(--color-text-primary);
 }
-
 .landing-filters input:hover,
 .landing-filters select:hover {
-  border-color: var(--button-text);
-  background-color: var(--button-text);
+  border-color: var(--color-text-tertiary);
+  /* background-color: var(--button-text); */
 }
 .landing-filters input:focus,
 .landing-filters select:focus {
   border-color: var(--color-text-tertiary);
   box-shadow: 0 0 0 2px rgba(0,120,231,0.2);
   outline: none;
-  background-color: #fff;
+  background-color: var(--color-text-primary);
 }
 
+.landing-filters .pure-button-primary {
+  background-color: var(--color-text-secondary);
+  color: var(--button-text);
+  border: none;
+  height: 2.3rem;
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+.landing-filters .pure-button-primary:hover {
+  background-color: var(--hover-red);
+  transform: translateY(-1px);
+  color: var(--button-text);
+}
+
+.landing-filters .pure-button-secondary {
+  background-color: var(--color-text-primary);
+  color: var(--color-border);
+  border: none;
+  height: 2.3rem;
+  padding: 0.6rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+.landing-filters .pure-button-secondary:hover {
+  background-color: var(--hover-red);
+  transform: translateY(-1px);
+  color: var(--button-text);
+}
 
 .landing-clashes {
   width: 100%;
@@ -370,7 +446,9 @@ body {
   margin: 0 0 2.5rem 0;
   color: var(--color-text-primary);
 }
-/* Clash Grid: use full width of screen */
+ 
+/* Clash Grid */
+
 .landing-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -383,10 +461,16 @@ body {
   border: 1px solid var(--color-text-primary);
   border-radius: 10px;
   padding: 1.5rem;
+  padding-bottom: 13px;
   height: 250px;
   text-align: left;
   transition: all 0.25s ease-in-out;
-  color: var(--color-text-primary)
+  color: var(--button-text);
+  line-height: 1.6;
+}
+
+.landing-card h3 {
+  color: var(--color-text-primary);
 }
 .landing-card:hover {
   border-color: var(--color-text-tertiary);
@@ -395,6 +479,7 @@ body {
 }
 
 /* Pagination */
+
 .landing-pagination {
   display: flex;
   justify-content: center;
@@ -407,14 +492,17 @@ body {
   padding: 0.5rem 1rem;
   font-size: 0.95rem;
   transition: all 0.2s ease-in-out;
+  background-color: var(--color-text-primary);
+  color: var(--color-border);
+  
 }
 .landing-pagination .pure-button:hover {
   background-color:  var(--color-text-secondary);
-  color: #fff;
+  color: var(--button-text);
 }
 .landing-pagination .page-numbers .pure-button-active {
   background-color:  var(--color-text-secondary);
-  color: #fff;
+  color: var(--button-text);
   font-weight: bold;
 }
 .landing-card-link {
@@ -428,7 +516,8 @@ body {
   transition: all 0.2s ease-in-out;
 }
 
-/* 🔹 Date wrapper alignment fix */
+/* Date wrapper */
+
 .landing-date-group {
   position: relative;
   display: flex;
@@ -436,57 +525,51 @@ body {
   align-items: flex-start;
   gap: 0.25rem;
 }
-
 .landing-date-row {
   display: flex;
   flex-direction: row;
   gap: 0.8rem;
   align-items: center;
 }
-
 #date-warning {
   position: absolute;
   top: 100%;
   left: 0;
-  color: #C33635;
+  color: var(--color-text-tertiary);
   font-size: 0.85rem;
   margin-top: 0.25rem;
   white-space: nowrap;
 }
-
 .landing-date-group .landing-date {
   height: 2.6rem;
   padding: 0.6rem;
-  border: 1px solid #ccc;
+  border: 1px solid;
   border-radius: 4px;
-  color: #314478;
+  color: var(--color-nav);
 }
 
 .landing-date.invalid {
-  border-color: #C33635 !important;
-  background-color: #fff5f5 !important;
+  border-color: var(--color-text-tertiary) !important;
+  background-color: var(--button-text) !important;
 }
 
 #date-warning.is-hidden {
   display: none;
 }
 
-/* ==============================
-   CONTACT PAGE (ClashPoint)
-============================== */
+/*Contact Page*/
+
 .contact-container {
   max-width: 750px;
   margin: 80px auto;
   background: var(--color-nav);
-  border: 2px solid var(--color-border);
-  border-radius: 16px;
+  border: 2px dotted var(--color-border);
   padding: 45px 55px;
   color: var(--color-text-primary);
   box-shadow: 0 0 18px rgba(0, 0, 0, 0.45);
   text-align: left;
 }
 
-/* Header Section */
 .contact-header {
   text-align: center;
   margin-bottom: 35px;
@@ -494,13 +577,13 @@ body {
 
 .contact-logo {
   height: 65px;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .contact-title {
   font-size: 2rem;
-  color: var(--color-text-tertiary);
-  margin-bottom: 6px;
+  color: var(--color-text-primary);
+  margin-bottom: 10px;
   letter-spacing: 1px;
 }
 
@@ -511,9 +594,11 @@ body {
 }
 
 /* Flash Messages */
+
 .flash-messages {
   margin-bottom: 20px;
 }
+
 .flash {
   padding: 12px 16px;
   border-radius: 8px;
@@ -522,19 +607,19 @@ body {
   font-size: 0.95rem;
   font-weight: 500;
   background: var(--cards);
-  border-left: 4px solid var(--color-text-secondary);
   color: var(--color-text-primary);
 }
+
 .flash.success {
-  border-left-color: #4CAF50;
-  color: #A8E6A3;
+  color: var(--color-text-tertiary);
 }
+
 .flash.error {
-  border-left-color: #E74C3C;
-  color: #FFB4B4;
+  color: var(--color-text-tertiary);
 }
 
 /* Form */
+
 .contact-form {
   display: flex;
   flex-direction: column;
@@ -558,8 +643,6 @@ body {
   border-radius: 8px;
   color: var(--color-text-primary);
   font-size: 1rem;
-  outline: none;
-  transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .contact-form input:focus,
@@ -574,6 +657,7 @@ body {
 }
 
 /* Centered Button */
+
 .form-center {
   display: flex;
   justify-content: center;
@@ -581,7 +665,7 @@ body {
 }
 
 .contact-btn {
-  background: var(--color-text-tertiary);
+  background: var(--color-text-secondary);
   color: var(--button-text);
   border: none;
   padding: 12px 26px;
@@ -592,12 +676,11 @@ body {
 }
 
 .contact-btn:hover {
-  background: var(--color-text-tertiary);
+  background: var(--color-text-primary);
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(216, 76, 76, 0.25);
 }
 
-/* Responsive Tweaks */
 @media (max-width: 700px) {
   .contact-container {
     padding: 25px 22px;
@@ -617,16 +700,15 @@ body {
 }
 
 
-/* ============================
-   TERMS & CONDITIONS PAGE
-============================ */
+/* Terms and Conditions */
+
 .terms-container {
   max-width: 850px;
   margin: 60px auto;
   padding: 40px 32px;
-  background: var(--bg-surface, #1f2937);
+  background: var(--color-nav);
   color: var(--text-primary, #e5e7eb);
-  border-radius: 12px;
+  border: 2px dotted var(--color-border);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
   line-height: 1.7;
 }
@@ -634,13 +716,13 @@ body {
 .terms-title {
   text-align: center;
   font-size: 2rem;
-  color: var(--accent, #60a5fa);
+  color: var(--color-text-primary);
   margin-bottom: 24px;
 }
 
 .terms-container h2 {
   margin-top: 28px;
-  color: var(--highlight, #93c5fd);
+  color: var(--color-text-primary);
   font-size: 1.25rem;
 }
 
@@ -648,6 +730,7 @@ body {
 .terms-container li {
   color: var(--text-secondary, #d1d5db);
   margin-top: 8px;
+  content: justify;
 }
 
 .terms-container ul {
@@ -671,13 +754,16 @@ body {
   color: var(--text-muted, #9ca3af);
 }
 
-/* ==============================
-   PROFILE PAGE STYLES (Unified)
-============================== */
 .profile-container {
   max-width: 700px;
   margin: 80px auto;
   background: var(--color-nav); /* match site background */
+/* Profile Page */
+
+.profile-container {
+  max-width: 700px;
+  margin: 80px auto;
+  background: var(--color-nav); 
   border: 2px solid var(--color-border);
   border-radius: 16px;
   padding: 40px 50px;
@@ -687,7 +773,7 @@ body {
 
 .profile-title {
   font-size: 2rem;
-  color: var(--color-text-tertiary); /* ClashPoint red */
+  color: var(--color-text-primary);
   text-align: center;
   margin-bottom: 30px;
   letter-spacing: 1px;
@@ -707,7 +793,7 @@ body {
 
 .form-group label {
   font-weight: bold;
-  color: var(--color-text-secondary); /* blue accent */
+  color: var(--color-text-primary); 
   font-size: 0.95rem;
 }
 
@@ -736,7 +822,7 @@ body {
 
 .btn-save {
   padding: 8px 18px;
-  background: var(--color-text-tertiary);
+  background: var(--color-text-secondary);
   color: var(--button-text);
   border: none;
   border-radius: 8px;
@@ -746,7 +832,7 @@ body {
 }
 
 .btn-save:hover {
-  background: #d84c4c;
+  background: var(--hover-red);
 }
 
 .divider {
@@ -768,7 +854,7 @@ body {
 
 .btn-delete {
   padding: 10px 24px;
-  background: var(--color-text-tertiary);
+  background: var(--color-text-secondary);
   color: var(--button-text);
   border: none;
   border-radius: 8px;
@@ -778,7 +864,7 @@ body {
 }
 
 .btn-delete:hover {
-  background: #d84c4c;
+  background: var(--hover-red);
 }
 
 /* ==============================
@@ -820,7 +906,6 @@ body {
 
 .btn-yes,
 .btn-cancel {
-  flex: 1;
   padding: 10px 0;
   border: none;
   border-radius: 8px;
@@ -830,8 +915,10 @@ body {
 }
 
 .btn-yes {
-  background: var(--color-text-tertiary);
+  background: var(--color-text-secondary);
   color: var(--button-text);
+  padding-left: 30px;
+  padding-right: 30px;;
 }
 
 .btn-yes:hover {
@@ -840,12 +927,15 @@ body {
 }
 
 .btn-cancel {
-  background: var(--cards);
-  color: var(--color-text-primary);
+  background: var(--color-border);
+  color: var(--button-text);
+  padding-left: 20px;
+  padding-right: 20px;;
+  padding-top: 10px;
 }
 
 .btn-cancel:hover {
-  background: #314478;
+  background: var(--color-text-tertiary);
   transform: translateY(-1px);
 }
 
@@ -903,7 +993,7 @@ body {
 }
 .btn-yes,
 .btn-cancel {
-  flex: 1;
+  
   padding: 10px 0;
   border: none;
   border-radius: 8px;
@@ -914,6 +1004,8 @@ body {
 .btn-yes {
   background: var(--color-text-tertiary);
   color: var(--button-text);
+  padding-left: 35px;
+  padding-right: 35px;
 }
 .btn-yes:hover {
   background: #d84c4c;
@@ -922,8 +1014,40 @@ body {
 .btn-cancel {
   background: var(--cards);
   color: var(--color-text-primary);
+  padding-left: 30px;
+  padding-right: 30px;
 }
 .btn-cancel:hover {
   background: #314478;
   transform: translateY(-1px);
+}
+
+/* ==============================
+   Uniform Button + Input Radius
+button,
+input[type="text"],
+input[type="search"],
+input[type="date"],
+input[type="email"],
+select,
+.pure-button,
+.pure-button-primary,
+.pure-button-secondary,
+.contact-btn,
+.btn-save,
+.btn-delete,
+.btn-yes,
+.btn-cancel,
+.tab,
+.landing-filters .landing-search {
+  border-radius: 8px !important;
+}
+
+/* Optional: keep consistent focus/hover visuals */
+button:focus,
+input:focus,
+select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0,120,231,0.3);
+  border-color: var(--color-text-tertiary);
 }

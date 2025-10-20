@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}ClashPoint{% endblock %}
+
+{% block content %}
+
+<div class="pure-g hero">
+    <div class="pure-u">
+        {% if not session.get('user') %}
+            <h1>Welcome to <span class="highlight">ClashPoint</span></h1>
+            <p class="tagline">One Stop for your non-stop opinions!</p>
+        {% else %}
+        {% set display_name =
+           session['user'].get('display_name')
+           or session['user'].get('https://clashpoint.app/username')
+           or session['user'].get('username')
+           or session['user'].get('nickname')
+           or session['user'].get('name')
+           or session['user'].get('email', '').split('@')[0]
+        %}
+        <h1>Hey, {{ display_name }}!</h1>
+        <p class="tagline">Ready for your next clash?</p>
+       {% endif %}
+    </div>
+</div>
+
+<!-- Landing Section -->
+<section class="landing-section">
+
+    <!-- Search & Filters -->
+    <form class="pure-form landing-filters" method="get" action="{{ url_for('clashes') }}">
+        <input type="hidden" name="scope" value="{{ scope }}">
+        {% if selected_category %}
+            <input type="hidden" name="category" value="{{ selected_category }}">
+        {% endif %}
+        <input type="text" name="query" class="pure-input landing-search"
+            placeholder="Type a topic, spark a clash..."
+            value="{{ query or '' }}">
+
+        <div class="landing-date-group">
+            <div class="landing-date-row">
+                <input type="date" name="start_date" id="start_date"
+                    class="pure-input landing-date" value="{{ start_date or '' }}">
+                <input type="date" name="end_date" id="end_date"
+                    class="pure-input landing-date" value="{{ end_date or '' }}">
+            </div>
+
+            <!-- ⚠️ Error message appears right below -->
+            <div id="date-warning" class="form-help is-hidden" role="alert"></div>
+        </div>
+
+        <select name="sort" class="pure-input landing-select">
+            <option value="">Sort By</option>
+            <option value="most_voted" {% if sort_by == 'most_voted' %}selected{% endif %}>Most Voted</option>
+            <option value="least_voted" {% if sort_by == 'least_voted' %}selected{% endif %}>Least Voted</option>
+        </select>
+
+        <select name="status" class="pure-input landing-select">
+            <option value="">All Status</option>
+            <option value="open" {% if status == 'open' %}selected{% endif %}>Open</option>
+            <option value="closed" {% if status == 'closed' %}selected{% endif %}>Closed</option>
+        </select>
+
+        <div class="button-row">
+            <button type="submit" class="pure-button pure-button-primary" id="search-btn" disabled>Search</button>
+            <a class="pure-button pure-button-secondary" href="{{ url_for('clashes', scope=scope) }}">Reset</a>
+        </div>
+    </form>
+
+    <!-- Clashes Section -->
+    <section class="landing-clashes">
+        {% if selected_category %}
+            <h2 class="landing-title">Category: {{ selected_category }}</h2>
+        {% endif %}
+         <div class="tabs">
+        <a href="{{ url_for('clashes', scope='all', query=query, sort=sort_by, status=status, start_date=start_date, end_date=end_date, category=selected_category) }}"
+            class="tab {% if scope == 'all' %}active{% endif %}">All Clashes</a>
+        {% if session.get('user') %}
+        <a href="{{ url_for('clashes', scope='mine', query=query, sort=sort_by, status=status, start_date=start_date, end_date=end_date, category=selected_category) }}"
+            class="tab {% if scope == 'mine' %}active{% endif %}">My Clashes</a>
+        {% endif %}
+    </div>
+        <!-- Clash Grid -->
+        <div class="landing-grid">
+            {% for clash in clashes %}
+               <a href="{{ url_for('view_clash', clash_id=clash.id) }}" class="landing-card-link">
+                <div class="landing-card">
+                    <h3>{{ clash.title }}</h3>
+                    <p>{{ clash.description }}</p>
+                    <p class="meta">
+                    Status: {{ clash.status|capitalize }} | {{ clash.created_at.strftime('%b %d, %Y') }}
+                    </p>
+                </div>
+                </a>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <div class="landing-pagination">
+            {% if page > 1 %}
+                <a href="{{ url_for('clashes', page=page-1,
+                                    query=query,
+                                    sort=sort_by,
+                                    status=status,
+                                    start_date=start_date,
+                                    end_date=end_date,
+                                    category=selected_category,
+                                    scope=scope) }}" 
+                class="pure-button">&laquo; Prev</a>
+            {% else %}
+                <button class="pure-button" disabled>&laquo; Prev</button>
+            {% endif %}
+
+            <div class="page-numbers">
+                {% for p in range(1, total_pages + 1) %}
+                    {% if p == page %}
+                        <button class="pure-button pure-button-active">{{ p }}</button>
+                    {% else %}
+                        <a href="{{ url_for('clashes',
+                                            page=p,
+                                            query=query,
+                                            sort=sort_by,
+                                            status=status,
+                                            start_date=start_date,
+                                            end_date=end_date,
+                                            category=selected_category,
+                                            scope=scope) }}"
+                        class="pure-button">{{ p }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            {% if page < total_pages %}
+                <a href="{{ url_for('clashes',
+                                    page=page+1,
+                                    query=query,
+                                    sort=sort_by,
+                                    status=status,
+                                    start_date=start_date,
+                                    end_date=end_date,
+                                    category=selected_category,
+                                    scope=scope) }}"
+                class="pure-button">Next &raquo;</a>
+            {% else %}
+                <button class="pure-button" disabled>Next &raquo;</button>
+            {% endif %}
+        </div>
+    </section>
+</section>
+{% endblock %}

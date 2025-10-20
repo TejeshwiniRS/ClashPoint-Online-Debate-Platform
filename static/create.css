@@ -1,7 +1,146 @@
+/* ==============================
+   Create Clash Page (Consistent with Contact Page)
+============================== */
+
 .parent-container {
+  max-width: 700px;
+  margin: 80px auto;
+  background: var(--color-nav);
+  border: 2px dotted var(--color-border);
+  padding: 55px 65px;
+  color: var(--color-text-primary);
+  text-align: left;
+  line-height: 1.7;
+}
+
+/* Headings */
+.parent-container h1 {
+  text-align: center;
+  font-size: 2rem;
+  color: var(--color-text-primary);
+  margin-bottom: 25px;
+  letter-spacing: 0.6px;
+}
+
+.form-description {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 1.05rem;
+  margin-bottom: 2.2rem;
+  line-height: 1.6;
+}
+
+/* Labels */
+.parent-container label {
+  display: block;
+  font-weight: bold;
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+  size: 20px;
+}
+
+/* Inputs, Selects, Textareas */
+.parent-container p,
+.parent-container input,
+.parent-container input[type="text"],
+.parent-container input[type="date"],
+.parent-container select,
+.parent-container textarea {
+  width: 100%;
+  min-height: fit-content;
+  padding: 12px 14px;
+  background: var(--cards);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+.parent-container P,
+.parent-container input:focus,
+.parent-container select:focus,
+.parent-container textarea:focus {
+  border-color: 2px solid var(--color-text-tertiary);
+  background: var(--color-nav);
+}
+
+/* Buttons Container */
+.button-row {
   display: flex;
-  justify-content: center; /* Centers horizontally */
-  align-items: center; /* Centers vertically */
-  /* Add height to the parent if you want to center vertically within a specific area */
-  height: 100vh; /* Example: center within the viewport height */
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+/* Create Button */
+.pure-button-primary {
+  background: var(--color-text-secondary);
+  color: var(--button-text);
+  border: none;
+  padding: 12px 26px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.pure-button-primary:hover {
+  background: var(--color-text-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(216, 76, 76, 0.25);
+}
+
+/* Cancel Button */
+.pure-button-secondary {
+  background: var(--cards);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  padding: 12px 26px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.form-description {
+    margin-bottom: 1em; /* spacing between text and buttons */
+    font-size: 1rem;    /* adjust as needed */  
+}
+
+.community{
+    background-color: var(--color-text-tertiary);
+    color: var(--button-text);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.community:hover {
+    background-color: var(--color-text-secondary);
+}
+
+.community:active {
+    background-color: var(--color-text-red);
+}
+.pure-button-secondary:hover {
+  background: #314478;
+  transform: translateY(-2px);
+  color: var(--button-text);
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .parent-container {
+    padding: 30px 25px;
+  }
+  .pure-button-primary,
+  .pure-button-secondary {
+    width: 100%;
+  }
 }

@@ -11,6 +11,7 @@ python-dotenv = "*"
 flask = "*"
 authlib = "*"
 requests = "*"
+flask-mail = "==0.9.1"
 
 [dev-packages]
 

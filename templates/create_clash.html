@@ -3,28 +3,38 @@
 {% block title %}Welcome to ClashPoint{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='create.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='create.css') }}"> 
 
 <div class="parent-container">
+    <h1 class="create-title">Create Clash</h1>
     <form action="/new_clash" method="POST" class="pure-form pure-form-stacked">
-        <label for="title">Title</label>
-        <input type="text" name="title" id="title" placeholder="">
-        <label for="description">Description</label>
-        <input type="textarea" name="description" id="description">
-        <label for="tags">Choose a tag:</label>
-        <select id="tags" name="tags" multiple>
-            <option value="soccer">soccer</option>
-            <option value="football">football</option>
-            <option value="golf">golf</option>
+        <label for="title">Title:</label>
+        <input type="text" name="title" id="title" required>
+
+        <label for="description">Description:</label>
+        <textarea name="description" id="description" required></textarea>
+
+        <label for="tags">Choose a tag that describes your Clash:</label>
+        <!-- only select one tag -->
+        <select id="tags" name="tags">
+            {% for tag in tags%}
+            <option value="{{ tag.id }}">{{ tag.name }}</option>
+            {% endfor %}
         </select>
 
+        <label for="newTag">Didn't see a label that resonated? Add one!</label>
+        <input type="text" name="newTag" id="newTag">
 
-        <label for="close_date">How long do you want to keep it open for?</label>
-        <input type="date" name="close_date" id="close_date">
+
+        <label for="close_date">When do you want your clash to close?</label>
+        <input type="date" name="close_date" id="close_date" min="2025-10-18" max="2100-12-31" required>
+
         <button type="submit" class="pure-button pure-button-primary">Create</button>
-        <a href="{{ url_for('index') }}" class="pure-button pure-button-primary">Cancel</a>
+        <a href="{{ url_for('clashes') }}" class="pure-button pure-button-secondary">Cancel</a>
         
     </form>
+
 </div>
 
 {% endblock %}

@@ -15,6 +15,14 @@
   border: 1px solid var(--color-border);
 }
 
+.create-title {
+  font-size: 2rem;
+  color: var(--color-text-primary);
+  text-align: center;
+  margin-bottom: 30px;
+  letter-spacing: 1px;
+}
+
 /* Clash Header */
 .clash-header {
   margin-bottom: 0.25rem;
