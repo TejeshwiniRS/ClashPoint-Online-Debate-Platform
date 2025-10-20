@@ -462,19 +462,13 @@ def remove_community_member(community_id, email):
 def search_clashes_in_community(community_id, query):
     with get_db_cursor() as cur:
         cur.execute("""
-            INSERT INTO clash (
-                start_time,
-                end_time,
-                status,
-                title,
-                description,
-                owner_id
-            ) VALUES
-                    (%s,%s,%s,%s,%s,%s )
-            """, 
-            (datetime.now(), close_date, "open", title, description, owner_id)
-            )
-    return None
+            SELECT  id, title, description, status, created_at
+            FROM clash
+            WHERE community_id =  %s
+                AND (title ILIKE %s OR description ILIKE %s)
+            ORDER BY created_at DESC;
+        """, (community_id, query))
+        return [dict(row) for row in cur.fetchall()]
 
 def get_score(arg_id):
      with get_db_cursor() as cur:
@@ -549,10 +543,3 @@ def arg_check_delete_status(arg_id):
     with get_db_cursor() as cur:
         cur.execute(""" SELECT is_deleted from arguments where id=%s """, (arg_id,))
         return cur.fetchone()
-            SELECT  id, title, description, status, created_at
-            FROM clash
-            WHERE community_id =  %s
-                AND (title ILIKE %s OR description ILIKE %s)
-            ORDER BY created_at DESC;
-        """, (community_id, query))
-        return [dict(row) for row in cur.fetchall()]
