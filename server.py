@@ -1,9 +1,10 @@
 import os
-from flask import Flask, render_template, redirect, url_for, session, abort, request
+from flask import Flask, render_template, redirect, url_for, session, abort, request, jsonify, flash
 from authlib.integrations.flask_client import OAuth
 from urllib.parse import urlencode, quote_plus
 from dotenv import load_dotenv
 import db   
+import json
 
 
 load_dotenv()
@@ -147,14 +148,30 @@ def view_clash(clash_id):
 
     arguments = db.get_arguments_by_clash_id(clash_id)
     replies = db.get_replies_by_clash_id(clash_id)
+    trending_clashes = db.get_trending_clashes()
+    related_clashes = db.get_related_clashes(clash_id)
 
-    replies_dict = {}
-    for rep in replies:
-        replies_dict.setdefault(rep["parent_id"], []).append(rep)
+    # Reply Nesting
+    def reply_tree(all_replies):
+        reply_dict = {}
+        for r in all_replies:
+            reply_dict.setdefault(r["parent_id"], []).append(r)
+
+        def attach_child_reply(parent):
+            reply_children = reply_dict.get(parent["id"], [])
+            for reply_child in reply_children:
+                reply_child["replies"] = attach_child_reply(reply_child)
+            return reply_children
+        return reply_dict, attach_child_reply
+
+    reply_dict, attach_child = reply_tree(replies)
     for arg in arguments:
-        print(type(arg), arg)
-        arg["replies"] = replies_dict.get(arg["id"], [])
-    return render_template("clash_view.html", clash=clash, arguments=arguments, user=user)
+        arg["replies"] = attach_child(arg)
+        # print(type(arg), arg)
+        # print(arguments)
+        # print(json.dumps(arguments, indent=2, default=str))
+        # print(user)
+    return render_template("clash_view.html", clash=clash, arguments=arguments, user=user, trending_clashes=trending_clashes, related_clashes=related_clashes)
 
 @app.route('/clash/<int:clash_id>/post', methods=['POST'])
 def post_argument(clash_id):
@@ -168,7 +185,7 @@ def post_argument(clash_id):
 
     if not content:
         abort(400, 'Content cannot be empty')
-    print(user)
+    # print(clash_id, user, content, argument_type, parent_id)
     db.create_argument(clash_id=clash_id, user_id=user, content=content, argument_type=argument_type, parent_id=parent_id)
     return redirect(url_for('view_clash', clash_id=clash_id))
 
@@ -184,7 +201,45 @@ def vote_argument(arg_id):
     value = 1 if vote == "up" else -1
     clash_id = db.vote_argument(arg_id, value)
 
+    stats = db.get_score(arg_id)
+    stats["score"] = 0.5 * stats["up_votes"] - stats["down_votes"]
+    return jsonify({
+        "success": True,
+        "up_votes": stats["up_votes"],
+        "down_votes": stats["down_votes"],
+        "score": round(float(stats["score"]),2)
+    })
+
     return redirect(url_for("view_clash", clash_id=clash_id))
+
+@app.route("/argument/<int:arg_id>/edit", methods=["POST"])
+def edit_argument(arg_id):
+    user = current_user()
+    if not user:
+        abort(401)
+
+    content = request.form.get("content", "").strip()
+    if not content:
+        return jsonify({"success": False, "error": "Content cannot be empty"}), 400
+
+    clash_id = db.edit_argument(arg_id, content)
+    if not clash_id:
+        return jsonify({"success": False, "error": "Not found"}), 404
+
+    return jsonify({"success": True, "content": content})
+
+
+@app.route("/argument/<int:arg_id>/delete", methods=["POST"])
+def delete_argument(arg_id):
+    user_id = session.get("user_id")
+    if not user_id:
+        abort(401)
+
+    clash_id = db.mark_argument_deleted(arg_id, user_id)
+    if not clash_id:
+        return jsonify({"success": False, "error": "Not allowed"}), 403
+
+    return jsonify({"success": True})
 
 # creating a clash
 @app.route("/create_clash")
@@ -202,7 +257,6 @@ def new_clash():
 
     db.add_clash(owner_id, title, description, tags, close_date)
     
-    # Now you can use these values to insert into the database, etc.
     return redirect(url_for("index"))
 
 @app.route("/create_community")
