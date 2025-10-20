@@ -25,7 +25,7 @@
         <span class="meta-item">Active Until: {{ clash.active_until_label }} </span>
         <span class="meta-item">Tags: 
           {% for tag in clash.tags %}
-            <a href=" {{url_for('index')}}?category={{tag.name | replace(' ', '+')}}" class="tags">{{tag.name}}</a>
+            <a href=" {{url_for('clashes')}}?category={{tag.name | replace(' ', '+')}}" class="tags">{{tag.name}}</a>
           {% endfor %}
         </span>
       </div>

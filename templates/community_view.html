@@ -2,53 +2,77 @@
 {% block title %}{{ community.title }} — Community{% endblock %}
 
 {% block content %}
-{% if is_owner %}
-<div class="owner-section">
-  <h3>Manage Members</h3>
-  <form id="removeMemberForm" method="POST"
-        action="{{ url_for('remove_member', community_id=community.id) }}"
-        class="pure-form">
-    <input type="email" name="email" id="removeEmail"
-           placeholder="Enter member's email to remove"
-           required
-           style="padding: 0.5rem; border-radius: 6px; border: 1px solid #ccc; width: 300px;">
-    <button type="button" class="pure-button pure-button-primary"
-            onclick="openRemoveModal()">Remove Member</button>
-  </form>
-</div>
-{% endif %}
 
-<hr>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='create.css') }}">
 
-<div class="community-clashes">
-  <h3>Clashes in this Community</h3>
+<div class="community-clashes ">
 
-  <!-- Search bar -->
-  <input type="text" id="clashSearch" placeholder="Search clashes..."
-         style="padding: 0.6rem 1rem; border-radius: 20px; width: 300px; margin-bottom: 1rem;">
-
-  <div id="clashList">
-    {% for clash in clashes %}
-      <div class="landing-card" style="margin-bottom: 1rem;">
-        <h4>{{ clash.title }}</h4>
-        <p>{{ clash.description }}</p>
-        <p>Status: {{ clash.status|capitalize }} | {{ clash.created_at.strftime('%b %d, %Y') }}</p>
-      </div>
-    {% else %}
-      <p>No clashes yet in this community.</p>
-    {% endfor %}
-  </div>
-</div>
-
-<!-- Confirm Removal Modal -->
-<div id="removeModal" class="modal-overlay">
-  <div class="modal">
-    <p>Are you sure you want to remove this member?</p>
-    <div class="modal-buttons">
-      <button id="confirmRemove" class="btn-yes">Yes, Remove</button>
-      <button class="btn-cancel" onclick="closeRemoveModal()">Cancel</button>
+  <!-- Community Info -->
+  <div class="community-info pure-g card soft box">
+    <!-- Title -->
+    <h1 class="community-title" id="clash-title">{{ community.title }}</h1>
+    <!-- Description -->
+    <div class="pure-u-2-3 community-description">
+      <p style="color: var(--color-text-primary);">{{ community.description }}</p>
+    </div>
+    <!-- Stats -->
+    <div class="pure-u-1-3 community-stats">
+      <h3 style="color: var(--color-text-secondary);">
+        Members: {{ num_members }}  |  Clashes: {{ num_clashes }}
+      </h3>
     </div>
   </div>
+  <a href="{{ url_for('create_clash') }}" class="pure-button pure-button-primary">
+    Add a New Clash
+  </a>
+
+  <!-- Clashes Section -->
+  <div class="clashes-container card soft box">
+    <h1 class="section-title" >Clashes in this Community</h1>
+    <!-- Search bar -->
+    <input type="text" id="clashSearch" placeholder="Search clashes..." 
+           class="search-bar" 
+           style="border: 1px solid var(--color-border); color: var(--color-text-primary);">
+
+    <div id="clashList">
+      {% for clash in clashes %}
+        <div class="landing-card" style="background-color: var(--cards); border: 1px solid var(--color-border);">
+          <h4 style="color: var(--color-text-primary);">{{ clash.title }}</h4>
+          <p style="color: var(--color-text-muted);">{{ clash.description }}</p>
+          <p style="color: var(--color-text-secondary);">
+            Status: {{ clash.status|capitalize }} | {{ clash.created_at.strftime('%b %d, %Y') }}
+          </p>
+        </div>
+      {% else %}
+        <p style="color: var(--color-text-muted);">No clashes yet in this community.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Owner Controls -->
+  {% if is_owner %}
+  <div class="owner-controls card soft box">
+    <div class="manage-members-form pure-form" 
+         style="background-color: var(--cards); padding: 1.5em; border-radius: 10px; max-width: 90%; margin: 2em auto;">
+      <h3 style="color: var(--color-text-primary);">Manage Members</h3>
+      <form id="removeMemberForm" method="POST"
+            action="{{ url_for('remove_member', community_id=community.id) }}">
+        
+        <input type="email" name="email" id="removeEmail"
+              placeholder="Enter member's email to remove"
+              required class="input-email"
+              style="padding: 0.5rem; border-radius: 6px; border: 1px solid var(--color-border); color: var(--color-text-primary); width: 300px;">
+        
+        <button type="button" class="pure-button pure-button-primary"
+                onclick="openRemoveModal()"
+                style="background-color: var(--button-fill); color: var(--button-text);">
+          Remove Member
+        </button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
 </div>
 
 {% endblock %}
