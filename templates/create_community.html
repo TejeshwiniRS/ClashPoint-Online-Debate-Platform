@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='create.css') }}"> 
 
 <div class="parent-container">
+    <h1 class="contact-title">Create Community</h1>
     {% if code %}
     <p> This is your community code: <span style="color: white">{{ code }}</span>.</p>
     <a href="{{ url_for('view_community', community_id=new_community_id) }}" class="pure-button community" >Your Community Page</a>
@@ -23,7 +24,7 @@
         <input type="date" name="close_date" id="close_date" min="2025-10-18" max="2100-12-31" required>
 
         <button type="submit" class="pure-button pure-button-primary">Create</button>
-        <a href="{{ url_for('clashes') }}" class="pure-button pure-button-primary">Cancel</a>
+        <a href="{{ url_for('clashes') }}" class="pure-button pure-button-secondary">Cancel</a>
         
     </form>
     {% endif %}

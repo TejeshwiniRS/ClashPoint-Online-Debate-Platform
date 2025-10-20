@@ -334,7 +334,7 @@ def update_profile():
     flash("Username updated successfully!", "success")
     return redirect(url_for("profile"))
 
-# ---------- Delete Account ----------
+
 @app.post("/delete_account")
 def delete_account():
     user_id = session.get("user_id")
@@ -358,7 +358,7 @@ def delete_account():
         print(f"⚠️ Error deleting from Auth0: {e}")
 
     session.clear()
-    flash("Your account was deleted from ClashPoint and Auth0.", "success")
+    flash("Your account was deleted from ClashPoint", "success")
     return redirect(url_for("clashes"))
 
 @app.route("/communities")
@@ -414,6 +414,8 @@ def join_community(community_id):
     return redirect(url_for("communities"))
 
 
+    flash("Your account was deleted successfully from ClashPoint and Auth0.", "deleted")
+    return redirect(url_for("index"))
 
 # ---------- Run ----------
 

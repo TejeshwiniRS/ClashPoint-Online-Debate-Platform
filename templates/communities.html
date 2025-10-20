@@ -10,16 +10,7 @@
 </div>
 
 <section class="landing-section">
-  <!-- Tabs -->
-  <div class="tabs">
-    <a href="{{ url_for('communities', scope='all', query=query, sort=sort_by, start_date=start_date, end_date=end_date) }}"
-       class="tab {% if scope == 'all' %}active{% endif %}">All Communities</a>
-    {% if session.get('user') %}
-    <a href="{{ url_for('communities', scope='mine', query=query, sort=sort_by, start_date=start_date, end_date=end_date) }}"
-       class="tab {% if scope == 'mine' %}active{% endif %}">My Communities</a>
-    {% endif %}
-  </div>
-
+  
   <!-- Search and Filters -->
   <form class="pure-form landing-filters" method="get" action="{{ url_for('communities') }}">
     <input type="hidden" name="scope" value="{{ scope }}">
@@ -52,11 +43,15 @@
 
   <!-- Communities Grid -->
   <section class="landing-clashes">
-    {% if scope == 'mine' %}
-      <h2 class="landing-title">My Communities</h2>
-    {% else %}
-      <h2 class="landing-title">All Communities</h2>
+    <!-- Tabs -->
+   <div class="tabs">
+    <a href="{{ url_for('communities', scope='all', query=query, sort=sort_by, start_date=start_date, end_date=end_date) }}"
+       class="tab {% if scope == 'all' %}active{% endif %}">All Communities</a>
+    {% if session.get('user') %}
+    <a href="{{ url_for('communities', scope='mine', query=query, sort=sort_by, start_date=start_date, end_date=end_date) }}"
+       class="tab {% if scope == 'mine' %}active{% endif %}">My Communities</a>
     {% endif %}
+  </div>
 
     {% if communities %}
       <div class="landing-grid">

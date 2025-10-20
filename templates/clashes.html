@@ -8,7 +8,7 @@
     <div class="pure-u">
         {% if not session.get('user') %}
             <h1>Welcome to <span class="highlight">ClashPoint</span></h1>
-            <p class="tagline">One Stop for your non-stop opinions</p>
+            <p class="tagline">One Stop for your non-stop opinions!</p>
         {% else %}
         {% set display_name =
            session['user'].get('display_name')
@@ -26,16 +26,6 @@
 
 <!-- Landing Section -->
 <section class="landing-section">
-
-    <div class="tabs">
-        <a href="{{ url_for('clashes', scope='all', query=query, sort=sort_by, status=status, start_date=start_date, end_date=end_date, category=selected_category) }}"
-            class="tab {% if scope == 'all' %}active{% endif %}">All Clashes</a>
-        {% if session.get('user') %}
-        <a href="{{ url_for('clashes', scope='mine', query=query, sort=sort_by, status=status, start_date=start_date, end_date=end_date, category=selected_category) }}"
-            class="tab {% if scope == 'mine' %}active{% endif %}">My Clashes</a>
-        {% endif %}
-    </div>
-
 
     <!-- Search & Filters -->
     <form class="pure-form landing-filters" method="get" action="{{ url_for('clashes') }}">
@@ -73,19 +63,23 @@
 
         <div class="button-row">
             <button type="submit" class="pure-button pure-button-primary" id="search-btn" disabled>Search</button>
-            <a class="pure-button" href="{{ url_for('clashes', scope=scope) }}">Reset</a>
+            <a class="pure-button pure-button-secondary" href="{{ url_for('clashes', scope=scope) }}">Reset</a>
         </div>
     </form>
-
 
     <!-- Clashes Section -->
     <section class="landing-clashes">
         {% if selected_category %}
             <h2 class="landing-title">Category: {{ selected_category }}</h2>
-        {% else %}
-            <h2 class="landing-title">Just Dropped Clashes</h2>
         {% endif %}
-
+         <div class="tabs">
+        <a href="{{ url_for('clashes', scope='all', query=query, sort=sort_by, status=status, start_date=start_date, end_date=end_date, category=selected_category) }}"
+            class="tab {% if scope == 'all' %}active{% endif %}">All Clashes</a>
+        {% if session.get('user') %}
+        <a href="{{ url_for('clashes', scope='mine', query=query, sort=sort_by, status=status, start_date=start_date, end_date=end_date, category=selected_category) }}"
+            class="tab {% if scope == 'mine' %}active{% endif %}">My Clashes</a>
+        {% endif %}
+    </div>
         <!-- Clash Grid -->
         <div class="landing-grid">
             {% for clash in clashes %}

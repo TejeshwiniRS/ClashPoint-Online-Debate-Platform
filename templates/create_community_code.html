@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='create.css') }}">
 
 <div class="parent-container">
+    <h1 class="contact-title">Create Community</h1>
     {% if code %}
     <p> This is your community code: <span style="color: white">{{ code }}</span>.</p>
     <a href="{{ url_for('index') }}" class="pure-button pure-button-primary">Home Page</a>
@@ -17,7 +18,7 @@
         People can enter the community only using this code. 
     </p>
     <button class="pure-button pure-button-primary">Generate</button>
-    <a href="{{ url_for('clashes') }}" class="pure-button pure-button-primary">Cancel</a>
+    <a href="{{ url_for('clashes') }}" class="pure-button pure-button-secondary">Cancel</a>
 </div>
 
 

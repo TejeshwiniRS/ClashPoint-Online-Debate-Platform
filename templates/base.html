@@ -13,9 +13,7 @@
 </head>
 
 <body class="site-wrapper">
-    <!-- ============================
-         HEADER
-    ============================= -->
+
     <header class="header">
         <div class="header-container">
             <div class="pure-menu pure-menu-horizontal">
@@ -30,10 +28,10 @@
                 <ul class="pure-menu-list">
                     {% if session.get('user') %}
                         <li class="pure-menu-item">
-                            <a href="{{ url_for('create_clash') }}" class="pure-menu-link">Create a Clash</a>
+                            <a href="{{ url_for('create_clash') }}" class="pure-menu-link">Create Clash</a>
                         </li>
                         <li class="pure-menu-item">
-                            <a href="{{ url_for('create_community') }}" class="pure-menu-link">Create a Community</a>
+                            <a href="{{ url_for('create_community') }}" class="pure-menu-link">Create Community</a>
                         </li>
                     {% endif %}
 
