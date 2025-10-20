@@ -215,7 +215,7 @@ def add_clash_tag(tag_id, clash_id):
         return None
 
 # community CRUD operations 
-def add_community(community_close_date, title, description, encoded_code, owner_id):
+def add_community(community_close_date, title, description, code, owner_id):
     with get_db_cursor(commit=True) as cur:
         cur.execute("""INSERT INTO community 
                     (start_time, 
@@ -229,7 +229,7 @@ def add_community(community_close_date, title, description, encoded_code, owner_
                     ) VALUES (%s,%s,%s,%s,%s,%s,%s, to_tsvector('english', %s || ' ' || %s) )
                     RETURNING ID
                     ;""",
-                      (datetime.now(), community_close_date, "open", title, description, encoded_code, owner_id, title, description)
+                      (datetime.now(), community_close_date, "open", title, description, code, owner_id, title, description)
                     )
         row = cur.fetchone()
         if row is None:
