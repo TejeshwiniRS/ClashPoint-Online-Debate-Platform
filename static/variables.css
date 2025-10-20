@@ -8,9 +8,13 @@
   /* Text */
   --color-text-primary: #9cb6cd;
   --color-text-secondary: #3968a1;
-  --color-text-tertiary: #da5b5b;  /*Hover*/ 
+  --color-text-tertiary:  #da5b5b;  /*Hover*/ 
+  --color-text-red: #C33635;
   --color-text-muted: #a5abb8;
+  --button-fill: #4e89d1d8;
   --button-text: whitesmoke;
   --cards: #3233663b;
+  --button-for: #198754;
+  --button-against: #b91c1c;
   --hover-red:#da5b5b;
 }

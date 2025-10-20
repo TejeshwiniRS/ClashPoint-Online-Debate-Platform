@@ -53,7 +53,6 @@ body {
 /* ==========================================
    TABS (All Clashes / My Clashes)
    Matches ClashPoint dark theme aesthetics
-========================================== */
 
 .tabs {
   display: flex;
@@ -182,7 +181,6 @@ body {
     color: var(--hover-red);
     font-weight: 600;
 }
-
 /*Footer*/
 
 .footer {
@@ -202,7 +200,6 @@ body {
     justify-content: space-between;
     flex-wrap: wrap;
 }
-
 /* Footer Columns */
 
 .footer-left,
@@ -222,7 +219,6 @@ body {
 .footer-right {
     text-align: right;
 }
-
 /* Footer Logo */
 
 .footer-logo img {
@@ -236,7 +232,6 @@ body {
     font-size: 0.7rem;
     max-width: 280px;
 }
-
 /* Tagline Center */
 
 .footer-tagline {
@@ -245,7 +240,6 @@ body {
     font-size: 1rem;
     margin: 0;
 }
-
 /* Right Column Header */
 
 .footer-right h4 {
@@ -275,7 +269,6 @@ body {
     text-decoration: underline;
     color: var(--color-text-tertiary);
 }
-
 /* Responsive Footer Alignment */
 
 @media (max-width: 768px) {
@@ -761,6 +754,10 @@ body {
   color: var(--text-muted, #9ca3af);
 }
 
+.profile-container {
+  max-width: 700px;
+  margin: 80px auto;
+  background: var(--color-nav); /* match site background */
 /* Profile Page */
 
 .profile-container {
@@ -1027,7 +1024,6 @@ body {
 
 /* ==============================
    Uniform Button + Input Radius
-============================== */
 button,
 input[type="text"],
 input[type="search"],
