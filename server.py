@@ -354,14 +354,10 @@ def new_community():
     description = request.form.get("description")
     community_close_date = request.form.get("close_date")
     community_close_date = datetime.strptime(community_close_date, "%Y-%m-%d")
-
-    # Generating and Encoding the community code
-
     options = string.ascii_letters + string.digits
     code = ''.join(secrets.choice(options) for _ in range(7))
-    encoded_code = base64.b64encode(code.encode()).decode()
 
-    new_community_id = db.add_community(community_close_date, title, description, encoded_code, owner_id)
+    new_community_id = db.add_community(community_close_date, title, description, code, owner_id)
     return render_template("create_community.html", code = code, new_community_id = new_community_id)
 
 # ---------- Profile ----------

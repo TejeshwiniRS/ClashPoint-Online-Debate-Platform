@@ -3,36 +3,35 @@
 
 {% block content %}
 
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='create.css') }}">
 
-<div class="community-clashes ">
-
+<div>
+  <h1 class="card soft-box" id="clash-title" style="margin: 1.5rem;">{{ community.title }}</h1>
   <!-- Community Info -->
   <div class="community-info pure-g card soft box">
-    <!-- Title -->
-    <h1 class="community-title" id="clash-title">{{ community.title }}</h1>
     <!-- Description -->
     <div class="pure-u-2-3 community-description">
-      <p style="color: var(--color-text-primary);">{{ community.description }}</p>
+      <p style="color: var(--color-text-primary); " class="argument-text" id="text-{{ community.id }}" >{{ community.description }}</p>
+      <button id="read-more-{{ community.id }}" class="hidden" style="color: white; background: var(--cards); margin-top: 4px;">Read more</button>
     </div>
     <!-- Stats -->
     <div class="pure-u-1-3 community-stats">
-      <h3 style="color: var(--color-text-secondary);">
+      <h3 style="color: var(--color-text-secondary); ">
         Members: {{ num_members }}  |  Clashes: {{ num_clashes }}
       </h3>
     </div>
   </div>
-  <a href="{{ url_for('create_clash') }}" class="pure-button pure-button-primary">
-    Add a New Clash
-  </a>
 
   <!-- Clashes Section -->
   <div class="clashes-container card soft box">
-    <h1 class="section-title" >Clashes in this Community</h1>
+    <a href="{{ url_for('create_clash') }}" class="pure-button pure-button-primary">
+    Add a New Clash
+    </a>
+    <h1 class="section-title" id="desc-text" >Clashes in this Community</h1>
     <!-- Search bar -->
     <input type="text" id="clashSearch" placeholder="Search clashes..." 
            class="search-bar" 
            style="border: 1px solid var(--color-border); color: var(--color-text-primary);">
+    
 
     <div id="clashList">
       {% for clash in clashes %}
@@ -53,7 +52,7 @@
   {% if is_owner %}
   <div class="owner-controls card soft box">
     <div class="manage-members-form pure-form" 
-         style="background-color: var(--cards); padding: 1.5em; border-radius: 10px; max-width: 90%; margin: 2em auto;">
+         style=" max-width: 90%; ">
       <h3 style="color: var(--color-text-primary);">Manage Members</h3>
       <form id="removeMemberForm" method="POST"
             action="{{ url_for('remove_member', community_id=community.id) }}">
@@ -75,4 +74,32 @@
 
 </div>
 
+<script>
+  const descText = document.getElementById("desc-text");
+  const toggleBtn = document.getElementById("toggle-btn");
+
+  const maxLength = 200; // number of characters to show initially
+  const fullText = descText.textContent;
+
+  if (fullText.length > maxLength) {
+    const shortText = fullText.slice(0, maxLength) + "...";
+    descText.textContent = shortText;
+
+    toggleBtn.style.display = "inline"; // show button
+    let expanded = false;
+
+    toggleBtn.addEventListener("click", () => {
+      if (!expanded) {
+        descText.textContent = fullText;
+        toggleBtn.textContent = "Read less";
+      } else {
+        descText.textContent = shortText;
+        toggleBtn.textContent = "Read more";
+      }
+      expanded = !expanded;
+    });
+  } else {
+    toggleBtn.style.display = "none"; // hide button if text is short
+  }
+</script>
 {% endblock %}
