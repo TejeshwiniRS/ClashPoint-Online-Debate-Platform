@@ -227,7 +227,6 @@ function setFormButtonsDisabled(field, disabled) {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-  
   initTabs();
   initVotes();
   initReplyToggle();
@@ -320,7 +319,7 @@ function initReplyToggle(){
   document.querySelectorAll(".reply-toggle").forEach(btn => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
-      const card = btn.closest(".argument-card, .reply-item");
+      const card = btn.closest(".argument-card, .reply-card");
       const replyForm = card ? card.querySelector(".reply-form") : null;
       if (replyForm) replyForm.classList.toggle("hidden");
     });
@@ -331,7 +330,7 @@ function initCollapseBtn() {
   // Toggle Collapse threads
   document.querySelectorAll(".collapse-btn").forEach(btn => {
     btn.addEventListener('click', () => {
-        const card = btn.closest(".argument-card, .reply-item");
+        const card = btn.closest(".argument-card, .reply-card");
         const isCollapsed = btn.dataset.collapsed === "true";
 
         btn.dataset.collapsed = (!isCollapsed).toString();
@@ -395,14 +394,22 @@ function initReadMore(){
 
 function initDropdown(){
   // function to handle dropdown functionality
-  document.querySelectorAll(".menu-btn").forEach(btn => {
-    btn.addEventListener("click", e => {
+  document.querySelectorAll(".menu-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
       e.stopPropagation();
-      const dropdown = btn.nextElementSibling;
+
+      // Scope to current argument or reply card
+      const card = btn.closest(".argument-card, .reply-card");
+      if (!card) return;
+
+      const dropdown = card.querySelector(".menu-dropdown");
+      if (!dropdown) return;
+
+      // Toggle visibility for this menu only
       dropdown.classList.toggle("hidden");
 
-      // Close other menus
-      document.querySelectorAll(".menu-dropdown").forEach(d => {
+      // Close others
+      document.querySelectorAll(".menu-dropdown").forEach((d) => {
         if (d !== dropdown) d.classList.add("hidden");
       });
     });
@@ -410,69 +417,36 @@ function initDropdown(){
 
   // Close dropdown when clicking outside
   document.addEventListener("click", () => {
-    document.querySelectorAll(".menu-dropdown").forEach(d => d.classList.add("hidden"));
+    document.querySelectorAll(".menu-dropdown").forEach((d) => d.classList.add("hidden"));
   });
-
 }
 
 function initDelete() {
-  document.querySelectorAll(".delete-btn").forEach(btn => {
+   document.querySelectorAll(".delete-btn").forEach((btn) => {
     btn.addEventListener("click", async (e) => {
       e.preventDefault();
-      e.stopPropagation();
-
-      if (!confirm("Are you sure you want to delete this post?")) return;
-
       const id = btn.dataset.id;
+      if (!id || !confirm("Are you sure you want to delete this argument?")) return;
 
       try {
         const res = await fetch(`/argument/${id}/delete`, { method: "POST" });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
+        if (res.ok) {
+          const card = document.querySelector(`#arg-${id}, #reply-${id}`);
+          if (card) {
+            const textEl = card.querySelector(".argument-text");
+            const formBtns = card.querySelectorAll(".vote-btn, .reply-toggle, .menu-btn");
 
-        if (!data.success) {
-          alert(data.error || "Delete failed — please try again.");
-          return;
+            if (textEl) {
+              textEl.innerHTML = "<i>Argument deleted by user</i>";
+              textEl.classList.add("deleted");
+            }
+            formBtns.forEach((b) => (b.disabled = true));
+          }
+        } else {
+          console.error("Delete failed:", res.statusText);
         }
-
-        const card = document.getElementById(`arg-${id}`);
-        if (!card) return;
-
-        card.classList.add("deleted");
-
-        // Replace the text content with deleted placeholder text
-        const textEl = card.querySelector(".argument-text");
-        if (textEl) {
-          textEl.textContent = card.classList.contains("reply-item")
-            ? "Reply deleted by user"
-            : "Argument deleted by user";
-          textEl.classList.add("deleted-text");
-        }
-
-        //Disable all interactions for this card
-        card.querySelectorAll(
-          ".vote-btn, .reply-toggle, .menu-edit, .delete-btn, .read-more"
-        ).forEach(el => {
-          el.disabled = true;
-          el.classList.add("disabled");
-          el.style.pointerEvents = "none";
-        });
-
-        const replyForm = card.querySelector(".reply-form");
-        if (replyForm) replyForm.classList.add("hidden");
-
-        const readMore = card.querySelector(".read-more-container");
-        if (readMore) readMore.classList.add("hidden");
-
-        const actionRow = card.querySelector(":scope .action-row");
-        if (actionRow) actionRow.classList.add("hidden");
-
-        card.style.transition = "background 0.3s ease";
-        card.style.backgroundColor = "#f8f8f8";
-
       } catch (err) {
         console.error("Delete error:", err);
-        alert("Something went wrong while deleting. Please refresh and try again.");
       }
     });
   });
@@ -529,68 +503,140 @@ function initPost() {
   });
 }
 
+// function initEditModal() {
+//   const modal = document.getElementById("editModal");
+//   const textarea = document.getElementById("editContent");
+//   const saveBtn = document.getElementById("saveEditBtn");
+//   const cancelBtn = document.getElementById("cancelEditBtn");
+//   const toxWarning = document.getElementById("toxicity-warning");
+
+//   let currentId = null;
+//   let currentTextEl = null;
+
+//   // Open modal when Edit is clicked
+
+  
+//   document.addEventListener("click", (e) => {
+//     const btn = e.target.closest(".menu-edit");
+//     if (!btn) return;
+//     e.preventDefault();
+
+//     currentId = btn.dataset.id;
+//     currentTextEl = document.querySelector(`#text-${currentId}`);
+//     if (!currentTextEl) return;
+
+//     textarea.value = currentTextEl.textContent.trim();
+//     toxWarning.classList.add("hidden");
+//     modal.classList.remove("hidden");
+//   });
+
+//   // toxicity monitoring - defined above
+//   watchToxicity(textarea);
+
+
+//   saveBtn.addEventListener("click", async () => {
+//     const content = textarea.value.trim();
+//     if (!content) return alert("Content cannot be empty.");
+
+//     try {
+//       const res = await fetch(`/argument/${currentId}/edit`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/x-www-form-urlencoded" },
+//         body: new URLSearchParams({ content })
+//       });
+
+//       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+//       const data = await res.json();
+//       if (!data.success) throw new Error(data.error || "Edit failed");
+
+//       if (currentTextEl) {
+//         currentTextEl.textContent = data.content;
+//         currentTextEl.style.transition = "background 0.3s ease";
+//         setTimeout(() => currentTextEl.style.backgroundColor = "transparent", 600);
+
+//       }
+
+//       modal.classList.add("hidden");
+//       currentId = null;
+//       currentTextEl = null;
+//     } catch (err) {
+//       console.error("Edit error:", err);
+//       alert("Could not save changes. Please try again.");
+//     }
+//   });
+
+//   cancelBtn.addEventListener("click", () => modal.classList.add("hidden"));
+//   modal.addEventListener("click", (e) => {
+//     if (e.target === modal) modal.classList.add("hidden");
+//   });
+// }   
+let currentId = null;
+let currentTextEl = null;
+
 function initEditModal() {
   const modal = document.getElementById("editModal");
-  const textarea = document.getElementById("editContent");
-  const saveBtn = document.getElementById("saveEditBtn");
-  const cancelBtn = document.getElementById("cancelEditBtn");
-  const toxWarning = document.getElementById("toxicity-warning");
+  const modalContent = document.getElementById("editContent");
+  const saveBtn = document.getElementById("saveEdit");
+  const cancelBtn = document.getElementById("cancelEdit");
 
-  let currentId = null;
-  let currentTextEl = null;
+  if (!modal) return;
 
-  // Open modal when Edit is clicked
-  document.addEventListener("click", (e) => {
-    const btn = e.target.closest(".menu-edit");
-    if (!btn) return;
-    e.preventDefault();
+  // Open modal when clicking edit
+  document.querySelectorAll(".menu-edit").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const card = btn.closest(".argument-card, .reply-card");
+      currentId = btn.dataset.id;
 
-    currentId = btn.dataset.id;
-    currentTextEl = document.querySelector(`#text-${currentId}`);
-    if (!currentTextEl) return;
+      // Get text field inside this card
+      currentTextEl = card.querySelector(".argument-text");
+      if (!currentTextEl) return;
 
-    textarea.value = currentTextEl.textContent.trim();
-    toxWarning.classList.add("hidden");
-    modal.classList.remove("hidden");
+      modalContent.value = currentTextEl.textContent.trim();
+      modal.classList.remove("hidden");
+      modal.style.display = "flex";
+
+      // Apply toxicity watch to modal text area
+      if (typeof watchToxicity === "function") {
+        watchToxicity();
+      }
+    });
   });
 
-  // toxicity monitoring - defined above
-  watchToxicity(textarea);
-
-
+  // Save changes
   saveBtn.addEventListener("click", async () => {
-    const content = textarea.value.trim();
-    if (!content) return alert("Content cannot be empty.");
+    const newText = modalContent.value.trim();
+    if (!newText || !currentId) return;
 
     try {
       const res = await fetch(`/argument/${currentId}/edit`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ content })
+        body: `content=${encodeURIComponent(newText)}`,
       });
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      if (!data.success) throw new Error(data.error || "Edit failed");
-
-      if (currentTextEl) {
-        currentTextEl.textContent = data.content;
-        currentTextEl.style.transition = "background 0.3s ease";
-        setTimeout(() => currentTextEl.style.backgroundColor = "transparent", 600);
-
+      if (res.ok) {
+        const card = document.querySelector(`#arg-${currentId}, #reply-${currentId}`);
+        if (card) {
+          const textEl = card.querySelector(".argument-text");
+          if (textEl) {
+            textEl.textContent = newText;
+          }
+        }
+      } else {
+        console.error("Edit failed:", res.statusText);
       }
-
-      modal.classList.add("hidden");
-      currentId = null;
-      currentTextEl = null;
     } catch (err) {
-      console.error("Edit error:", err);
-      alert("Could not save changes. Please try again.");
+      console.error("Error:", err);
+    } finally {
+      modal.classList.add("hidden");
+      modal.style.display = "none";
+      currentId = null;
     }
   });
 
-  cancelBtn.addEventListener("click", () => modal.classList.add("hidden"));
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) modal.classList.add("hidden");
+  cancelBtn.addEventListener("click", () => {
+    modal.classList.add("hidden");
+    modal.style.display = "none";
   });
-}   
+}
