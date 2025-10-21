@@ -5,6 +5,47 @@
 
 
 <div>
+    <!-- Owner Controls -->
+  {% if is_owner %}
+  <div style="margin: 1.5rem;">
+    <a href="" type="button" class="pure-button pure-button-primary" style="background-color: red;">
+      Delete Community
+    </a>
+    <a href="{{ url_for('get_community_edit_page', community_id=community.id )}}" type="button" class="pure-button pure-button-primary">
+      Edit Community
+    </a>
+  </div>
+  <div class="owner-controls card soft box">
+    
+    <div class="manage-members-form pure-form" style="max-width: 90%;">
+      <div style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 1rem;
+          flex-wrap: wrap;
+          margin-bottom: 1rem;
+        ">
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+          <h3 style="color: var(--color-text-primary); margin: 0;">Manage Members</h3>
+
+          <input type="email" name="email" id="removeEmail"
+                placeholder="Enter member's email to remove"
+                required class="input-email"
+                style="padding: 0.5rem; border-radius: 6px; border: 1px solid var(--color-border); color: var(--color-text-primary); width: 300px;">
+
+          <button type="button" class="pure-button pure-button-primary"
+                  onclick="openRemoveModal()">
+            Remove Member
+          </button>
+        </div>
+    
+
+      </div>
+    </div>
+  </div>
+
+  {% endif %}
   <h1 class="card soft-box" id="clash-title" style="margin: 1.5rem;">{{ community.title }}</h1>
   <!-- Community Info -->
   <div class="community-info pure-g card soft box">
@@ -23,7 +64,7 @@
 
   <!-- Clashes Section -->
   <div class="clashes-container card soft box">
-    <a href="{{ url_for('create_clash') }}" class="pure-button pure-button-primary">
+    <a href="{{ url_for('create_community_clash', community_id=community.id) }}" class="pure-button pure-button-primary">
     Add a New Clash
     </a>
     <h1 class="section-title" id="desc-text" >Clashes in this Community</h1>
@@ -31,46 +72,21 @@
     <input type="text" id="clashSearch" placeholder="Search clashes..." 
            class="search-bar" 
            style="border: 1px solid var(--color-border); color: var(--color-text-primary);">
-    
+  </div>
 
-    <div id="clashList">
-      {% for clash in clashes %}
-        <div class="landing-card" style="background-color: var(--cards); border: 1px solid var(--color-border);">
-          <h4 style="color: var(--color-text-primary);">{{ clash.title }}</h4>
-          <p style="color: var(--color-text-muted);">{{ clash.description }}</p>
-          <p style="color: var(--color-text-secondary);">
-            Status: {{ clash.status|capitalize }} | {{ clash.created_at.strftime('%b %d, %Y') }}
+  <div class="landing-grid">
+    {% for clash in clashes %}
+      <a href="{{ url_for('view_clash', clash_id=clash.id) }}" class="landing-card-link">
+        <div class="landing-card">
+          <h3>{{ clash.title }}</h3>
+          <p>{{ clash.description }}</p>
+          <p class="meta">
+          Status: {{ clash.status|capitalize }} | {{ clash.created_at.strftime('%b %d, %Y') }}
           </p>
-        </div>
-      {% else %}
-        <p style="color: var(--color-text-muted);">No clashes yet in this community.</p>
-      {% endfor %}
-    </div>
+          </div>
+      </a>
+    {% endfor %}
   </div>
-
-  <!-- Owner Controls -->
-  {% if is_owner %}
-  <div class="owner-controls card soft box">
-    <div class="manage-members-form pure-form" 
-         style=" max-width: 90%; ">
-      <h3 style="color: var(--color-text-primary);">Manage Members</h3>
-      <form id="removeMemberForm" method="POST"
-            action="{{ url_for('remove_member', community_id=community.id) }}">
-        
-        <input type="email" name="email" id="removeEmail"
-              placeholder="Enter member's email to remove"
-              required class="input-email"
-              style="padding: 0.5rem; border-radius: 6px; border: 1px solid var(--color-border); color: var(--color-text-primary); width: 300px;">
-        
-        <button type="button" class="pure-button pure-button-primary"
-                onclick="openRemoveModal()"
-                style="background-color: var(--button-fill); color: var(--button-text);">
-          Remove Member
-        </button>
-      </form>
-    </div>
-  </div>
-  {% endif %}
 
 </div>
 
