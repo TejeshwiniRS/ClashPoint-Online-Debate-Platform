@@ -357,7 +357,7 @@ def update_community(community_id, title, description, community_close_date, own
 
 def search_clashes(query, sort_by, status, start_date, end_date, limit, offset, category=None, owner_id=None):
     with get_db_cursor() as cur:
-        conditions = []
+        conditions = ["c.community_id IS NULL"]
         params = []
         joins = ""
         order_clause = "ORDER BY c.created_at DESC"
