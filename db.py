@@ -389,23 +389,33 @@ def search_clashes(query, sort_by, status, start_date, end_date, limit, offset, 
             conditions.append("c.owner_id = %s")
             params.append(owner_id)
 
-        if sort_by in ["most_voted", "least_voted"]:
+        # Sorting logic
+        if sort_by == "most_voted":
+            # Only clashes that have at least one argument
             joins = """
-                LEFT JOIN (
-                    SELECT clash_id, COALESCE(SUM(up_votes), 0) AS total_up_votes
+                INNER JOIN (
+                    SELECT clash_id, SUM(up_votes) AS total_up_votes
                     FROM arguments
                     GROUP BY clash_id
                 ) AS a ON a.clash_id = c.id
             """
-            direction = "DESC" if sort_by == "most_voted" else "ASC"
-            order_clause = f"ORDER BY a.total_up_votes {direction}, c.created_at DESC"
-        else:
-            joins = "" 
-            order_clause = "ORDER BY c.created_at DESC"
+            order_clause = "ORDER BY a.total_up_votes DESC, c.created_at DESC"
+
+        elif sort_by == "least_voted":
+            # Include all clashes, but no-argument ones go last
+            joins = """
+                LEFT JOIN (
+                    SELECT clash_id, SUM(up_votes) AS total_up_votes
+                    FROM arguments
+                    GROUP BY clash_id
+                ) AS a ON a.clash_id = c.id
+            """
+            order_clause = "ORDER BY COALESCE(a.total_up_votes, 9999999) ASC, c.created_at DESC"
 
         where_clause = "WHERE " + " AND ".join(conditions) if conditions else ""
+        vote_select = "COALESCE(a.total_up_votes, 0)" if "JOIN" in joins else "0"
 
-        vote_select = "COALESCE(a.total_up_votes, 0)" if joins else "0"
+        # Main paginated query
         query_sql = f"""
             SELECT c.id, c.title, c.description, c.status, c.created_at,
                    {vote_select} AS total_up_votes,
@@ -416,11 +426,15 @@ def search_clashes(query, sort_by, status, start_date, end_date, limit, offset, 
             {order_clause}
             LIMIT %s OFFSET %s;
         """
-
         cur.execute(query_sql, [query or ""] + params + [limit, offset])
         clashes = [dict(row) for row in cur.fetchall()]
 
-        count_sql = f"SELECT COUNT(*) AS count FROM clash c {where_clause};"
+        count_sql = f"""
+            SELECT COUNT(*) AS count
+            FROM clash c
+            {joins}
+            {where_clause};
+        """
         cur.execute(count_sql, params)
         total = cur.fetchone()["count"]
 
