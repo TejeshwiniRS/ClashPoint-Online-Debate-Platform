@@ -39,7 +39,7 @@
   font-size: 1.75rem;
   font-weight: 700;
   margin: 0 0 0.5rem 0;
-  color: var(--color-text-tertiary);
+  color: var(--color-text-primary);
 }
 
 .clash-desc {
@@ -77,16 +77,18 @@
 }
 
 .edit-btn {
-  background: var(--color-text-tertiary);
+  background: var(--color-text-primary);
   color: var(--color-nav);
   margin-top: 0.5rem;
   cursor: pointer;
   border: none;
+  font-weight: bold;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
 .section-title{
   margin-bottom: 1rem;
-  color: var(--color-text-tertiary);
+  color: var(--color-text-primary);
   font-size: 1.25rem;
 }
 
@@ -120,6 +122,8 @@ textarea:focus {
   background: var(--button-for);
   color: var(--button-text);
   border: 1px solid var(--button-for);
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-weight: bold;
 }
 
 .btn-soft-for:hover, .btn-soft-against:hover {
@@ -130,6 +134,8 @@ textarea:focus {
   background: var(--button-against);
   color: var(--button-text);
   border: 1px solid var(--button-against);
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-weight: bold;
 }
 
 .btn-disabled {
@@ -144,10 +150,11 @@ textarea:focus {
   width: 100%;
   box-sizing: border-box;
   background: var(--cards);
-  border-radius: 10px;
+  /* border-radius: 10px; */
   padding: 0.9rem 1rem;
   margin: 0.7rem 0;
   position: relative;
+  border: 2px dotted var(--color-border);
 }
 
 .argument-text {
