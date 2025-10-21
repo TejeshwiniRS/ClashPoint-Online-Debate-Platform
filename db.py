@@ -55,7 +55,7 @@ def upsert_user(auth0_id, name, email):
 
 def get_clash_details(clash_id):
     with get_db_cursor() as cur:
-        cur.execute(""" SELECT c.id, c.title, c.description, c.owner_id, u.name as owner_name, c.start_time, c.end_time from clash c join users u on u.id = c.owner_id WHERE c.id = %s """, (clash_id,))
+        cur.execute(""" SELECT c.id, c.title, c.description, c.owner_id, u.name as owner_name, c.start_time, c.end_time from clash c join users u on u.id = c.owner_id WHERE c.id = %s AND c.status!='deleted'""", (clash_id,))
         clash = cur.fetchone()
 
         if not clash:
@@ -357,7 +357,7 @@ def update_community(community_id, title, description, community_close_date, own
 
 def search_clashes(query, sort_by, status, start_date, end_date, limit, offset, category=None, owner_id=None):
     with get_db_cursor() as cur:
-        conditions = ["c.community_id IS NULL"]
+        conditions = ["c.community_id IS NULL", "c.status != 'deleted'"]
         params = []
         joins = ""
         order_clause = "ORDER BY c.created_at DESC"
@@ -494,7 +494,7 @@ def close_expired_items():
 
 def search_communities(query, status, start_date, end_date, user_id=None, limit=6, offset=0):
     with get_db_cursor() as cur:
-        conditions = []
+        conditions = ["status != 'deleted'"]
         params = []
 
         # --- Filters ---
@@ -577,7 +577,7 @@ def get_community_details(community_id):
         cur.execute("""
             SELECT id, title, description, owner_id, start_time, end_time, status
             FROM community
-            WHERE id = %s;
+            WHERE id = %s AND status!='deleted';
         """, (community_id,))
         return cur.fetchone()
     
@@ -597,14 +597,14 @@ def get_clashes_by_community(community_id, limit=6, offset=0):
         cur.execute("""
             SELECT COUNT(*) AS total
             FROM clash
-            WHERE community_id = %s;
+            WHERE community_id = %s AND status != 'deleted';
         """, (community_id,))
         total = cur.fetchone()["total"]
 
         cur.execute("""
             SELECT id, title, description, status, created_at
             FROM clash
-            WHERE community_id = %s
+            WHERE community_id = %s AND status != 'deleted'
             ORDER BY created_at DESC
             LIMIT %s OFFSET %s;
         """, (community_id, limit, offset))
