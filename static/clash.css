@@ -15,6 +15,11 @@
   border: 1px solid var(--color-border);
 }
 
+.soft-box {
+  border-radius: 1.2rem;
+  border: 1px solid var(--color-border);
+}
+
 /* Clash Header */
 .clash-header {
   margin-bottom: 0.25rem;
@@ -366,7 +371,6 @@ textarea:focus {
   box-shadow: 0 2px 6px var(--shadow);
   min-width: 130px;
   z-index: 100;
-  opacity: 100;
 }
 
 .menu-dropdown a {

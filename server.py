@@ -1,4 +1,3 @@
-import os
 from flask import Flask, render_template, redirect, url_for, session, abort, request, flash, jsonify
 from authlib.integrations.flask_client import OAuth
 from urllib.parse import urlencode, quote_plus
@@ -9,6 +8,8 @@ from flask_mail import Mail, Message
 import secrets
 import string
 import base64
+import os
+import json
 
 # ---------------- Environment & Setup ----------------
 load_dotenv()
@@ -213,7 +214,7 @@ def contact_submit():
 # ---------- Clash Views ----------
 @app.route('/clash/<int:clash_id>')
 def view_clash(clash_id):
-    user = current_user_id()
+    user_id = current_user_id()
     clash = db.get_clash_details(clash_id)
     # print(clash)
     if not clash:
@@ -243,9 +244,8 @@ def view_clash(clash_id):
         # print(type(arg), arg)
         # print(arguments)
         # print(json.dumps(arguments, indent=2, default=str))
-    print(user)
-    return render_template("clash_view.html", clash=clash, arguments=arguments, user=user, trending_clashes=trending_clashes, related_clashes=related_clashes)
-
+        # print(user)
+    return render_template("clash_view.html", clash=clash, arguments=arguments, user=user_id, trending_clashes=trending_clashes, related_clashes=related_clashes)
 
 @app.route('/clash/<int:clash_id>/post', methods=['POST'])
 def post_argument(clash_id):
@@ -302,6 +302,7 @@ def edit_argument(arg_id):
 
     return jsonify({"success": True, "content": content})
 
+
 @app.route("/argument/<int:arg_id>/delete", methods=["POST"])
 def delete_argument(arg_id):
     user_id = session.get("user_id")
@@ -353,14 +354,10 @@ def new_community():
     description = request.form.get("description")
     community_close_date = request.form.get("close_date")
     community_close_date = datetime.strptime(community_close_date, "%Y-%m-%d")
-
-    # Generating and Encoding the community code
-
     options = string.ascii_letters + string.digits
     code = ''.join(secrets.choice(options) for _ in range(7))
-    encoded_code = base64.b64encode(code.encode()).decode()
 
-    new_community_id = db.add_community(community_close_date, title, description, encoded_code, owner_id)
+    new_community_id = db.add_community(community_close_date, title, description, code, owner_id)
     return render_template("create_community.html", code = code, new_community_id = new_community_id)
 
 # ---------- Profile ----------
@@ -492,14 +489,15 @@ def close_expired():
 # ---------- Community Views ----------
 @app.route("/community/<int:community_id>")
 def view_community(community_id):
-    print("came here")
     user_id = current_user_id()
     community = db.get_community_details(community_id)
     if not community:
         abort(404)
 
     members = db.get_community_members(community_id)
+    num_members = len(members)
     clashes = db.get_clashes_by_community(community_id)
+    num_clashes = len(clashes)
     is_owner = (user_id == community["owner_id"])
 
     return render_template(
@@ -508,7 +506,9 @@ def view_community(community_id):
         members=members,
         clashes=clashes,
         is_owner=is_owner,
-        user=current_user_info()
+        user=current_user_info(),
+        num_members=num_members,
+        num_clashes=num_clashes
     )
 
 @app.get("/community/<int:community_id>/search_clashes")
