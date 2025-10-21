@@ -61,7 +61,9 @@
                 <a href="{{ url_for('view_community', community_id=c.id) }}" class="landing-card-link">
             {% endif %}
                 <h3>{{ c.title }}</h3>
-                <p>{{ c.description }}</p>
+                <p class="card-desc" data-url="{{ url_for('view_community', community_id=c.id) }}">
+                {{ c.description }}
+                </p>
                 <p class="meta">
                 Status: {{ c.status|capitalize }} | {{ c.created_at.strftime('%b %d, %Y') }}
                 </p>

@@ -1055,3 +1055,345 @@ select:focus {
   box-shadow: 0 0 0 2px rgba(0,120,231,0.3);
   border-color: var(--color-text-tertiary);
 }
+
+/* ===============================
+   Universal Truncated Card Text
+   (Used in Clashes, Communities, and Community View)
+=============================== */
+.card-desc {
+  position: relative;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;             /* limit to 3 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--color-text-primary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  word-wrap: break-word;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+/* create fade + dots effect at bottom */
+.card-desc {
+  position: relative;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;             /* limit visible lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--color-text-primary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  word-wrap: break-word;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+/* ===============================
+   COMMUNITY PAGE STYLING (Mockup)
+   Matches ClashPoint Dark Theme
+================================ */
+
+.community-container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  background: var(--color-nav);
+  border: 2px dotted var(--color-border);
+  padding: 2rem 2.5rem;
+  color: var(--color-text-primary);
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.4);
+}
+
+/* ========== Owner Controls ========== */
+.community-owner-controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.btn-delete {
+  background: var(--color-text-tertiary);
+  color: var(--button-text);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.25s;
+  margin-top: 2rem;
+
+}
+
+.btn-delete:hover {
+  background: var(--hover-red);
+}
+
+.btn-edit {
+  background: var(--color-text-secondary);
+  color: var(--button-text);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: 0.25s;
+  margin-top: 2rem;
+}
+
+.btn-edit:hover {
+  background: var(--hover-red);
+}
+
+/* ========== Manage Members ========== */
+.manage-members {
+  margin: 1.5rem 0;
+}
+
+.manage-members h3 {
+  margin-bottom: 0.6rem;
+  color: var(--color-text-primary);
+}
+
+.manage-members form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.manage-members input {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--cards);
+  color: var(--color-text-primary);
+  min-width: 280px;
+}
+
+.btn-remove {
+  background: var(--color-text-secondary);
+  color: var(--button-text);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: 0.25s;
+}
+
+.btn-remove:hover {
+  background: var(--hover-red);
+}
+
+/* ========== Community Header ========== */
+.community-title {
+  font-size: 1.9rem;
+  font-weight: 650;
+  color: var(--color-text-primary);
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+/* ========== Description Box ========== */
+.community-description-box {
+  background: var(--cards);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  position: relative;
+}
+
+.community-description-box h2 {
+  font-size: 1.3rem;
+  margin-bottom: 0.8rem;
+  /* text-align: center; */
+  color: var(--color-text-primary);
+}
+
+.community-description-box p {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+}
+
+.edit-icon {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: color 0.2s ease;
+}
+
+.edit-icon:hover {
+  color: var(--hover-red);
+}
+
+/* ========== Stats ========== */
+.community-stats {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1.2rem;
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+}
+
+/* ========== Clashes Section ========== */
+.community-clash-section {
+  margin-bottom: 1.5rem;
+}
+
+.community-clash-section h3 {
+  font-size: 1.15rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.community-clash-section a {
+  color: var(--color-text-secondary);
+  text-decoration: underline;
+}
+
+.community-clash-section a:hover {
+  color: var(--hover-red);
+}
+
+/* ==========================
+   Search Bar + Create Clash Row
+========================== */
+.community-search-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Search Wrapper */
+.community-search-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 300px;
+  max-width: 550px;
+}
+
+/* Search Input */
+.community-search {
+  width: 100%;
+  padding: 0.6rem 2.8rem 0.6rem 1rem; /* space for icon */
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--cards);
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.community-search::placeholder {
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+/* Add Search Icon */
+.community-search-wrapper::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23bfbfbf' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27a6.471 6.471 0 001.48-5.34C15.35 5.59 12.28 3 8.5 3S1.65 5.59 1.09 8.39A6.5 6.5 0 008.5 15a6.47 6.47 0 004.34-1.61l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-7 0C6.01 14 4 11.99 4 9.5S6.01 5 8.5 5 13 7.01 13 9.5 10.99 14 8.5 14z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+/* Hover + Focus */
+.community-search:focus {
+  outline: none;
+  border-color: var(--color-text-tertiary);
+  box-shadow: 0 0 0 2px rgba(0,120,231,0.2);
+}
+
+/* Create Clash Button */
+.btn-create-clash {
+  background: var(--color-text-secondary);
+  color: var(--button-text);
+  font-weight: 600;
+  padding: 0.7rem 1.4rem;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.25s ease-in-out;
+  white-space: nowrap;
+}
+
+.btn-create-clash:hover {
+  background: var(--hover-red);
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .community-search-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-create-clash {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+
+
+/* ========== Pagination ========== */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 2rem;
+}
+
+.pagination button {
+  border: 1px solid var(--color-border);
+  background: var(--cards);
+  color: var(--color-text-primary);
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination button:hover {
+  background: var(--hover-red);
+  color: var(--button-text);
+}
+
+.pagination .active {
+  background: var(--color-text-secondary);
+  color: var(--button-text);
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 700px) {
+  .community-container {
+    padding: 1.5rem;
+  }
+  .community-description-box {
+    padding: 1rem;
+  }
+  .community-stats {
+    justify-content: space-between;
+  }
+  .clash-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

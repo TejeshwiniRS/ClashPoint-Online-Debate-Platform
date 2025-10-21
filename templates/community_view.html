@@ -3,89 +3,87 @@
 
 {% block content %}
 
+<div class="community-container">
 
-<div>
-    <!-- Owner Controls -->
-  {% if is_owner %}
-  <div style="margin: 1.5rem;">
-    <a href="" type="button" class="pure-button pure-button-primary" style="background-color: red;">
-      Delete Community
-    </a>
-    <a href="{{ url_for('get_community_edit_page', community_id=community.id )}}" type="button" class="pure-button pure-button-primary">
-      Edit Community
-    </a>
+  <!-- Community Info -->
+  <h1 class="community-title">My Community</h1>
+
+  <div class="community-description-box">
+    <h2>{{ community.title }}</h2>
+    <p>{{ community.description }}</p>
+    <i class="fa fa-pencil edit-icon"></i>
+
+    <div class="community-stats">
+    <span>Members: {{ num_members }}</span>
+    <span>Topics: {{ num_clashes }}</span>
   </div>
-  <div class="owner-controls card soft box">
-    
-    <div class="manage-members-form pure-form" style="max-width: 90%;">
-      <div style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 1rem;
-          flex-wrap: wrap;
-          margin-bottom: 1rem;
-        ">
-        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
-          <h3 style="color: var(--color-text-primary); margin: 0;">Manage Members</h3>
+  </div>
 
-          <input type="email" name="email" id="removeEmail"
-                placeholder="Enter member's email to remove"
-                required class="input-email"
-                style="padding: 0.5rem; border-radius: 6px; border: 1px solid var(--color-border); color: var(--color-text-primary); width: 300px;">
 
-          <button type="button" class="pure-button pure-button-primary"
-                  onclick="openRemoveModal()">
-            Remove Member
-          </button>
-        </div>
-    
-
-      </div>
-    </div>
+  <!-- Owner Controls -->
+  {% if is_owner %}
+  <div class="manage-members">
+    <h3>Manage Members</h3>
+    <form class="pure-form">
+      <input type="email" id="removeEmail" placeholder="Enter member's email to remove" required>
+      <button type="button" class="pure-button btn-remove" onclick="openRemoveModal()">Remove Member</button>
+    </form>
   </div>
 
   {% endif %}
-  <h1 class="card soft-box" id="clash-title" style="margin: 1.5rem;">{{ community.title }}</h1>
-  <!-- Community Info -->
-  <div class="community-info pure-g card soft box">
-    <!-- Description -->
-    <div class="pure-u-2-3 community-description">
-      <p style="color: var(--color-text-primary); " class="argument-text" id="text-{{ community.id }}" >{{ community.description }}</p>
-      <button id="read-more-{{ community.id }}" class="hidden" style="color: white; background: var(--cards); margin-top: 4px;">Read more</button>
-    </div>
-    <!-- Stats -->
-    <div class="pure-u-1-3 community-stats">
-      <h3 style="color: var(--color-text-secondary); ">
-        Members: {{ num_members }}  |  Clashes: {{ num_clashes }}
-      </h3>
-    </div>
-  </div>
+
 
   <!-- Clashes Section -->
-  <div class="clashes-container card soft box">
-    <a href="{{ url_for('create_community_clash', community_id=community.id) }}" class="pure-button pure-button-primary">
-    Add a New Clash
-    </a>
-    <h1 class="section-title" id="desc-text" >Clashes in this Community</h1>
-    <!-- Search bar -->
-    <input type="text" id="clashSearch" placeholder="Search clashes..." 
-           class="search-bar" 
-           style="border: 1px solid var(--color-border); color: var(--color-text-primary);">
+  <div class="community-clash-section">
+    <h3>Clashes:</h3>
+    
+  <div class="community-search-row">
+  <div class="community-search-wrapper">
+    <input type="search" id="clashSearch" placeholder="Search for clashes..." class="community-search">
   </div>
 
+  <a class="pure-button btn-create-clash" style="text-decoration: none; color: var(--button-text);"
+     href="{{ url_for('create_community_clash', community_id=community.id) }}">
+    Create Clash
+  </a>
+  </div>
+
+  </div>
+
+  <!-- Clashes Grid -->
   <div class="landing-grid">
-    {% for clash in clashes %}
-      <a href="{{ url_for('view_clash', clash_id=clash.id) }}" class="landing-card-link">
-        <div class="landing-card">
-          <h3>{{ clash.title }}</h3>
-          <p>{{ clash.description }}</p>
-          <p class="meta">
-          Status: {{ clash.status|capitalize }} | {{ clash.created_at.strftime('%b %d, %Y') }}
-          </p>
-          </div>
-      </a>
-    {% endfor %}
+            {% for clash in clashes %}
+            <a href="{{ url_for('view_clash', clash_id=clash.id) }}" class="landing-card-link">
+            <div class="landing-card">
+                <h3>{{ clash.title }}</h3>
+                <p class="card-desc" data-url="{{ url_for('view_clash', clash_id=clash.id) }}">
+                {{ clash.description }}
+                <span class="read-more" style="display:none;">...</span>
+                </p>
+                <p class="meta">
+                Status: {{ clash.status|capitalize }} | {{ clash.created_at.strftime('%b %d, %Y') }}
+                </p>
+            </div>
+            </a>
+            {% endfor %}
+        </div>
+   
+  {% if is_owner %}
+  <div class="community-owner-controls">
+    <a href="{{ url_for('get_community_edit_page', community_id=community.id) }}" class="pure-button btn-edit" >
+      Edit Community
+    </a>
+    <a href="" class="pure-button btn-delete">Delete Community</a>
+  </div>
+  {% endif %}
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <button>&laquo;</button>
+    <button class="active">1</button>
+    <button>2</button>
+    <button>3</button>
+    <button>&raquo;</button>
   </div>
 
   <div class="landing-pagination">
@@ -123,32 +121,4 @@
 
 </div>
 
-<script>
-  const descText = document.getElementById("desc-text");
-  const toggleBtn = document.getElementById("toggle-btn");
-
-  const maxLength = 200; // number of characters to show initially
-  const fullText = descText.textContent;
-
-  if (fullText.length > maxLength) {
-    const shortText = fullText.slice(0, maxLength) + "...";
-    descText.textContent = shortText;
-
-    toggleBtn.style.display = "inline"; // show button
-    let expanded = false;
-
-    toggleBtn.addEventListener("click", () => {
-      if (!expanded) {
-        descText.textContent = fullText;
-        toggleBtn.textContent = "Read less";
-      } else {
-        descText.textContent = shortText;
-        toggleBtn.textContent = "Read more";
-      }
-      expanded = !expanded;
-    });
-  } else {
-    toggleBtn.style.display = "none"; // hide button if text is short
-  }
-</script>
 {% endblock %}

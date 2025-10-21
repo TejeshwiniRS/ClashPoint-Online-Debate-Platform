@@ -83,15 +83,18 @@
         <!-- Clash Grid -->
         <div class="landing-grid">
             {% for clash in clashes %}
-               <a href="{{ url_for('view_clash', clash_id=clash.id) }}" class="landing-card-link">
-                <div class="landing-card">
-                    <h3>{{ clash.title }}</h3>
-                    <p>{{ clash.description }}</p>
-                    <p class="meta">
-                    Status: {{ clash.status|capitalize }} | {{ clash.created_at.strftime('%b %d, %Y') }}
-                    </p>
-                </div>
-                </a>
+            <a href="{{ url_for('view_clash', clash_id=clash.id) }}" class="landing-card-link">
+            <div class="landing-card">
+                <h3>{{ clash.title }}</h3>
+                <p class="card-desc" data-url="{{ url_for('view_clash', clash_id=clash.id) }}">
+                {{ clash.description }}
+                <span class="read-more" style="display:none;">...</span>
+                </p>
+                <p class="meta">
+                Status: {{ clash.status|capitalize }} | {{ clash.created_at.strftime('%b %d, %Y') }}
+                </p>
+            </div>
+            </a>
             {% endfor %}
         </div>
 

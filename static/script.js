@@ -134,6 +134,38 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+ document.querySelectorAll(".card-desc").forEach(desc => {
+    const url = desc.dataset.url;
+
+    // make text clickable
+    if (url) {
+      desc.addEventListener("click", (e) => {
+        e.stopPropagation();
+        window.location.href = url;
+      });
+    }
+
+    // check if text overflows its box
+    const isOverflowing = desc.scrollHeight > desc.clientHeight + 5;
+
+    if (isOverflowing) {
+      // create trailing "..." only for overflowing text
+      const dots = document.createElement("span");
+      dots.textContent = " ...";
+      dots.style.fontWeight = "bold";
+      dots.style.cursor = "pointer";
+
+      // when clicked, go to page
+      dots.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (url) window.location.href = url;
+      });
+
+      desc.appendChild(dots);
+    }
+  });
+  
+
   // --- Search Clashes within a Community ---
   const clashSearchInput = document.getElementById('clashSearch');
   if (clashSearchInput) {

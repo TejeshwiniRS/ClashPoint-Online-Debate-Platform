@@ -129,32 +129,62 @@ def signup():
         screen_hint="signup"
     )
 
+# @app.route("/callback")
+# def callback():
+#     token = auth0.authorize_access_token()
+#     user_info = token["userinfo"]
+
+#     auth0_id = user_info["sub"]
+#     email = user_info.get("email")
+
+#     username  = (user_info.get("username") or "").strip()
+#     nickname  = (user_info.get("nickname") or "").strip()
+#     full_name = (user_info.get("name") or "").strip()
+
+#     display_name = (
+#         username or
+#         nickname or
+#         full_name or
+#         (email.split("@")[0] if email else "User")
+#     )
+
+#     user_id = db.upsert_user(auth0_id, display_name, email)
+
+#     user_info["display_name"] = display_name
+#     session["user"] = user_info
+#     session["user_id"] = user_id
+
+#     return redirect(url_for("clashes"))
+
 @app.route("/callback")
 def callback():
     token = auth0.authorize_access_token()
     user_info = token["userinfo"]
 
     auth0_id = user_info["sub"]
-    email = user_info.get("email")
+    email = user_info.get("email", "").strip()
 
+    # Extract username fields from Auth0
     username  = (user_info.get("username") or "").strip()
     nickname  = (user_info.get("nickname") or "").strip()
     full_name = (user_info.get("name") or "").strip()
 
-    display_name = (
-        username or
-        nickname or
-        full_name or
-        (email.split("@")[0] if email else "User")
+    display_name = username or nickname or full_name or (email.split("@")[0] if email else "User")
+
+    # Save / update in DB
+    user_id = db.upsert_user(
+        auth0_id=auth0_id,
+        name=display_name,
+        email=email
     )
 
-    user_id = db.upsert_user(auth0_id, display_name, email)
-
+    # Save in session
     user_info["display_name"] = display_name
     session["user"] = user_info
     session["user_id"] = user_id
 
     return redirect(url_for("clashes"))
+
 
 @app.route("/logout")
 def logout():
@@ -344,19 +374,71 @@ def new_clash():
 def create_community():
     return render_template("create_community.html", today = datetime.now().strftime("%Y-%m-%d"))
 
+# @app.post("/new_community")
+# def new_community():
+#     owner_id = current_user_id()
+#     title = request.form.get("title")
+#     description = request.form.get("description")
+#     community_close_date = request.form.get("close_date")
+#     community_close_date = datetime.strptime(community_close_date, "%Y-%m-%d")
+#     options = string.ascii_letters + string.digits
+#     code = ''.join(secrets.choice(options) for _ in range(7))
+
+#     new_community_id = db.add_community(community_close_date, title, description, code, owner_id)
+#     return render_template("create_community.html", code = code, new_community_id = new_community_id)
+
 @app.post("/new_community")
 def new_community():
     owner_id = current_user_id()
+    user = current_user_info()
+
+    if not owner_id or not user:
+        flash("Please log in to create a community.", "error")
+        return redirect(url_for("login"))
+
     title = request.form.get("title")
     description = request.form.get("description")
     community_close_date = request.form.get("close_date")
     community_close_date = datetime.strptime(community_close_date, "%Y-%m-%d")
+
+    # Generate random 7-character code
     options = string.ascii_letters + string.digits
     code = ''.join(secrets.choice(options) for _ in range(7))
 
+    # Save to DB
     new_community_id = db.add_community(community_close_date, title, description, code, owner_id)
     db.add_user_to_community(owner_id, new_community_id, role="owner", is_active_member=True)
-    return render_template("create_community.html", code = code, new_community_id = new_community_id, today = datetime.now().strftime("%Y-%m-%d"))
+
+    # Fetch user details
+    user_email = user.get("email")
+    user_name = user.get("name") or user.get("nickname") or user.get("display_name") or "ClashPoint User"
+
+    # Send email with community code
+    if user_email:
+        try:
+            msg = Message(
+                subject=f"Your New Community Code for '{title}'",
+                recipients=[user_email],
+                body=(
+                    f"Hi {user_name},\n\n"
+                    f"Your new community '{title}' has been created successfully on ClashPoint!\n\n"
+                    f"Here’s your unique community code: {code}\n\n"
+                    f"You can share this code with others so they can join your community.\n\n"
+                    f"Visit your community page here:\n"
+                    f"{url_for('view_community', community_id=new_community_id, _external=True)}\n\n"
+                    f"— The ClashPoint Team"
+                ),
+            )
+            mail.send(msg)
+            flash("Community created successfully! The code has been emailed to you.", "success")
+        except Exception as e:
+            print(f"⚠️ Error sending email: {e}")
+            flash("Community created successfully, but email could not be sent.", "warning")
+    else:
+        flash("Community created successfully! (No email found to send the code.)", "info")
+
+    return render_template("create_community.html", code=code, new_community_id=new_community_id)
+
 
 @app.get("/edit/<int:community_id>")
 def get_community_edit_page(community_id): 
