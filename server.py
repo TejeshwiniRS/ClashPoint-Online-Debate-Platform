@@ -214,8 +214,9 @@ def contact_submit():
 # ---------- Clash Views ----------
 @app.route('/clash/<int:clash_id>')
 def view_clash(clash_id):
-    user_id = current_user_info()
+    user_id = current_user_id()
     clash = db.get_clash_details(clash_id)
+    # print(clash)
     if not clash:
         abort(404)
 
@@ -248,8 +249,8 @@ def view_clash(clash_id):
 
 @app.route('/clash/<int:clash_id>/post', methods=['POST'])
 def post_argument(clash_id):
-    user_id = current_user_id()
-    if not user_id:
+    user = current_user_id()
+    if not user:
         abort(401)
 
     content = request.form.get("content", "").strip()
@@ -264,8 +265,8 @@ def post_argument(clash_id):
 
 @app.route("/argument/<int:arg_id>/vote", methods=["POST"])
 def vote_argument(arg_id):
-    user_id = current_user_id()
-    if not user_id:
+    user = current_user_id()
+    if not user:
         abort(401)
 
     vote = request.form.get("vote")
@@ -287,7 +288,7 @@ def vote_argument(arg_id):
 
 @app.route("/argument/<int:arg_id>/edit", methods=["POST"])
 def edit_argument(arg_id):
-    user = current_user()
+    user = current_user_id()
     if not user:
         abort(401)
 
@@ -314,7 +315,6 @@ def delete_argument(arg_id):
 
     return jsonify({"success": True})
 
-# creating a clash
 # ---------- Create ----------
 @app.route("/create_clash")
 def create_clash():

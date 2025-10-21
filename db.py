@@ -86,6 +86,7 @@ def get_clash_details(clash_id):
             clash["active_until_label"] = end_time.strftime("%b %d, %Y %I:%M %p") if end_time else "Ongoing"            
 
         return clash
+
     
 def get_arguments_by_clash_id(clash_id):
     with get_db_cursor() as cur:
@@ -113,7 +114,6 @@ def mark_argument_deleted(arg_id, user_id):
         """, (arg_id, user_id))
         row = cur.fetchone()
         return row["clash_id"] if row else None
-    
 def create_argument(clash_id, user_id, content, argument_type, parent_id=None):
     with get_db_cursor(commit=True) as cur:
         if parent_id:
@@ -144,6 +144,8 @@ def get_all_tags():
     with get_db_cursor() as cur:
         cur.execute("SELECT id, name FROM tags ORDER BY name;")
         return [dict(row) for row in cur.fetchall()]
+
+
     
 def add_new_tag(new_tag):
     with get_db_cursor(commit=True) as cur:
@@ -189,11 +191,89 @@ def vote_argument(arg_id, vote):
         cur.execute(f"""
             UPDATE arguments 
             SET {column} = {column} + 1
+            WHERE id = {arg_id}
+            RETURNING clash_id;
+        """)
+        result = cur.fetchone()
+        if result:
+            return result["clash_id"]
+        else:
+            return None
+        
+def get_score(arg_id):
+     with get_db_cursor() as cur:
+        cur.execute("""
+            SELECT up_votes, down_votes, (up_votes - down_votes) AS score
+            FROM arguments
+            WHERE id = %s;
+        """, (arg_id,))
+        return cur.fetchone()
+        # row = cur.fetchone()
+        # vote_score = max(row["up_votes"] - row["down_votes"], 0)
+        # content = row["content"]
+        # words = len(content.split()) if content else 0
+        # max_words = 250
+        # length_score = min(words, max_words) / max_words * 10 
+        # weighted_score = 0.5 * vote_score + 0.5 * length_score
+        # row["score"] = weighted_score
+        # return row
+        
+def get_argument_by_id(arg_id):
+    with get_db_cursor() as cur:
+        cur.execute("SELECT * FROM arguments WHERE id = %s;", (arg_id,))
+        return cur.fetchone()
+def edit_argument(arg_id, content):
+    with get_db_cursor(commit=True) as cur:
+        cur.execute("""
+            UPDATE arguments 
+            SET content = %s, updated_at = %s
             WHERE id = %s
             RETURNING clash_id;
-        """, (arg_id,))
+        """, (content, datetime.now() , arg_id))
         result = cur.fetchone()
-        return result["clash_id"] if result else None
+        if result:
+            return result["clash_id"]
+        else:
+            return None
+
+def delete_argument(arg_id):
+    content = "----- deleted -----"
+    with get_db_cursor(commit=True) as cur:
+        cur.execute("""
+            UPDATE arguments 
+            SET is_deleted = TRUE, updated_at = %s
+            WHERE id = %s
+            RETURNING clash_id;
+        """, (datetime.now() , arg_id))
+        result = cur.fetchone()
+        if result:
+            return result["clash_id"]
+        else:
+            return None
+        
+def get_trending_clashes(limit=5):
+    with get_db_cursor() as cur:
+        cur.execute(""" SELECT id, title, description FROM clash ORDER BY created_at  limit %s; """, (limit,))
+        return cur.fetchall()
+    
+def get_related_clashes(clash_id, limit=5):
+    with get_db_cursor() as cur:
+        cur.execute(""" SELECT DISTINCT c.id, c.title, c.description, c.created_at
+                        FROM clash c
+                        JOIN clash_tag ct ON c.id = ct.clash_id
+                        WHERE ct.tag_id IN (
+                            SELECT tag_id FROM clash_tag WHERE clash_id = %s
+                        )
+                        AND c.id != %s
+                        ORDER BY c.created_at DESC
+                        LIMIT %s; """, (clash_id, clash_id, limit,))
+        return cur.fetchall()
+    
+def arg_check_delete_status(arg_id):
+    with get_db_cursor() as cur:
+        cur.execute(""" SELECT is_deleted from arguments where id=%s """, (arg_id,))
+        return cur.fetchone()     
+
 
 def add_clash(owner_id, title, description, clash_close_date):
     with get_db_cursor(commit=True) as cur:
@@ -469,58 +549,8 @@ def search_clashes_in_community(community_id, query):
             ORDER BY created_at DESC;
         """, (community_id, query))
         return [dict(row) for row in cur.fetchall()]
+    
 
-def get_score(arg_id):
-     with get_db_cursor() as cur:
-        cur.execute("""
-            SELECT up_votes, down_votes, (up_votes - down_votes) AS score
-            FROM arguments
-            WHERE id = %s;
-        """, (arg_id,))
-        return cur.fetchone()
-        # row = cur.fetchone()
-        # vote_score = max(row["up_votes"] - row["down_votes"], 0)
-        # content = row["content"]
-        # words = len(content.split()) if content else 0
-        # max_words = 250
-        # length_score = min(words, max_words) / max_words * 10 
-        # weighted_score = 0.5 * vote_score + 0.5 * length_score
-        # row["score"] = weighted_score
-        # return row
-     
-def get_argument_by_id(arg_id):
-    with get_db_cursor() as cur:
-        cur.execute("SELECT * FROM arguments WHERE id = %s;", (arg_id,))
-        return cur.fetchone()
-def edit_argument(arg_id, content):
-    with get_db_cursor(commit=True) as cur:
-        cur.execute("""
-            UPDATE arguments 
-            SET content = %s, updated_at = %s
-            WHERE id = %s
-            RETURNING clash_id;
-        """, (content, datetime.now() , arg_id))
-        result = cur.fetchone()
-        if result:
-            return result["clash_id"]
-        else:
-            return None
-
-def delete_argument(arg_id):
-    content = "----- deleted -----"
-    with get_db_cursor(commit=True) as cur:
-        cur.execute("""
-            UPDATE arguments 
-            SET is_deleted = TRUE, updated_at = %s
-            WHERE id = %s
-            RETURNING clash_id;
-        """, (datetime.now() , arg_id))
-        result = cur.fetchone()
-        if result:
-            return result["clash_id"]
-        else:
-            return None
-        
 def get_trending_clashes(limit=5):
     with get_db_cursor() as cur:
         cur.execute(""" SELECT id, title, description FROM clash ORDER BY created_at  limit %s; """, (limit,))
