@@ -414,6 +414,7 @@ textarea:focus {
   display: flex;
   border-bottom: 2px solid #e0e0e0;
   margin-bottom: 1rem;
+  color: var(--cards);
 }
 
 .tab-link {
