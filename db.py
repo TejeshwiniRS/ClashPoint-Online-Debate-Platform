@@ -289,6 +289,48 @@ def add_clash(owner_id, title, description, clash_close_date):
         new_clash_id = row['id']
     return new_clash_id
 
+def update_clash(clash_id, title, description, close_date, owner_id, tag_id):
+    with get_db_cursor(commit=True) as cur:
+        fields = []
+        params = []
+
+        if title:
+            fields.append("title = %s")
+            params.append(title)
+
+        if description:
+            fields.append("description = %s")
+            params.append(description)
+
+        if close_date:
+            fields.append("end_time = %s")
+            params.append(close_date)
+
+        if tag_id:
+            with get_db_cursor(commit=True) as cur:
+                cur.execute("UPDATE clash_tag SET tag_id=%s WHERE clash_id = %s;", (tag_id, clash_id))
+   
+
+        fields.append("updated_at = NOW()")
+        params.append(clash_id)
+        params.append(owner_id)
+
+        sql = f"""
+            UPDATE clash
+            SET {', '.join(fields)}
+            WHERE id = %s AND owner_id = %s;
+        """
+
+        cur.execute(sql, params)
+
+def delete_clash(clash_id):
+    with get_db_cursor(commit=True) as cur:
+        cur.execute("""
+            UPDATE clash SET status = %s WHERE id = %s;
+        """ ,
+        ( "deleted", clash_id)
+        )
+        
 def add_community_clash(owner_id, title, description, clash_close_date, community_id):
     with get_db_cursor(commit=True) as cur:
         cur.execute("""
@@ -360,6 +402,13 @@ def update_community(community_id, title, description, close_date, owner_id):
 
         cur.execute(sql, params)
 
+def delete_community(community_id):
+    with get_db_cursor(commit=True) as cur:
+        cur.execute("""
+            UPDATE community SET status = %s WHERE id = %s;
+        """ ,
+        ( "deleted", community_id)
+        )
 
 def search_clashes(query, sort_by, status, start_date, end_date, limit, offset, category=None, owner_id=None):
     with get_db_cursor() as cur:

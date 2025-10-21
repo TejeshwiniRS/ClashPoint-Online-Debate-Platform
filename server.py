@@ -246,7 +246,7 @@ def contact_submit():
 def view_clash(clash_id):
     user_id = current_user_id()
     clash = db.get_clash_details(clash_id)
-    # print(clash)
+    #print(clash)
     if not clash:
         abort(404)
 
@@ -374,6 +374,51 @@ def new_clash():
 def create_community():
     return render_template("create_community.html", today = datetime.now().strftime("%Y-%m-%d"))
 
+@app.get("/edit/<int:clash_id>")
+def get_clash_edit_page(clash_id): 
+    clash = db.get_clash_details(clash_id)  # however you fetch it
+    if not clash:
+        return "Clash not found", 404
+
+    if request.method == "POST":
+        # handle updates here
+        ...
+        return redirect(url_for("get_clash_page", clash_id=clash_id))
+
+    return render_template("edit_clash.html", clash=clash)
+
+@app.post("/edit_clash/<int:clash_id>")
+def edit_clash(clash_id):
+    owner_id = current_user_id()
+    title = request.form.get("title", "").strip()
+    description = request.form.get("description", "").strip()
+    tag_id = request.form.get("tags")
+
+    close_date_str = request.form.get("close_date", "").strip()
+
+    clash_close_date = None
+    if close_date_str:
+        try:
+            clash_close_date = datetime.strptime(close_date_str, "%Y-%m-%d")
+        except ValueError:
+            flash("Invalid date format.", "error")
+            return redirect({{ url_for('get_clash_edit_page', clash_id=clash_id) }})
+
+    if not (title or description or clash_close_date or tag_id):
+        flash("Please fill at least one field to update.", "error")
+        return redirect(url_for('get_clash_edit_page', clash_id=clash_id))
+
+    db.update_clash(clash_id, title, description, clash_close_date, owner_id, tag_id)
+
+    flash("Community updated successfully!", "success")
+    return redirect(url_for("view_clash", clash_id=clash_id))
+
+
+@app.get("/delete_clash/<int:clash_id>")
+def delete_clash(clash_id):
+    db.delete_clash(clash_id)
+    return redirect(url_for("clashes"))    
+
 # @app.post("/new_community")
 # def new_community():
 #     owner_id = current_user_id()
@@ -493,6 +538,11 @@ def new_community_clash(community_id):
     new_clash_id = db.add_community_clash(owner_id, title, description, clash_close_date, community_id)
     db.add_clash_tag(tag_id, new_clash_id)
     return redirect(url_for("view_clash", clash_id=new_clash_id))
+
+@app.get("/delete_community/<int:community_id>")
+def delete_community(community_id):
+    db.delete_community(community_id)
+    return redirect(url_for("communities")) 
 
 # ---------- Profile ----------
 @app.route("/profile")

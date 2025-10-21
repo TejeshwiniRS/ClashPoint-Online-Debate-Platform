@@ -73,18 +73,11 @@
     <a href="{{ url_for('get_community_edit_page', community_id=community.id) }}" class="pure-button btn-edit" >
       Edit Community
     </a>
-    <a href="" class="pure-button btn-delete">Delete Community</a>
+    <a href="{{ url_for('delete_community', community_id=community.id) }}" class="pure-button btn-delete">Delete Community</a>
   </div>
   {% endif %}
 
   <!-- Pagination -->
-  <div class="pagination">
-    <button>&laquo;</button>
-    <button class="active">1</button>
-    <button>2</button>
-    <button>3</button>
-    <button>&raquo;</button>
-  </div>
 
   <div class="landing-pagination">
     {% if page > 1 %}

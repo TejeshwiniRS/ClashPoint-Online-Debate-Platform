@@ -12,7 +12,10 @@
       <div class="pure-u-1 clash-title-row">
         <h1 id="clash-title">{{ clash.title }}</h1>
         {% if user and session.get('user_id') == clash.owner_id %}
-          <a href="#" class="pure-button edit-btn">✏️ Edit Clash</a>
+        <div>
+          <a href="{{ url_for('delete_clash', clash_id=clash.id) }}" class="pure-button edit-btn">✏️ Delete Clash</a>
+          <a href="{{ url_for('get_clash_edit_page', clash_id=clash.id) }}" class="pure-button edit-btn" style="background-color: #3968a1;">✏️ Edit Clash</a>
+        </div>
         {% endif %}
       </div>
 
