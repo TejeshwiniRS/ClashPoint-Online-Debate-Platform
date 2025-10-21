@@ -28,7 +28,7 @@
 
 
         <label for="close_date">When do you want your clash to close?</label>
-        <input type="date" name="close_date" id="close_date" min="2025-10-18" max="2100-12-31" required>
+        <input type="date" name="close_date" id="close_date" min="{{today}}" max="2100-12-31" required>
 
         <button type="submit" class="pure-button pure-button-primary">Create</button>
         <a href="{{ url_for('clashes') }}" class="pure-button pure-button-secondary">Cancel</a>

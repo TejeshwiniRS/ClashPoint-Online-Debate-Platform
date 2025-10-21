@@ -1,25 +1,52 @@
 {% extends "base.html" %}
 
-{% block title %}Welcome to ClashPoint{% endblock %}
+{% block title %}Edit Community{% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='create.css') }}"> 
 
 <div class="parent-container">
-    <form action="{{ url_for('edit_community', community_id=community.id) }}" method="POST" class="pure-form pure-form-stacked">
-        <h1>Please Fill All Fields. </h1>
+    <form action="{{ url_for('edit_community', community_id=community.id) }}" 
+          method="POST" 
+          class="pure-form pure-form-stacked" 
+          id="edit-form">
+
+        <h1>Edit Community</h1>
+
         <label for="title">New Name:</label>
-        <input type="text" name="title" id="title" required>
+        <input type="text" name="title" id="title">
 
         <label for="description">New Description:</label>
-        <textarea name="description" id="description" required></textarea>
+        <textarea name="description" id="description"></textarea>
 
         <label for="close_date">New Close Date:</label>
-        <input type="date" name="close_date" id="close_date" min="2025-10-18" max="2100-12-31" required>
+        <input type="date" name="close_date" id="close_date" min="{{ today }}" max="2100-12-31">
 
-        <button type="submit" class="pure-button pure-button-primary">Edit</button>
+        <button type="submit" class="pure-button pure-button-primary" id="edit-btn" disabled>
+            Edit
+        </button>
+
         <a href="{{ url_for('clashes')}}" class="pure-button pure-button-secondary">Cancel</a>
     </form>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const title = document.getElementById("title");
+    const description = document.getElementById("description");
+    const closeDate = document.getElementById("close_date");
+    const editBtn = document.getElementById("edit-btn");
+
+    function toggleButton() {
+        const hasValue = title.value.trim() || description.value.trim() || closeDate.value;
+        editBtn.disabled = !hasValue;
+    }
+
+    [title, description, closeDate].forEach(el => {
+        el.addEventListener("input", toggleButton);
+        el.addEventListener("change", toggleButton);
+    });
+});
+</script>
 
 {% endblock %}

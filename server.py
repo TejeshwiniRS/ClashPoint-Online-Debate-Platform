@@ -319,7 +319,7 @@ def delete_argument(arg_id):
 @app.route("/create_clash")
 def create_clash():
     tags = db.get_all_tags() 
-    return render_template("create_clash.html")
+    return render_template("create_clash.html", today = datetime.now().strftime("%Y-%m-%d"))
 
 @app.post("/new_clash")
 def new_clash():
@@ -342,7 +342,7 @@ def new_clash():
 
 @app.route("/create_community")
 def create_community():
-    return render_template("create_community.html")
+    return render_template("create_community.html", today = datetime.now().strftime("%Y-%m-%d"))
 
 @app.post("/new_community")
 def new_community():
@@ -355,7 +355,8 @@ def new_community():
     code = ''.join(secrets.choice(options) for _ in range(7))
 
     new_community_id = db.add_community(community_close_date, title, description, code, owner_id)
-    return render_template("create_community.html", code = code, new_community_id = new_community_id)
+    db.add_user_to_community(owner_id, new_community_id, role="owner", is_active_member=True)
+    return render_template("create_community.html", code = code, new_community_id = new_community_id, today = datetime.now().strftime("%Y-%m-%d"))
 
 @app.get("/edit/<int:community_id>")
 def get_community_edit_page(community_id): 
@@ -365,19 +366,33 @@ def get_community_edit_page(community_id):
 @app.post("/edit_community/<int:community_id>")
 def edit_community(community_id):
     owner_id = current_user_id()
-    title = request.form.get("title")
-    description = request.form.get("description")
-    community_close_date = request.form.get("close_date")
-    community_close_date = datetime.strptime(community_close_date, "%Y-%m-%d")
+    title = request.form.get("title", "").strip()
+    description = request.form.get("description", "").strip()
+    close_date_str = request.form.get("close_date", "").strip()
+
+    community_close_date = None
+    if close_date_str:
+        try:
+            community_close_date = datetime.strptime(close_date_str, "%Y-%m-%d")
+        except ValueError:
+            flash("Invalid date format.", "error")
+            return redirect(url_for("edit_community_page", community_id=community_id))
+
+    if not (title or description or community_close_date):
+        flash("Please fill at least one field to update.", "error")
+        return redirect(url_for("edit_community_page", community_id=community_id))
+
     db.update_community(community_id, title, description, community_close_date, owner_id)
-                     
-    return redirect(url_for('view_community', community_id = community_id))
+
+    flash("Community updated successfully!", "success")
+    return redirect(url_for("view_community", community_id=community_id))
+
 
 
 @app.route("/create_community_clash/<int:community_id>")
 def create_community_clash(community_id):
     tags = db.get_all_tags() 
-    return render_template("create_community_clash.html", community_id=community_id)
+    return render_template("create_community_clash.html", community_id=community_id, today = datetime.now().strftime("%Y-%m-%d"))
 
 @app.post("/new_community_clash/<int:community_id>")
 def new_community_clash(community_id):
@@ -514,7 +529,7 @@ def join_community(community_id):
         return redirect(url_for("communities"))
 
     # --- If valid, add membership ---
-    db.add_user_to_community(user_id, community_id)
+    db.add_user_to_community(user_id, community_id, role="member", is_active_member=True)
     flash("Welcome! You've successfully joined the community.", "success")
     return redirect(url_for("communities"))
 

@@ -331,29 +331,35 @@ def add_community(community_close_date, title, description, code, owner_id):
         new_community_id = row['id']
     return new_community_id
     
-def update_community(community_id, title, description, community_close_date, owner_id):
+def update_community(community_id, title, description, close_date, owner_id):
     with get_db_cursor(commit=True) as cur:
-        cur.execute("""
-            UPDATE community
-            SET 
-                end_time = %s,
-                title = %s,
-                description = %s,
-                owner_id = %s,
-                search_vector = to_tsvector('english', %s || ' ' || %s)
-            WHERE id = %s
-            RETURNING id;
-        """, (
-            community_close_date,
-            title,
-            description,
-            owner_id,
-            title,
-            description,
-            community_id
-        ))
+        fields = []
+        params = []
 
-        return None
+        if title:
+            fields.append("title = %s")
+            params.append(title)
+
+        if description:
+            fields.append("description = %s")
+            params.append(description)
+
+        if close_date:
+            fields.append("end_time = %s")
+            params.append(close_date)
+
+        fields.append("updated_at = NOW()")
+        params.append(community_id)
+        params.append(owner_id)
+
+        sql = f"""
+            UPDATE community
+            SET {', '.join(fields)}
+            WHERE id = %s AND owner_id = %s;
+        """
+
+        cur.execute(sql, params)
+
 
 def search_clashes(query, sort_by, status, start_date, end_date, limit, offset, category=None, owner_id=None):
     with get_db_cursor() as cur:
@@ -548,13 +554,12 @@ def get_user_community_ids(user_id):
         cur.execute("SELECT community_id FROM community_users WHERE user_id = %s", (user_id,))
         return [r['community_id'] for r in cur.fetchall()]
     
-def add_user_to_community(user_id, community_id):
+def add_user_to_community(user_id, community_id, role="member", is_active_member=True):
     with get_db_cursor(commit=True) as cur:
         cur.execute("""
-            INSERT INTO community_users (community_id, user_id, is_active_member, role, joined_at)
-            VALUES (%s, %s, TRUE, 'member', NOW())
-            ON CONFLICT DO NOTHING;
-        """, (community_id, user_id))
+            INSERT INTO community_users (community_id, user_id, role, is_active_member, joined_at)
+            VALUES (%s, %s, %s, %s, NOW());
+        """, (community_id, user_id, role, is_active_member))
 
 def verify_community_code(community_id, entered_code):
     with get_db_cursor() as cur:
