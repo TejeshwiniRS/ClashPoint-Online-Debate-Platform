@@ -209,6 +209,20 @@ def add_clash(owner_id, title, description, clash_close_date):
         new_clash_id = row['id']
     return new_clash_id
 
+def add_community_clash(owner_id, title, description, clash_close_date, community_id):
+    with get_db_cursor(commit=True) as cur:
+        cur.execute("""
+            INSERT INTO clash (start_time, end_time, status, title, description, owner_id, community_id)
+            VALUES (%s, %s, %s, %s, %s, %s, %s) 
+            RETURNING id;
+        """, (datetime.now(), clash_close_date, "open", title, description, owner_id, community_id))
+        # have to do this to fetch the id of this new clash
+        row = cur.fetchone()
+        if row is None:
+            raise Exception("Failed to insert clash!")
+        new_clash_id = row['id']
+    return new_clash_id
+
 def add_clash_tag(tag_id, clash_id):
     with get_db_cursor(commit=True) as cur:
         cur.execute("INSERT INTO clash_tag (tag_id, clash_id) VALUES (%s, %s);", (tag_id, clash_id))
@@ -237,6 +251,29 @@ def add_community(community_close_date, title, description, code, owner_id):
         new_community_id = row['id']
     return new_community_id
     
+def update_community(community_id, title, description, community_close_date, owner_id):
+    with get_db_cursor(commit=True) as cur:
+        cur.execute("""
+            UPDATE community
+            SET 
+                end_time = %s,
+                title = %s,
+                description = %s,
+                owner_id = %s,
+                search_vector = to_tsvector('english', %s || ' ' || %s)
+            WHERE id = %s
+            RETURNING id;
+        """, (
+            community_close_date,
+            title,
+            description,
+            owner_id,
+            title,
+            description,
+            community_id
+        ))
+
+        return None
 
 def search_clashes(query, sort_by, status, start_date, end_date, limit, offset, category=None, owner_id=None):
     with get_db_cursor() as cur:

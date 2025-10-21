@@ -332,9 +332,6 @@ def new_clash():
     new_tag = request.form.get("newTag")
     if new_tag:
         tag_id = db.add_new_tag(new_tag)
-        # how can I make this new tag, the tag that pairs with the new clash???
-        # come back to this. 
-        # make it so that the function returns the new id of the tag. 
     
     clash_close_date = request.form.get("close_date")
     clash_close_date = datetime.strptime(clash_close_date, "%Y-%m-%d")
@@ -359,6 +356,46 @@ def new_community():
 
     new_community_id = db.add_community(community_close_date, title, description, code, owner_id)
     return render_template("create_community.html", code = code, new_community_id = new_community_id)
+
+@app.get("/edit/<int:community_id>")
+def get_community_edit_page(community_id): 
+    community = db.get_community_details(community_id)
+    return render_template("edit_community.html", community = community)
+
+@app.post("/edit_community/<int:community_id>")
+def edit_community(community_id):
+    owner_id = current_user_id()
+    title = request.form.get("title")
+    description = request.form.get("description")
+    community_close_date = request.form.get("close_date")
+    community_close_date = datetime.strptime(community_close_date, "%Y-%m-%d")
+    db.update_community(community_id, title, description, community_close_date, owner_id)
+                     
+    return redirect(url_for('view_community', community_id = community_id))
+
+
+@app.route("/create_community_clash/<int:community_id>")
+def create_community_clash(community_id):
+    tags = db.get_all_tags() 
+    return render_template("create_community_clash.html", community_id=community_id)
+
+@app.post("/new_community_clash/<int:community_id>")
+def new_community_clash(community_id):
+    owner_id = current_user_id()
+    title = request.form.get("title")
+    description = request.form.get("description")
+    tag_id = request.form.get("tags")
+
+    # user wants to add a new tag. 
+    new_tag = request.form.get("newTag")
+    if new_tag:
+        tag_id = db.add_new_tag(new_tag)
+    
+    clash_close_date = request.form.get("close_date")
+    clash_close_date = datetime.strptime(clash_close_date, "%Y-%m-%d")
+    new_clash_id = db.add_community_clash(owner_id, title, description, clash_close_date, community_id)
+    db.add_clash_tag(tag_id, new_clash_id)
+    return redirect(url_for("view_clash", clash_id=new_clash_id))
 
 # ---------- Profile ----------
 @app.route("/profile")
@@ -495,6 +532,7 @@ def view_community(community_id):
         abort(404)
 
     members = db.get_community_members(community_id)
+    print(members)
     num_members = len(members)
     clashes = db.get_clashes_by_community(community_id)
     num_clashes = len(clashes)
