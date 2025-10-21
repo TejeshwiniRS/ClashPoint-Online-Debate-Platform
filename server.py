@@ -453,24 +453,40 @@ def delete_account():
 @app.route("/communities")
 def communities():
     user_id = current_user_id()
-    scope = request.args.get("scope", "all")  # all | mine
+    scope = request.args.get("scope", "all")
     query = request.args.get("query", "").strip()
     status = request.args.get("status")
     start_date = request.args.get("start_date")
     end_date = request.args.get("end_date")
+    page = int(request.args.get("page", 1))
+    limit = 6
+    offset = (page - 1) * limit
 
     if scope == "mine" and user_id:
-        communities = db.search_communities(query, status, start_date, end_date, user_id=user_id)
+        communities, total = db.search_communities(
+            query, status, start_date, end_date, user_id=user_id, limit=limit, offset=offset
+        )
     else:
-        communities = db.search_communities(query, status, start_date, end_date)
+        communities, total = db.search_communities(
+            query, status, start_date, end_date, limit=limit, offset=offset
+        )
 
+    total_pages = (total + limit - 1) // limit
     user_community_ids = db.get_user_community_ids(user_id) if user_id else []
-    return render_template("communities.html",
-                           communities=communities,
-                           user_community_ids=user_community_ids,
-                           query=query, status=status,
-                           start_date=start_date, end_date=end_date,
-                           scope=scope)
+
+    return render_template(
+        "communities.html",
+        communities=communities,
+        user_community_ids=user_community_ids,
+        query=query,
+        status=status,
+        start_date=start_date,
+        end_date=end_date,
+        scope=scope,
+        page=page,
+        total_pages=total_pages,
+    )
+
 
 # To Join a community
 @app.post("/join_community/<int:community_id>")
@@ -531,11 +547,20 @@ def view_community(community_id):
     if not community:
         abort(404)
 
+    # --- Pagination params ---
+    page = int(request.args.get("page", 1))
+    limit = 6
+    offset = (page - 1) * limit
+
+    # --- Members ---
     members = db.get_community_members(community_id)
-    print(members)
     num_members = len(members)
-    clashes = db.get_clashes_by_community(community_id)
-    num_clashes = len(clashes)
+
+    # --- Paginated clashes ---
+    clashes, total = db.get_clashes_by_community(community_id, limit=limit, offset=offset)
+    num_clashes = total
+    total_pages = (total + limit - 1) // limit
+
     is_owner = (user_id == community["owner_id"])
 
     return render_template(
@@ -546,8 +571,11 @@ def view_community(community_id):
         is_owner=is_owner,
         user=current_user_info(),
         num_members=num_members,
-        num_clashes=num_clashes
+        num_clashes=num_clashes,
+        page=page,
+        total_pages=total_pages
     )
+
 
 @app.get("/community/<int:community_id>/search_clashes")
 def search_community_clashes(community_id):

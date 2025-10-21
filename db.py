@@ -77,13 +77,13 @@ def get_clash_details(clash_id):
 
         if start_time and now < start_time:
             clash["status"] = "not_started"
-            clash["active_until_label"] = f"Clash will begin on {start_time.strftime("%b %d, %Y %I:%M %p")}"
+            clash["active_until_label"] = f"Clash will begin on {start_time.strftime('%b %d, %Y %I:%M %p')}"
         elif end_time and now > end_time:
             clash["status"] = "ended"
             clash["active_until_label"] = "Clash ended"
         else:
             clash["status"] = "active"
-            clash["active_until_label"] = end_time.strftime("%b %d, %Y %I:%M %p") if end_time else "Ongoing"            
+            clash["active_until_label"] = end_time.strftime('%b %d, %Y %I:%M %p') if end_time else "Ongoing"            
 
         return clash
 
@@ -478,11 +478,12 @@ def close_expired_items():
 
     return closed_clashes, closed_communities
 
-def search_communities(query, status, start_date, end_date, user_id=None):
+def search_communities(query, status, start_date, end_date, user_id=None, limit=6, offset=0):
     with get_db_cursor() as cur:
         conditions = []
         params = []
 
+        # --- Filters ---
         if query:
             conditions.append("search_vector @@ plainto_tsquery('english', %s)")
             params.append(query)
@@ -492,7 +493,13 @@ def search_communities(query, status, start_date, end_date, user_id=None):
             params.extend([start_date, end_date])
 
         if user_id:
-            conditions.append("id IN (SELECT community_id FROM community_users WHERE user_id = %s AND is_active_member=true)")
+            conditions.append("""
+                id IN (
+                    SELECT community_id
+                    FROM community_users
+                    WHERE user_id = %s AND is_active_member = true
+                )
+            """)
             params.append(user_id)
 
         if status in ["open", "closed"]:
@@ -500,9 +507,26 @@ def search_communities(query, status, start_date, end_date, user_id=None):
             params.append(status)
 
         where_clause = "WHERE " + " AND ".join(conditions) if conditions else ""
-        sql = f"SELECT * FROM community {where_clause} ORDER BY created_at DESC;"
-        cur.execute(sql, params)
-        return [dict(row) for row in cur.fetchall()]
+
+        # --- Get total count ---
+        count_sql = f"SELECT COUNT(*) AS total FROM community {where_clause};"
+        cur.execute(count_sql, params)
+        count_row = cur.fetchone()
+        total = count_row["total"] if count_row and "total" in count_row else 0
+
+        # --- Paginated query ---
+        sql = f"""
+            SELECT *
+            FROM community
+            {where_clause}
+            ORDER BY created_at DESC
+            LIMIT %s OFFSET %s;
+        """
+        cur.execute(sql, params + [limit, offset])
+        rows = [dict(row) for row in cur.fetchall()]
+
+        return rows, total
+
 
     
 def get_user_community_ids(user_id):
@@ -554,15 +578,26 @@ def get_community_members(community_id):
         """, (community_id,))
         return cur.fetchall()
     
-def get_clashes_by_community(community_id):
+def get_clashes_by_community(community_id, limit=6, offset=0):
     with get_db_cursor() as cur:
+        cur.execute("""
+            SELECT COUNT(*) AS total
+            FROM clash
+            WHERE community_id = %s;
+        """, (community_id,))
+        total = cur.fetchone()["total"]
+
         cur.execute("""
             SELECT id, title, description, status, created_at
             FROM clash
             WHERE community_id = %s
-            ORDER BY created_at DESC;
-        """, (community_id,))
-        return cur.fetchall()
+            ORDER BY created_at DESC
+            LIMIT %s OFFSET %s;
+        """, (community_id, limit, offset))
+        rows = [dict(row) for row in cur.fetchall()]
+
+        return rows, total
+
     
 
 def remove_community_member(community_id, email):

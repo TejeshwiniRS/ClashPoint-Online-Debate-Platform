@@ -88,6 +88,39 @@
     {% endfor %}
   </div>
 
+  <div class="landing-pagination">
+    {% if page > 1 %}
+        <a href="{{ url_for('view_community',
+                            community_id=community.id,
+                            page=page-1) }}"
+           class="pure-button">&laquo; Prev</a>
+    {% else %}
+        <button class="pure-button" disabled>&laquo; Prev</button>
+    {% endif %}
+
+    <div class="page-numbers">
+        {% for p in range(1, total_pages + 1) %}
+            {% if p == page %}
+                <button class="pure-button pure-button-active">{{ p }}</button>
+            {% else %}
+                <a href="{{ url_for('view_community',
+                                    community_id=community.id,
+                                    page=p) }}"
+                   class="pure-button">{{ p }}</a>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    {% if page < total_pages %}
+        <a href="{{ url_for('view_community',
+                            community_id=community.id,
+                            page=page+1) }}"
+           class="pure-button">Next &raquo;</a>
+    {% else %}
+        <button class="pure-button" disabled>Next &raquo;</button>
+    {% endif %}
+  </div>
+
 </div>
 
 <script>
