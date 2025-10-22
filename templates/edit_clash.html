@@ -15,14 +15,6 @@
         <label for="description">New Description:</label>
         <textarea name="description" id="description" ></textarea>
 
-        <label for="tags">Choose a new tag:</label>
-        <!-- only select one tag -->
-        <select id="tags" name="tags">
-            {% for tag in tags%}
-            <option value="{{ tag.id }}">{{ tag.name }}</option>
-            {% endfor %}
-        </select>
-
         <label for="newTag">Didn't see a label that resonated? Add one!</label>
         <input type="text" name="newTag" id="newTag">
 
