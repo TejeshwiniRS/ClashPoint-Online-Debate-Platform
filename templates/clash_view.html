@@ -5,86 +5,137 @@
 <div class="pure-g clash-layout">
 
   <!-- Left main area -->
-  <div class="pure-u-18-24">
+  <div class="pure-u-3-4">
 
     <!-- Clash Header -->
-    <div class="pure-g card clash-header">
-      <div class="pure-u-1">
-        <h1>{{ clash.title }}</h1>
-        <p>{{ clash.description }}</p>
-        <p class="meta">By {{ clash.owner_name }}</p>
-
-        {% if user and user['id'] == clash.owner_id %}
-          <a href="#" class="pure-button edit-btn">✏️ Edit Clash</a>
-        {% endif %}
-      </div>
-    </div>
-
-    <!-- Argument Form -->
-    <div class="pure-g card argument-input">
-      <div class="pure-u-1">
-        {% if user %}
-          <form method="POST" action="{{ url_for('post_argument', clash_id=clash.id) }}" class="pure-form pure-form-stacked">
-            <label for="argument">Add Argument:</label>
-            <textarea id="argument" name="content" rows="3" placeholder="Enter your argument..." required></textarea>
-            <div class="pure-g">
-              <div class="pure-u-1-2">
-                <button type="submit" name="argument_type" value="for" class="pure-button button-for">Post FOR</button>
-              </div>
-              <div class="pure-u-1-2">
-                <button type="submit" name="argument_type" value="against" class="pure-button button-against">Post AGAINST</button>
-              </div>
-            </div>
-          </form>
-        {% else %}
-          <textarea placeholder="Login to post your argument" disabled></textarea>
-          <div class="pure-g">
-            <div class="pure-u-1-2"><button class="pure-button" disabled>Post FOR</button></div>
-            <div class="pure-u-1-2"><button class="pure-button" disabled>Post AGAINST</button></div>
+    <section class="pure-g card clash-header soft-box">
+      <div class="pure-u-1 clash-title-row">
+        <h1 id="clash-title">{{ clash.title }}</h1>
+        {% if user and session.get('user_id') == clash.owner_id %}
+          <div class="pure-button-group" role="group" style="margin-top: 0.5rem;">
+            <a href="{{ url_for('delete_clash', clash_id=clash.id) }}" 
+              class="pure-button btn-delete"
+              onclick="return confirmDelete(event, '{{ clash.title }}');">
+              🗑️ Delete Clash
+            </a>
+            <a href="{{ url_for('get_clash_edit_page', clash_id=clash.id) }}" 
+              class="pure-button btn-edit"
+              style="background-color: #3968a1;">
+              ✏️ Edit Clash
+            </a>
           </div>
         {% endif %}
       </div>
-    </div>
 
-    <!-- For/Against Columns -->
-    <div class="pure-g card arguments-grid">
-      <div class="pure-u-1-2 argument-col">
-        <h2>FOR Arguments</h2>
-        {% for arg in arguments if arg.argument_type == 'for' %}
-          {% include 'argument_card.html' %}
-        {% else %}
-          <p class="no-arguments">No FOR arguments yet.</p>
-        {% endfor %}
+      <div class="pure-u-1 clash-desc">
+        <p>{{ clash.description }}</p>
       </div>
-      <div class="pure-u-1-2 argument-col">
-        <h2>AGAINST Arguments</h2>
-        {% for arg in arguments if arg.argument_type == 'against' %}
-          {% include 'argument_card.html' %}
-        {% else %}
-          <p class="no-arguments">No AGAINST arguments yet.</p>
-        {% endfor %}
+      
+      <div class="pure-u-1 meta-line">
+        <span class="meta-item">Hosted By: {{ clash.owner_name }}</span>
+        <span class="meta-item">Active Until: {{ clash.active_until_label }} </span>
+        <span class="meta-item">Tags: 
+          {% for tag in clash.tags %}
+            <a href=" {{url_for('clashes')}}?category={{tag.name | replace(' ', '+')}}" class="tags">{{tag.name}}</a>
+          {% endfor %}
+        </span>
       </div>
-    </div>
+    </section>
+
+    <!-- Argument Form -->
+    <section class="pure-g card argument-input soft-box">
+      <div class="pure-u-1">
+          {% if clash.status == 'not_started' %}
+            <p class="muted clash-status-msg">⚠️ This clash hasn’t started yet. Posting will be available once it begins.</p>
+          {% elif clash.status == 'ended' %}
+            <p class="muted clash-status-msg">⏰ This clash has ended. You can no longer post arguments.</p>
+          {% else %}
+            <h2 class="section-title">Post your Argument</h2>
+            {% if user %}
+              <form method="POST" action="{{ url_for('post_argument', clash_id=clash.id) }}" class="pure-form pure-form-stacked">
+                <textarea id="argument" name="content" rows="3" placeholder="Enter your argument..." required></textarea>
+                <div class="pure-g btn-row">
+                  <div class="pure-u-1-2">
+                    <button type="submit" name="argument_type" value="for" class="pure-button btn-soft-for">Post FOR</button>
+                    <button type="submit" name="argument_type" value="against" class="pure-button btn-soft-against">Post AGAINST</button> 
+                  </div>
+                </div>
+              </form>
+            {% else %}
+              <textarea placeholder="Login to post your argument" disabled></textarea>
+              <div class="pure-g btn-row">
+                <div><button class="pure-button btn-disabled" disabled>Post FOR</button></div>
+                <div><button class="pure-button btn-disabled" disabled>Post AGAINST</button></div>
+              </div>
+            {% endif %}
+          {%endif%}
+      </div>
+    </section>
+
+    <!-- For/Against Tabs -->
+    <section class="pure-g card tabbed-arguments soft-box">
+      <div class="pure-u-1">
+        <!-- Tab headers -->
+        <div class="arg-tabs">
+          <button class="tab-link active" data-tab="for-tab">FOR the Clash</button>
+          <button class="tab-link" data-tab="against-tab">AGAINST the Clash</button>
+        </div>
+
+        <!-- Tab content -->
+        <div id="for-tab" class="tab-content active">
+          {% for arg in arguments if arg.argument_type=='for' %}
+            {% include 'argument_card.html' %}
+          {% else %}
+            <p class="muted">No FOR arguments yet.</p>
+          {% endfor %}
+        </div>
+
+        <div id="against-tab" class="tab-content">
+          {% for arg in arguments if arg.argument_type == 'against' %}
+            {% include 'argument_card.html' %}
+          {% else %}
+            <p class="muted">No AGAINST arguments yet.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
 
   </div>
 
-  <!-- Sidebar -->
-  <div class="pure-u-6-24 sidebar">
-    <div class="card">
-      <h3>Related Debates</h3>
-      <ul>
-        <li>Should AI be regulated?</li>
-        <li>Is remote work sustainable?</li>
-      </ul>
+
+  <div class="pure-u-1-4 sidebar">
+    <div class="pure-g sidebar-card">
+      <div class="pure-u-1">
+        <h3 class="sidebar-title">🔗 Related Clashses</h3>
+        <ul class="pure-menu-list" id="menu-list">
+          {% for r in related_clashes%}
+            <li class="pure-menu-item">
+              <a href="{{ url_for('view_clash', clash_id=r.id) }}" class="pure-menu-link" id="menu-link">{{ r.title }}</a>
+            </li>
+          {% else %}
+          <li class="pure-menu-item"><span class="muted">No related clashes found</span></li>
+          {% endfor %}
+        </ul>
+      </div>
     </div>
-    <div class="card">
-      <h3>Trending Debates</h3>
-      <ul>
-        <li>Climate policy reform</li>
-        <li>Automation in education</li>
-      </ul>
+
+    <div class="pure-g sidebar-card">
+      <div class="pure-u-1">
+        <h3 class="sidebar-title">🔥 Trending Clashses</h3>
+        <ul class="pure-menu-list" id="menu-list">
+          {% for t in trending_clashes%}
+            <li class="pure-menu-item">
+              <a href="{{ url_for('view_clash', clash_id=t.id) }}" class="pure-menu-link" id="menu-link">{{ t.title }}</a>
+            </li>
+          {% else %}
+          <li class="pure-menu-item"><span class="muted">No trending clashes found</span></li>
+          {% endfor %}
+        </ul>
+      </div>
     </div>
   </div>
+
 
 </div>
 {% endblock %}

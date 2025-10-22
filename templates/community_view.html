@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block title %}{{ community.title }} — Community{% endblock %}
+
+{% block content %}
+<div class="community-container">
+
+  <!-- Community Info -->
+  <section class="pure-g card community-header soft-box">
+    <!-- Title Row -->
+    <div class="pure-u-1 community-title-row"
+         style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+
+      <h1 id="community-title" style="margin: 0;">{{ community.title }}</h1>
+
+      {% if is_owner %}
+      <div class="pure-button-group" role="group" style="margin: 0;">
+        <a href="{{ url_for('delete_community', community_id=community.id) }}" 
+           class="pure-button btn-delete"
+           onclick="return confirmDelete(event, '{{ community.title }}');">
+           🗑️ Delete Community
+        </a>
+        <a href="{{ url_for('get_community_edit_page', community_id=community.id) }}" 
+           class="pure-button btn-edit"
+           style="background-color: #3968a1;">
+           ✏️ Edit Community
+        </a>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="pure-u-1 community-desc">
+      <p>{{ community.description }}</p>
+    </div>
+
+    <div class="pure-u-1 meta-line">
+      <span class="meta-item">Members: {{ num_members }}</span>
+      <span class="meta-item">Topics: {{ num_clashes }}</span>
+      <span class="meta-item">Status: {{ community.status|capitalize }}</span>
+    </div>
+  </section>
+
+
+  <!-- Owner Controls (Aligned with container) -->
+  {% if is_owner %}
+  <section class="card soft-box" style="margin-top: 1rem;">
+    <h3>Manage Members</h3>
+    <form class="pure-form" style=" gap: 1.5rem; align-items: center; padding: 10px;">
+      <input type="email" id="removeEmail" placeholder="Enter member's email to remove"
+             required style="background-color: var(--color-text-primary);  min-width: 250px;">
+      <button type="button" class="pure-button btn-remove" onclick="openRemoveModal()">Remove Member</button>
+    </form>
+  </section>
+  {% endif %}
+
+
+  <!-- Clashes Section -->
+  <section class="community-clash-section card soft-box">
+    <h3>Clashes:</h3>
+    
+    <div class="community-search-row">
+      <form method="GET"
+            action="{{ url_for('search_community_clashes', community_id=community.id) }}"
+            class="pure-form"
+            style="display: flex; gap: 0.5rem; align-items: center;">
+    
+        <input type="search"
+              name="query"
+              placeholder="Search for clashes..."
+              class="pure-input-rounded"
+              style="flex: 1; background-color: var(--color-text-primary);"
+              value="{{ request.args.get('query', '') }}">
+        
+        <button type="submit" class="pure-button pure-button-primary" style="background-color: var(--color-text-secondary); text-decoration: none;">Search</button>
+
+        <a class="pure-button pure-button-secondary " style="color: var(--color-text-secondary); text-decoration: none;" href="{{ url_for('view_community', community_id=community.id) }}">
+          Reset
+        </a>
+      </form>
+
+      <a class="pure-button btn-create-clash" 
+         style="text-decoration: none; color: var(--button-text); background-color: var(--color-text-secondary); font-weight: bold;"
+         href="{{ url_for('create_community_clash', community_id=community.id) }}">
+         Create Clash
+      </a>
+    </div>
+  </section>
+
+
+  <!-- Clashes Grid -->
+  <div class="landing-grid">
+    {% for clash in clashes %}
+      <a href="{{ url_for('view_clash', clash_id=clash.id) }}" class="landing-card-link">
+        <div class="landing-card">
+          <h3>{{ clash.title }}</h3>
+          <p class="card-desc">{{ clash.description }}</p>
+          <p class="meta">
+            Status: {{ clash.status|capitalize }} | {{ clash.created_at.strftime('%b %d, %Y') }}
+          </p>
+        </div>
+      </a>
+    {% else %}
+      <p class="muted">No clashes found for this community yet.</p>
+    {% endfor %}
+  </div>
+
+
+  <!-- Pagination -->
+  <div class="landing-pagination">
+    {% if page > 1 %}
+        <a href="{{ url_for('view_community', community_id=community.id, page=page-1) }}"
+           class="pure-button">&laquo; Prev</a>
+    {% else %}
+        <button class="pure-button" disabled>&laquo; Prev</button>
+    {% endif %}
+
+    <div class="page-numbers">
+        {% for p in range(1, total_pages + 1) %}
+            {% if p == page %}
+                <button class="pure-button pure-button-active">{{ p }}</button>
+            {% else %}
+                <a href="{{ url_for('view_community', community_id=community.id, page=p) }}"
+                   class="pure-button">{{ p }}</a>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    {% if page < total_pages %}
+        <a href="{{ url_for('view_community', community_id=community.id, page=page+1) }}"
+           class="pure-button">Next &raquo;</a>
+    {% else %}
+        <button class="pure-button" disabled>Next &raquo;</button>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

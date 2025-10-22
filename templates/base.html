@@ -4,33 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}ClashPoint{% endblock %}</title>
+
+    <!-- Core CSS -->
     <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.6/build/pure-min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='clash.css') }}">
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='clash.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='variables.css') }}">
 </head>
 
 <body class="site-wrapper">
-    <!-- Header -->
+
     <header class="header">
         <div class="header-container">
             <div class="pure-menu pure-menu-horizontal">
                 <!-- Brand -->
-                <a href="{{ url_for('index') }}" class="brand">
-                    <img src="{{ url_for('static', filename='ClashPoint_Logo.png') }}" 
+                <a href="{{ url_for('clashes') }}" class="brand">
+                    <img src="{{ url_for('static', filename='ClashPoint_Logo.PNG') }}" 
                          alt="ClashPoint Logo" class="logo-img">
                     <span class="brand-text">ClashPoint</span>
                 </a>
 
                 <!-- Menu -->
                 <ul class="pure-menu-list">
-                    <!-- Categories -->
+                    {% if session.get('user') %}
+                        <li class="pure-menu-item">
+                            <a href="{{ url_for('create_clash') }}" class="pure-menu-link">Create Clash</a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="{{ url_for('create_community') }}" class="pure-menu-link">Create Community</a>
+                        </li>
+                    {% endif %}
+
+                    <!-- Categories Dropdown -->
                     <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
                         <a href="javascript:void(0)" class="pure-menu-link">Categories</a>
                         <ul class="pure-menu-children">
                             {% for tag in tags %}
                                 <li class="pure-menu-item">
-                                    <a href="{{ url_for('index', category=tag.name) }}" class="pure-menu-link">
+                                    <a href="{{ url_for('clashes', category=tag.name) }}" class="pure-menu-link">
                                         {{ tag.name }}
                                     </a>
                                 </li>
@@ -38,7 +49,10 @@
                         </ul>
                     </li>
 
-                    
+                    <!-- Clashes -->
+                    <li class="pure-menu-item">
+                        <a href="{{ url_for('clashes') }}" class="pure-menu-link">Clashes</a>
+                    </li>
 
                     <!-- Communities -->
                     <li class="pure-menu-item">
@@ -57,8 +71,12 @@
                                      alt="Profile" class="nav-profile-pic">
                             </a>
                             <ul class="pure-menu-children">
-                                <li class="pure-menu-item"><a href="#" class="pure-menu-link">Profile</a></li>
-                                <li class="pure-menu-item"><a href="{{ url_for('logout') }}" class="pure-menu-link">Logout</a></li>
+                                <li class="pure-menu-item">
+                                    <a href="{{ url_for('profile') }}" class="pure-menu-link">Profile</a>
+                                </li>
+                                <li class="pure-menu-item">
+                                    <a href="{{ url_for('logout') }}" class="pure-menu-link">Logout</a>
+                                </li>
                             </ul>
                         </li>
                     {% endif %}
@@ -67,31 +85,69 @@
         </div>
     </header>
 
-    <!-- Main Content -->
+    <!-- ============================
+         MAIN CONTENT
+    ============================= -->
     <main class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
+    <!-- ============================
+         FOOTER
+    ============================= -->
     <footer class="footer">
         <div class="pure-g footer-container">
             <div class="pure-u-1 pure-u-md-1-3 footer-left">
                 <div class="footer-logo">
-                    <img src="{{ url_for('static', filename='ClashPoint_Logo.png') }}" alt="ClashPoint Logo">
+                    <img src="{{ url_for('static', filename='ClashPoint_Logo.PNG') }}" alt="ClashPoint Logo">
                 </div>
                 <p><strong>ClashPoint</strong> is a debate and discussion platform where stronger opinions emerge.</p>
             </div>
+
             <div class="pure-u-1 pure-u-md-1-3 footer-center">
                 <p class="footer-tagline">Keep Clashing!</p>
             </div>
+
             <div class="pure-u-1 pure-u-md-1-3 footer-right">
                 <h4>Curious to know more?</h4>
                 <div class="footer-links">
-                   <a href="{{ url_for('terms') }}">Terms & Conditions</a>
-                   <a href="{{ url_for('contact') }}">Contact Us</a>
-             </div>
+                    <a href="{{ url_for('terms') }}">Terms & Conditions</a>
+                    <a href="{{ url_for('contact') }}">Contact Us</a>
+                </div>
             </div>
         </div>
     </footer>
+
+<!-- Edit Argument / Reply Modal -->
+<!-- Edit Modal -->
+<div id="editModal" class="hidden modal-overlay">
+  <div class="modal-content">
+    <h3>Edit Argument</h3>
+    <textarea id="editContent" rows="5"></textarea>
+    <div class="modal-actions">
+      <button id="saveEdit" class="pure-button pure-button-primary">Save Changes</button>
+      <button id="cancelEdit" class="pure-button">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+    <!-- ============================
+         SCRIPTS
+    ============================= -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/toxicity"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

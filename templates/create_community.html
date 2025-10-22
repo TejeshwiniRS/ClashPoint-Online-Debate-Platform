@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to ClashPoint{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='create.css') }}"> 
+
+<div class="parent-container">
+    <h1 class="contact-title">Create Community</h1>
+    {% if code %}
+    <p> This is your community code: <span style="color: white">{{ code }}</span>.</p>
+    <a href="{{ url_for('view_community', community_id=new_community_id) }}" class="pure-button community" >Your Community Page</a>
+    <a href="{{ url_for('clashes') }}" class="pure-button pure-button-primary">Home Page</a>
+    {% else %}
+
+    <form action="/new_community" method="POST" class="pure-form pure-form-stacked">
+        <label for="title">Name:</label>
+        <input type="text" name="title" id="title" required>
+
+        <label for="description">Description:</label>
+        <textarea name="description" id="description" required></textarea>
+
+        <label for="close_date">When do you want your clash to close?</label>
+        <input type="date" name="close_date" id="close_date" min="{{ today }}" max="2100-12-31" required>
+
+        <button type="submit" class="pure-button pure-button-primary">Create</button>
+        <a href="{{ url_for('clashes') }}" class="pure-button pure-button-secondary">Cancel</a>
+        
+    </form>
+    {% endif %}
+</div>
+
+
+{% endblock %}

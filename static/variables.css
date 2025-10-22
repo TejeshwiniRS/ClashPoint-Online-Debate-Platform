@@ -1,7 +1,21 @@
+/* ====== DARK THEME VARIABLES ====== */
 :root {
-  --color-primary: #314478;   /* header-blue */
-  --color-secondary: #4A90E2; /* bright blue */
-  --color-accent: #E53E3E;    /* red */
-  --color-bg: #F7FAFC;        /* light gray background */
-  --color-text: #2D3748;      /* main text */
+  /* Base */
+  --color-border: #0e3260;
+
+  /* Nav Bar */
+  --color-nav: #16202d;
+  /* Text */
+  --color-text-primary: #9cb6cd;
+  --color-text-secondary: #3968a1;
+  --color-text-tertiary:  #da5b5b;  /*Hover*/ 
+  --color-text-red: #C33635;
+  --color-text-muted: #a5abb8;
+  --button-fill: #4e89d1d8;
+  --button-text: whitesmoke;
+  --cards: #3233663b;
+  --button-for: #3aa171;
+  --button-against: #da5b5b;
+  --hover-red:#da5b5b;
+
 }

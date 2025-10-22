@@ -1,0 +1,67 @@
+<div class="reply-card soft-box" id="reply-{{ reply.id }}">
+  <div class="reply-header">
+    <button class="collapse-btn" type="button">▼</button>
+    {% if reply.is_deleted %}
+      <p class="argument-text deleted"><i>Reply deleted by user</i></p>
+    {% else %}
+      <div class="reply-meta">
+        <p>By <strong>{{ reply.name }}</strong></p>
+      </div>
+      <p class="argument-text" id="text-{{ reply.id }}">{{ reply.content }}</p>
+    {% endif %}
+  </div>
+
+  <div class="read-more-container hidden" id="read-more-{{reply.id}}"> 
+    <span class="read-more">Read More...</span>
+  </div>
+
+  {% if not reply.is_deleted %}
+  <div class="pure-g action-row">
+    <div class="pure-u-3-4">
+      <form method="POST" action="{{ url_for('vote_argument', arg_id=reply.id) }}" class="pure-form inline-form vote-form">
+        <button type="button" class="pure-button button-for vote-btn" data-id="{{ reply.id }}" data-vote="up">
+          ⬆ <span id="up-{{ reply.id }}">{{ reply.up_votes }}</span>
+        </button>
+        <button type="button" class="pure-button button-against vote-btn" data-id="{{ reply.id }}" data-vote="down">
+          ⬇ <span id="down-{{ reply.id }}">{{ reply.down_votes }}</span>
+        </button>
+        <button type="button" class="pure-button reply-toggle">💬 Reply</button>
+      </form>
+    </div>
+
+    <div class="pure-u-1-4 align-right clash-score">
+      ⚔ ClashPoints: <strong id="score-{{ reply.id }}">{{ reply.score }}</strong>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="menu-container">
+    <button class="menu-btn">⋮</button>
+    <div class="menu-dropdown hidden">
+      {% if user and session.get('user_id') == reply.owner_id and not reply.is_deleted %}
+      <a href="#" class="menu-edit" data-id="{{ reply.id }}">✏️ Edit</a>
+      <a href="#" class="delete-btn" data-id="{{ reply.id }}">🗑️ Delete</a>
+      {% endif %}
+      <a href="/contact" class="menu-report">🚩 Report</a>
+    </div>
+  </div>
+  
+   {% if user %}
+    <div class="reply-form hidden">
+      <form method="POST" action="{{ url_for('post_argument', clash_id=clash.id) }}" class="pure-form pure-form-stacked">
+        <input type="hidden" name="parent_id" value="{{ reply.id }}">
+        <textarea name="content" rows="2" placeholder="Write a reply..." required></textarea>
+        <button type="submit" class="pure-button button-reply">Reply</button>
+      </form>
+    </div>
+  {% endif %}
+  
+
+  <!-- Nested replies -->
+  {% for subreply in reply.replies %}
+    <div class="pure-u-1 nested-replies">
+      {% set reply = subreply %}
+      {% include 'reply_card.html' %}
+    </div>
+  {% endfor %}
+</div>
