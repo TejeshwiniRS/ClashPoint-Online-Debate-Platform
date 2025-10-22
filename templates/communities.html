@@ -14,37 +14,34 @@
   <!-- Search and Filters -->
   <form class="pure-form landing-filters" method="get" action="{{ url_for('communities') }}">
     <input type="hidden" name="scope" value="{{ scope }}">
-    <input type="hidden" name="sort" value="">
+    <input type="hidden" name="sort" value="{{ sort_by or '' }}">
 
     <input type="text" name="query" class="pure-input landing-search"
            placeholder="Search communities..." value="{{ query or '' }}">
 
     <div class="landing-date-group">
-        <div class="landing-date-row">
-            <input type="date" name="start_date" id="start_date"
-                class="pure-input landing-date" value="{{ start_date or '' }}">
-            <input type="date" name="end_date" id="end_date"
-                class="pure-input landing-date" value="{{ end_date or '' }}">
-        </div>
-        <div id="date-warning" class="form-help is-hidden" role="alert"></div>
+      <div class="landing-date-row">
+        <input type="date" name="start_date" id="start_date"
+            class="pure-input landing-date" value="{{ start_date or '' }}">
+        <input type="date" name="end_date" id="end_date"
+            class="pure-input landing-date" value="{{ end_date or '' }}">
+      </div>
     </div>
 
     <select name="status" class="pure-input landing-select">
-        <option value="">All Status</option>
-        <option value="open" {% if status == 'open' %}selected{% endif %}>Open</option>
-        <option value="closed" {% if status == 'closed' %}selected{% endif %}>Closed</option>
+      <option value="">All Status</option>
+      <option value="open" {% if status == 'open' %}selected{% endif %}>Open</option>
+      <option value="closed" {% if status == 'closed' %}selected{% endif %}>Closed</option>
     </select>
 
     <div class="button-row">
-        <button type="submit" class="pure-button pure-button-primary">Search</button>
-        <a class="pure-button" href="{{ url_for('communities',scope=scope) }}">Reset </a>
+      <button type="submit" class="pure-button pure-button-primary">Search</button>
+      <a class="pure-button" href="{{ url_for('communities', scope=scope) }}">Reset</a>
     </div>
   </form>
 
-  <!-- Communities Grid -->
-  <section class="landing-clashes">
-    <!-- Tabs -->
-   <div class="tabs">
+  <!-- Tabs -->
+  <div class="tabs">
     <a href="{{ url_for('communities', scope='all', query=query, sort=sort_by, start_date=start_date, end_date=end_date) }}"
        class="tab {% if scope == 'all' %}active{% endif %}">All Communities</a>
     {% if session.get('user') %}
@@ -53,77 +50,68 @@
     {% endif %}
   </div>
 
-    {% if communities %}
-      <div class="landing-grid">
-        {% for c in communities %}
-            <div class="landing-card">
-            {% if scope == 'mine' %}
-                <a href="{{ url_for('view_community', community_id=c.id) }}" class="landing-card-link">
-            {% endif %}
-                <h3>{{ c.title }}</h3>
-                <p class="card-desc" data-url="{{ url_for('view_community', community_id=c.id) }}">
-                {{ c.description }}
-                </p>
-                <p class="meta">
-                Status: {{ c.status|capitalize }} | {{ c.created_at.strftime('%b %d, %Y') }}
-                </p>
+  <!-- Communities Grid -->
+  {% if communities %}
+  <div class="landing-grid">
+    {% for c in communities %}
+      <div class="landing-card">
 
-                {% if session.get('user') and c.id not in user_community_ids %}
-                <button class="pure-button pure-button-primary join-btn"
-                        onclick="openJoinModal({{ c.id }})">Join Community</button>
-                {% endif %}
-            </div>
-        {% endfor %}
+        {% if scope == 'mine' %}
+        <a href="{{ url_for('view_community', community_id=c.id) }}" class="landing-card-link">
+          <h3>{{ c.title }}</h3>
+          <p class="card-desc">{{ c.description }}</p>
+          <p class="meta">
+            Status: {{ c.status|capitalize }}
+            {% if c.created_at %}| {{ c.created_at.strftime('%b %d, %Y') }}{% endif %}
+          </p>
+        </a>
+        {% else %}
+          <h3>{{ c.title }}</h3>
+          <p class="card-desc">{{ c.description }}</p>
+          <p class="meta">
+            Status: {{ c.status|capitalize }}
+            {% if c.created_at %}| {{ c.created_at.strftime('%b %d, %Y') }}{% endif %}
+          </p>
+
+          {% if session.get('user') and user_community_ids and c.id not in user_community_ids %}
+            <button class="pure-button pure-button-primary join-btn"
+                    onclick="openJoinModal({{ c.id }})">Join Community</button>
+          {% endif %}
+        {% endif %}
       </div>
-    {% else %}
-      <p style="color: var(--color-text-secondary); margin-top: 2rem;">No communities found.</p>
-    {% endif %}
-    <!-- Pagination -->
-<div class="landing-pagination">
+    {% endfor %}
+  </div>
+  {% else %}
+    <p style="color: var(--color-text-secondary); margin-top: 2rem;">No communities found.</p>
+  {% endif %}
+
+  <!-- Pagination -->
+  <div class="landing-pagination">
     {% if page > 1 %}
-        <a href="{{ url_for('communities',
-                            page=page-1,
-                            scope=scope,
-                            query=query,
-                            status=status,
-                            start_date=start_date,
-                            end_date=end_date) }}"
-           class="pure-button">&laquo; Prev</a>
+      <a href="{{ url_for('communities', page=page-1, scope=scope, query=query, status=status, start_date=start_date, end_date=end_date) }}"
+         class="pure-button">&laquo; Prev</a>
     {% else %}
-        <button class="pure-button" disabled>&laquo; Prev</button>
+      <button class="pure-button" disabled>&laquo; Prev</button>
     {% endif %}
 
     <div class="page-numbers">
-        {% for p in range(1, total_pages + 1) %}
-            {% if p == page %}
-                <button class="pure-button pure-button-active">{{ p }}</button>
-            {% else %}
-                <a href="{{ url_for('communities',
-                                    page=p,
-                                    scope=scope,
-                                    query=query,
-                                    status=status,
-                                    start_date=start_date,
-                                    end_date=end_date) }}"
-                   class="pure-button">{{ p }}</a>
-            {% endif %}
-        {% endfor %}
+      {% for p in range(1, total_pages + 1) %}
+        {% if p == page %}
+          <button class="pure-button pure-button-active">{{ p }}</button>
+        {% else %}
+          <a href="{{ url_for('communities', page=p, scope=scope, query=query, status=status, start_date=start_date, end_date=end_date) }}"
+             class="pure-button">{{ p }}</a>
+        {% endif %}
+      {% endfor %}
     </div>
 
     {% if page < total_pages %}
-        <a href="{{ url_for('communities',
-                            page=page+1,
-                            scope=scope,
-                            query=query,
-                            status=status,
-                            start_date=start_date,
-                            end_date=end_date) }}"
-           class="pure-button">Next &raquo;</a>
+      <a href="{{ url_for('communities', page=page+1, scope=scope, query=query, status=status, start_date=start_date, end_date=end_date) }}"
+         class="pure-button">Next &raquo;</a>
     {% else %}
-        <button class="pure-button" disabled>Next &raquo;</button>
+      <button class="pure-button" disabled>Next &raquo;</button>
     {% endif %}
-</div>
-  </section>
+  </div>
 </section>
 
 <!-- Join Modal -->
@@ -140,5 +128,18 @@
     </form>
   </div>
 </div>
+
+<!-- Modal JS -->
+<script>
+function openJoinModal(id) {
+  const modal = document.getElementById("joinModal");
+  const form = document.getElementById("joinForm");
+  form.action = `/join_community/${id}`;
+  modal.style.display = "flex";
+}
+function closeJoinModal() {
+  document.getElementById("joinModal").style.display = "none";
+}
+</script>
 
 {% endblock %}
