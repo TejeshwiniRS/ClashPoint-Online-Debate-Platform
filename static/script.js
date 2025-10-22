@@ -689,4 +689,17 @@ function initEditModal() {
     modal.classList.add("hidden");
     modal.style.display = "none";
   });
+
+  const deleteCommunityBtn = document.querySelector(".btn-delete");
+
+  if (deleteCommunityBtn) {
+    deleteCommunityBtn.addEventListener("click", function (e) {
+      e.preventDefault(); // stop direct navigation
+      const confirmed = confirm("⚠️ Are you sure you want to delete this community?\nThis action cannot be undone.");
+      if (confirmed) {
+        // proceed to delete
+        window.location.href = this.getAttribute("href");
+      }
+    });
+  }
 }
