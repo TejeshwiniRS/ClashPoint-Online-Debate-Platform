@@ -377,6 +377,7 @@ def create_community():
 @app.get("/edit/<int:clash_id>")
 def get_clash_edit_page(clash_id): 
     clash = db.get_clash_details(clash_id)  # however you fetch it
+
     if not clash:
         return "Clash not found", 404
 
@@ -458,7 +459,6 @@ def new_community():
     user_email = user.get("email")
     user_name = user.get("name") or user.get("nickname") or user.get("display_name") or "ClashPoint User"
 
-    '''
     # Send email with community code
     if user_email:
         try:
@@ -483,8 +483,6 @@ def new_community():
     else:
         flash("Community created successfully! (No email found to send the code.)", "info")
 
-    '''
-    
     return render_template("create_community.html", code=code, new_community_id=new_community_id)
 
 
