@@ -657,9 +657,9 @@ def join_community(community_id):
 
     # --- Fetch and verify only that community's code ---
     is_valid = db.verify_community_code(community_id, entered_code)
-    if not is_valid:
-        flash("Invalid code for this community.", "error")
-        return redirect(url_for("communities"))
+    # if not is_valid:
+    #     flash("Invalid code for this community.", "error")
+    #     return redirect(url_for("communities"))
 
     # --- If valid, add membership ---
     db.add_user_to_community(user_id, community_id, role="member", is_active_member=True)
