@@ -19,6 +19,13 @@ CSCI 5117, Fall 2024, [assignment description](https://canvas.umn.edu/courses/46
 
 **Describe the most challenging features you implemented
 (one sentence per bullet, maximum 4 bullets):**
+* Implemented a client-side toxicity moderator using TensorFlow.js to evaluate user input in real time.
+
+* Built a recommended clashes to suggest related arguments based on shared tags.
+
+* Developed a daily cron job to automatically close arguments reaching their end date.
+
+* Designed a scoring algorithm that calculates argument scores based on vote distributions.
 
 * ...
 
