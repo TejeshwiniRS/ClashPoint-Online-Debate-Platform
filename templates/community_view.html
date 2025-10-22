@@ -34,13 +34,41 @@
 
 
   <!-- Clashes Section -->
+   <div class="community-search-row">
+
+
+  <a class="pure-button pure-button-primary"
+     style="text-decoration: none; margin-left: 0.5rem;"
+     href="{{ url_for('create_community_clash', community_id=community.id) }}">
+    Create Clash
+  </a>
+</div>
+
+
   <div class="community-clash-section">
     <h3>Clashes:</h3>
     
   <div class="community-search-row">
-  <div class="community-search-wrapper">
-    <input type="search" id="clashSearch" placeholder="Search for clashes..." class="community-search">
-  </div>
+    <form method="GET"
+      action="{{ url_for('search_community_clashes', community_id=community.id) }}"
+      class="pure-form"
+      style="display: flex; gap: 0.5rem; align-items: center;">
+  
+      <input type="search"
+            name="query"
+            placeholder="Search for clashes..."
+            class="pure-input-rounded"
+            style="flex: 1;"
+            value="{{ request.args.get('query', '') }}">
+      
+      <button type="submit" class="pure-button pure-button-primary">Search</button>
+
+      <a class="pure-button" href="{{ url_for('view_community', community_id=community.id) }}">
+        Reset
+      </a>
+    </form>
+
+
 
   <a class="pure-button btn-create-clash" style="text-decoration: none; color: var(--button-text);"
      href="{{ url_for('create_community_clash', community_id=community.id) }}">

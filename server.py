@@ -489,6 +489,7 @@ def new_community():
 @app.get("/edit/<int:community_id>")
 def get_community_edit_page(community_id): 
     community = db.get_community_details(community_id)
+    print("edit - community " + community)
     return render_template("edit_community.html", community = community)
 
 @app.post("/edit_community/<int:community_id>")
@@ -728,8 +729,30 @@ def view_community(community_id):
 @app.get("/community/<int:community_id>/search_clashes")
 def search_community_clashes(community_id):
     query = request.args.get("query", "").strip()
-    results = db.search_clashes_in_community(community_id, query)
-    return jsonify(results)
+    clashes = db.search_clashes_in_community(community_id, query)
+
+    # --- fetch other page info ---
+    community = db.get_community_details(community_id)
+    members = db.get_community_members(community_id)
+    num_members = len(members)
+    num_clashes = len(clashes)
+    user_id = current_user_id()
+    is_owner = (user_id == community["owner_id"])
+
+    # --- render the same community_view template ---
+    return render_template(
+        "community_view.html",
+        community=community,
+        members=members,
+        clashes=clashes,             # filtered clashes here
+        is_owner=is_owner,
+        user=current_user_info(),
+        num_members=num_members,
+        num_clashes=num_clashes,
+        page=1,
+        total_pages=1
+    )
+
 
 @app.post("/community/<int:community_id>/remove_member")
 def remove_member(community_id):

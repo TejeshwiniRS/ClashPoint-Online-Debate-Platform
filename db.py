@@ -306,10 +306,6 @@ def update_clash(clash_id, title, description, close_date, owner_id, tag_id):
             fields.append("end_time = %s")
             params.append(close_date)
 
-        if tag_id:
-            cur.execute("UPDATE clash_tag SET tag_id=%s WHERE clash_id = %s;", (tag_id, clash_id))
-   
-
         fields.append("updated_at = NOW()")
         params.append(clash_id)
         params.append(owner_id)
@@ -633,7 +629,7 @@ def get_community_details(community_id):
             WHERE id = %s AND status!='deleted';
         """, (community_id,))
         return cur.fetchone()
-    
+
 def get_community_members(community_id):
     with get_db_cursor() as cur:
         cur.execute("""
@@ -680,15 +676,16 @@ def remove_community_member(community_id, email):
     
 def search_clashes_in_community(community_id, query):
     with get_db_cursor() as cur:
+        like_pattern = f"%{query}%"
         cur.execute("""
-            SELECT  id, title, description, status, created_at
+            SELECT id, title, description, status, created_at
             FROM clash
-            WHERE community_id =  %s
-                AND (title ILIKE %s OR description ILIKE %s)
+            WHERE community_id = %s
+              AND (title ILIKE %s OR description ILIKE %s)
             ORDER BY created_at DESC;
-        """, (community_id, query))
+        """, (community_id, like_pattern, like_pattern))
         return [dict(row) for row in cur.fetchall()]
-    
+
 
 def get_trending_clashes(limit=5):
     with get_db_cursor() as cur:

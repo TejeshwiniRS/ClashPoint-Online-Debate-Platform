@@ -535,6 +535,17 @@ function initPost() {
   });
 }
 
+function confirmDelete(event, clashTitle) {
+  event.preventDefault(); // stop the link immediately
+  const confirmed = confirm(`Are you sure you want to delete "${clashTitle}"?`);
+  if (confirmed) {
+    window.location.href = event.currentTarget.href; // proceed to delete
+  } else {
+    console.log("Delete cancelled");
+  }
+  return false;
+}
+
 // function initEditModal() {
 //   const modal = document.getElementById("editModal");
 //   const textarea = document.getElementById("editContent");
