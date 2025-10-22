@@ -41,8 +41,17 @@ CSCI 5117, Fall 2024, [assignment description](https://canvas.umn.edu/courses/46
 **[Add a screenshot of each key page (around 4)](https://stackoverflow.com/questions/10189356/how-to-add-screenshot-to-readmes-in-github-repository)
 along with a very brief caption:**
 
-![](https://media.giphy.com/media/o0vwzuFwCGAFO/giphy.gif)
+<img width="1916" height="686" alt="image" src="https://github.com/user-attachments/assets/be863aaa-d60d-4bf2-91cf-6ba09693fc54" />
+Client-side toxicity moderator: Used TensorFlow.js to run a lightweight ML model directly in the browser, analyzing user input as they type and flagging toxic or offensive language before submission.
 
+<img width="495" height="779" alt="image" src="https://github.com/user-attachments/assets/3ee82cb8-607f-458e-ba0b-63f82e6adbaf" />
+Related clashes recommender: Implemented a tag-based similarity engine that fetches and displays arguments with overlapping or related topics to improve engagement and content discovery.
+
+<img width="1344" height="328" alt="Screenshot 2025-10-22 at 12 40 39 AM" src="https://github.com/user-attachments/assets/97c6b9ee-ecee-45e6-ad16-4d9e051e216e" />
+Daily cron job for closures: Set up a scheduled background task that runs every night at 11:55 to automatically mark arguments as closed once their end date is reached, keeping data consistent.
+
+<img width="1916" height="698" alt="image" src="https://github.com/user-attachments/assets/97408bed-f6bd-4f5f-902f-48a710a9983e" />
+Custom scoring algorithm: Designed a weighted formula that dynamically updates each argument’s score based on upvotes, downvotes to reflect community consensus accurately.
 
 ## Mock-up 
 
