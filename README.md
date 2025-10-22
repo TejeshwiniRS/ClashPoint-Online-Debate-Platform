@@ -44,7 +44,7 @@ along with a very brief caption:**
 <img width="1916" height="686" alt="image" src="https://github.com/user-attachments/assets/be863aaa-d60d-4bf2-91cf-6ba09693fc54" />
 Client-side toxicity moderator: Used TensorFlow.js to run a lightweight ML model directly in the browser, analyzing user input as they type and flagging toxic or offensive language before submission.
 
-<img width="495" height="779" alt="image" src="https://github.com/user-attachments/assets/3ee82cb8-607f-458e-ba0b-63f82e6adbaf" />
+<img width="400" height="500" alt="image" src="https://github.com/user-attachments/assets/3ee82cb8-607f-458e-ba0b-63f82e6adbaf" />
 Related clashes recommender: Implemented a tag-based similarity engine that fetches and displays arguments with overlapping or related topics to improve engagement and content discovery.
 
 <img width="1344" height="328" alt="Screenshot 2025-10-22 at 12 40 39 AM" src="https://github.com/user-attachments/assets/97c6b9ee-ecee-45e6-ad16-4d9e051e216e" />
