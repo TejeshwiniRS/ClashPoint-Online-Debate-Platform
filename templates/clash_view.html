@@ -14,12 +14,12 @@
         {% if user and session.get('user_id') == clash.owner_id %}
           <div class="pure-button-group" role="group" style="margin-top: 0.5rem;">
             <a href="{{ url_for('delete_clash', clash_id=clash.id) }}" 
-              class="pure-button button-error"
+              class="pure-button btn-delete"
               onclick="return confirmDelete(event, '{{ clash.title }}');">
               🗑️ Delete Clash
             </a>
             <a href="{{ url_for('get_clash_edit_page', clash_id=clash.id) }}" 
-              class="pure-button pure-button-primary"
+              class="pure-button btn-edit"
               style="background-color: #3968a1;">
               ✏️ Edit Clash
             </a>
