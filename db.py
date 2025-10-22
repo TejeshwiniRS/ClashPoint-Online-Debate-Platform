@@ -307,8 +307,7 @@ def update_clash(clash_id, title, description, close_date, owner_id, tag_id):
             params.append(close_date)
 
         if tag_id:
-            with get_db_cursor(commit=True) as cur:
-                cur.execute("UPDATE clash_tag SET tag_id=%s WHERE clash_id = %s;", (tag_id, clash_id))
+            cur.execute("UPDATE clash_tag SET tag_id=%s WHERE clash_id = %s;", (tag_id, clash_id))
    
 
         fields.append("updated_at = NOW()")

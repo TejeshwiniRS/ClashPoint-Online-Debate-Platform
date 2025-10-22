@@ -9,13 +9,13 @@
 <div class="parent-container">
     <h1 class="create-title">Edit Clash</h1>
     <form action="{{ url_for('edit_clash', clash_id=clash.id) }}" method="POST" class="pure-form pure-form-stacked">
-        <label for="title">Title:</label>
+        <label for="title">New Title:</label>
         <input type="text" name="title" id="title">
 
-        <label for="description">Description:</label>
+        <label for="description">New Description:</label>
         <textarea name="description" id="description" ></textarea>
 
-        <label for="tags">Choose a tag that describes your Clash:</label>
+        <label for="tags">Choose a new tag:</label>
         <!-- only select one tag -->
         <select id="tags" name="tags">
             {% for tag in tags%}
