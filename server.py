@@ -376,7 +376,9 @@ def create_community():
 
 @app.get("/edit/<int:clash_id>")
 def get_clash_edit_page(clash_id): 
-    clash = db.get_clash_details(clash_id)  # however you fetch it
+    print("clash_id", clash_id)
+    clash = db.get_clash_details(clash_id)
+    print("clash", clash)
 
     if not clash:
         return "Clash not found", 404
@@ -486,10 +488,9 @@ def new_community():
     return render_template("create_community.html", code=code, new_community_id=new_community_id)
 
 
-@app.get("/edit/<int:community_id>")
+@app.get("/community/<int:community_id>/edit")
 def get_community_edit_page(community_id): 
     community = db.get_community_details(community_id)
-    print("edit - community " + community)
     return render_template("edit_community.html", community = community)
 
 @app.post("/edit_community/<int:community_id>")

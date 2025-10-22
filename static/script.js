@@ -109,30 +109,37 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }, 4000);
   });
-  // --- Confirm Remove Member Modal ---
-  window.openRemoveModal = function () {
-    const email = document.getElementById('removeEmail').value.trim();
-    if (!email) {
-      alert("Please enter a valid email address before proceeding.");
-      return;
-    }
+  // --- Safe modal handling for "Remove Member" ---
+    window.openRemoveModal = function () {
+      const emailInput = document.getElementById("removeEmail");
+      if (!emailInput) return;
 
-    const modal = document.getElementById('removeModal');
-    modal.classList.add('active');
-  };
+      const email = emailInput.value.trim();
+      if (!email) {
+        alert("Please enter an email address to remove.");
+        return;
+      }
 
-  window.closeRemoveModal = function () {
-    const modal = document.getElementById('removeModal');
-    if (modal) modal.classList.remove('active');
-  };
+      // Dynamically send the POST request using Fetch
+      const communityId = window.location.pathname.split("/community/")[1]?.split("/")[0];
+      if (!communityId) return;
 
-  const confirmRemoveBtn = document.getElementById('confirmRemove');
-  if (confirmRemoveBtn) {
-    confirmRemoveBtn.addEventListener('click', () => {
-      const form = document.getElementById('removeMemberForm');
-      if (form) form.submit();
-    });
-  }
+      fetch(`/community/${communityId}/remove_member`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ email }),
+      })
+      .then(res => {
+        if (res.redirected) {
+          window.location.href = res.url;
+        } else {
+          window.location.reload();
+        }
+      })
+      .catch(err => console.error("Error removing member:", err));
+    };
+
+
 
  document.querySelectorAll(".card-desc").forEach(desc => {
     const url = desc.dataset.url;
@@ -682,4 +689,17 @@ function initEditModal() {
     modal.classList.add("hidden");
     modal.style.display = "none";
   });
+
+  const deleteCommunityBtn = document.querySelector(".btn-delete");
+
+  if (deleteCommunityBtn) {
+    deleteCommunityBtn.addEventListener("click", function (e) {
+      e.preventDefault(); // stop direct navigation
+      const confirmed = confirm("⚠️ Are you sure you want to delete this community?\nThis action cannot be undone.");
+      if (confirmed) {
+        // proceed to delete
+        window.location.href = this.getAttribute("href");
+      }
+    });
+  }
 }
