@@ -11,12 +11,6 @@ import base64
 import os
 import json
 
-from werkzeug.middleware.proxy_fix import ProxyFix
-app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
-
-app.config["PREFERRED_URL_SCHEME"] = "https"
-
-
 # ---------------- Environment & Setup ----------------
 load_dotenv()
 
@@ -124,7 +118,6 @@ def clashes():
 @app.route("/login")
 def login():
     redirect_uri = url_for("callback", _external=True)
-    print("Redirect URI:", redirect_uri)
     return auth0.authorize_redirect(redirect_uri=redirect_uri)
 
 @app.route("/signup")
