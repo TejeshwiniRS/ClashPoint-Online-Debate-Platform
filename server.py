@@ -118,6 +118,7 @@ def clashes():
 @app.route("/login")
 def login():
     redirect_uri = url_for("callback", _external=True)
+    print("Redirect URI:", redirect_uri)
     return auth0.authorize_redirect(redirect_uri=redirect_uri)
 
 @app.route("/signup")
