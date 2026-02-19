@@ -11,6 +11,12 @@ import base64
 import os
 import json
 
+from werkzeug.middleware.proxy_fix import ProxyFix
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
+app.config["PREFERRED_URL_SCHEME"] = "https"
+
+
 # ---------------- Environment & Setup ----------------
 load_dotenv()
 
