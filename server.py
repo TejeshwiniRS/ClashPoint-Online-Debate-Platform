@@ -117,16 +117,44 @@ def clashes():
 # ---------- Auth ----------
 @app.route("/login")
 def login():
-    redirect_uri = "https://clashpoint.up.railway.app/callback"
+    redirect_uri = url_for("callback", _external=True)
     return auth0.authorize_redirect(redirect_uri=redirect_uri)
 
 @app.route("/signup")
 def signup():
+    redirect_uri = url_for("callback", _external=True)
     session.clear()
     return auth0.authorize_redirect(
-        redirect_uri="https://clashpoint.up.railway.app/callback",
+        redirect_uri=redirect_uri,
         screen_hint="signup"
     )
+
+# @app.route("/callback")
+# def callback():
+#     token = auth0.authorize_access_token()
+#     user_info = token["userinfo"]
+
+#     auth0_id = user_info["sub"]
+#     email = user_info.get("email")
+
+#     username  = (user_info.get("username") or "").strip()
+#     nickname  = (user_info.get("nickname") or "").strip()
+#     full_name = (user_info.get("name") or "").strip()
+
+#     display_name = (
+#         username or
+#         nickname or
+#         full_name or
+#         (email.split("@")[0] if email else "User")
+#     )
+
+#     user_id = db.upsert_user(auth0_id, display_name, email)
+
+#     user_info["display_name"] = display_name
+#     session["user"] = user_info
+#     session["user_id"] = user_id
+
+#     return redirect(url_for("clashes"))
 
 @app.route("/callback")
 def callback():
@@ -162,7 +190,7 @@ def callback():
 def logout():
     session.clear()
     params = {
-        "returnTo": "https://clashpoint.up.railway.app/clashes",
+        "returnTo": url_for("clashes", _external=True),
         "client_id": os.environ.get("AUTH0_CLIENT_ID")
     }
     return redirect(f"https://{os.environ.get('AUTH0_DOMAIN')}/v2/logout?" + urlencode(params, quote_via=quote_plus))
@@ -218,6 +246,7 @@ def contact_submit():
 def view_clash(clash_id):
     user_id = current_user_id()
     clash = db.get_clash_details(clash_id)
+    #print(clash)
     if not clash:
         abort(404)
 
@@ -242,7 +271,10 @@ def view_clash(clash_id):
     reply_dict, attach_child = reply_tree(replies)
     for arg in arguments:
         arg["replies"] = attach_child(arg)
-
+        # print(type(arg), arg)
+        # print(arguments)
+        # print(json.dumps(arguments, indent=2, default=str))
+        # print(user)
     return render_template("clash_view.html", clash=clash, arguments=arguments, user=user_id, trending_clashes=trending_clashes, related_clashes=related_clashes)
 
 @app.route('/clash/<int:clash_id>/post', methods=['POST'])
@@ -257,6 +289,7 @@ def post_argument(clash_id):
 
     if not content:
         abort(400, 'Content cannot be empty')
+    # print(clash_id, user, content, argument_type, parent_id)
     db.create_argument(clash_id=clash_id, user_id=user, content=content, argument_type=argument_type, parent_id=parent_id)
     return redirect(url_for('view_clash', clash_id=clash_id))
 
@@ -280,6 +313,8 @@ def vote_argument(arg_id):
         "down_votes": stats["down_votes"],
         "score": round(float(stats["score"]),2)
     })
+
+    return redirect(url_for("view_clash", clash_id=clash_id))
 
 @app.route("/argument/<int:arg_id>/edit", methods=["POST"])
 def edit_argument(arg_id):
@@ -323,6 +358,7 @@ def new_clash():
     description = request.form.get("description")
     tag_id = request.form.get("tags")
 
+    # user wants to add a new tag. 
     new_tag = request.form.get("newTag")
     if new_tag:
         tag_id = db.add_new_tag(new_tag)
@@ -331,6 +367,7 @@ def new_clash():
     clash_close_date = datetime.strptime(clash_close_date, "%Y-%m-%d")
     new_clash_id = db.add_clash(owner_id, title, description, clash_close_date)
     db.add_clash_tag(tag_id, new_clash_id)
+    # where do I redirect after this? 
     return redirect(url_for("view_clash", clash_id=new_clash_id))
 
 @app.route("/create_community")
@@ -339,12 +376,15 @@ def create_community():
 
 @app.get("/edit/<int:clash_id>")
 def get_clash_edit_page(clash_id): 
+    print("clash_id", clash_id)
     clash = db.get_clash_details(clash_id)
+    print("clash", clash)
 
     if not clash:
         return "Clash not found", 404
 
     if request.method == "POST":
+        # handle updates here
         ...
         return redirect(url_for("get_clash_page", clash_id=clash_id))
 
@@ -365,7 +405,7 @@ def edit_clash(clash_id):
             clash_close_date = datetime.strptime(close_date_str, "%Y-%m-%d")
         except ValueError:
             flash("Invalid date format.", "error")
-            return redirect(url_for('get_clash_edit_page', clash_id=clash_id))
+            return redirect({{ url_for('get_clash_edit_page', clash_id=clash_id) }})
 
     if not (title or description or clash_close_date or tag_id):
         flash("Please fill at least one field to update.", "error")
@@ -426,6 +466,7 @@ def edit_community(community_id):
     return redirect(url_for("view_community", community_id=community_id))
 
 
+
 @app.route("/create_community_clash/<int:community_id>")
 def create_community_clash(community_id):
     tags = db.get_all_tags() 
@@ -438,6 +479,7 @@ def new_community_clash(community_id):
     description = request.form.get("description")
     tag_id = request.form.get("tags")
 
+    # user wants to add a new tag. 
     new_tag = request.form.get("newTag")
     if new_tag:
         tag_id = db.add_new_tag(new_tag)
@@ -557,18 +599,30 @@ def join_community(community_id):
         flash("Please enter the community code.", "error")
         return redirect(url_for("communities"))
 
+    # --- Check if already a member ---
     joined_ids = db.get_user_community_ids(user_id)
     if community_id in joined_ids:
         flash("You are already a member of this community.", "info")
         return redirect(url_for("communities"))
 
+    # --- Fetch and verify only that community's code ---
     is_valid = db.verify_community_code(community_id, entered_code)
+    # if not is_valid:
+    #     flash("Invalid code for this community.", "error")
+    #     return redirect(url_for("communities"))
 
+    # --- If valid, add membership ---
     db.add_user_to_community(user_id, community_id, role="member", is_active_member=True)
     flash("Welcome! You've successfully joined the community.", "success")
     return redirect(url_for("communities"))
 
-# ---------- Cron Job ----------
+
+    flash("Your account was deleted successfully from ClashPoint and Auth0.", "deleted")
+    return redirect(url_for("index"))
+
+# ---------- Run ----------
+
+# Cron Job to close the clashes
 @app.route("/internal/close-expired", methods=["POST"])
 def close_expired():
     secret = os.environ.get("CRON_SECRET")
@@ -591,13 +645,16 @@ def view_community(community_id):
     if not community:
         abort(404)
 
+    # --- Pagination params ---
     page = int(request.args.get("page", 1))
     limit = 6
     offset = (page - 1) * limit
 
+    # --- Members ---
     members = db.get_community_members(community_id)
     num_members = len(members)
 
+    # --- Paginated clashes ---
     clashes, total = db.get_clashes_by_community(community_id, limit=limit, offset=offset)
     num_clashes = total
     total_pages = (total + limit - 1) // limit
@@ -623,6 +680,7 @@ def search_community_clashes(community_id):
     query = request.args.get("query", "").strip()
     clashes = db.search_clashes_in_community(community_id, query)
 
+    # --- fetch other page info ---
     community = db.get_community_details(community_id)
     members = db.get_community_members(community_id)
     num_members = len(members)
@@ -630,11 +688,12 @@ def search_community_clashes(community_id):
     user_id = current_user_id()
     is_owner = (user_id == community["owner_id"])
 
+    # --- render the same community_view template ---
     return render_template(
         "community_view.html",
         community=community,
         members=members,
-        clashes=clashes,
+        clashes=clashes,             # filtered clashes here
         is_owner=is_owner,
         user=current_user_info(),
         num_members=num_members,
@@ -665,6 +724,7 @@ def remove_member(community_id):
         flash("No member found with that email.", "error")
 
     return redirect(url_for("view_community", community_id=community_id))
+    
 
 
 if __name__ == "__main__":

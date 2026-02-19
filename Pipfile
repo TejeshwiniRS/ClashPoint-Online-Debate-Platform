@@ -7,10 +7,10 @@ name = "pypi"
 gunicorn = "*"
 psycopg2-binary = "*"
 python-dotenv = "*"
-flask = "*"
 authlib = "*"
 requests = "*"
 flask-mail = "==0.9.1"
+flask = "*"
 
 [dev-packages]
 
