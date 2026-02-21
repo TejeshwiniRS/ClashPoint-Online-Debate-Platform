@@ -1,84 +1,73 @@
-# Module 1 Group Assignment
+# ClashPoint - Online Debate Platform 
+An online debate platform where you create clashes, argue your side, and let the community decide. 
 
-CSCI 5117, Fall 2024, [assignment description](https://canvas.umn.edu/courses/460699/pages/project-1)
-
-## App Info:
-
-* Team Name: FOUR LOOPS
-* App Name: ClashPoint
-* App Link: (https://clashpoint.onrender.com/)
-
-### Students
-
-* Alexander Garduno Garcia, gardu022@umn.edu
-* Reshma Rao Chandukudlu Hosamane, chand950@umn.edu
-* Tejeshwini Ramesh Subasri, rames189@umn.edu
-* Shivank Sapra, sapra013@umn.edu
+App Link: https://clashpoint.up.railway.app
 
 ## Key Features
 
-**Describe the most challenging features you implemented
-(one sentence per bullet, maximum 4 bullets):**
 * Implemented a client-side toxicity moderator using TensorFlow.js to evaluate user input in real time.
-
-* Built a recommended clashes to suggest related arguments based on shared tags.
-
+* Built a recommended clashes engine to suggest related arguments based on shared tags.
 * Developed a daily cron job to automatically close arguments reaching their end date.
-
 * Designed a scoring algorithm that calculates argument scores based on vote distributions.
 
-* ...
+## Third-Party Integrations
 
-## Testing Notes
+* **TensorFlow.js** — Runs a lightweight ML toxicity model directly in the browser to flag offensive language before submission.
+* **Auth0** — Handles user authentication and authorization including Google sign-in and secure session management.
+* **Flask-Mail** — Used to send contact form submissions and notifications via SMTP.
 
-**Is there anything special we need to know in order to effectively test your app? (optional):**
+## Running Locally
 
-* ...
+### Prerequisites
+- Python 3.11+
+- Pipenv
+- PostgreSQL database
 
+### Steps
 
-## Screenshots of Site
+1. **Clone the repo**
+```bash
+   git clone https://github.com/reshmaraoch/ClashPoint-Online-Debate-Platform.git
+   cd ClashPoint-Online-Debate-Platform
+```
 
-**[Add a screenshot of each key page (around 4)](https://stackoverflow.com/questions/10189356/how-to-add-screenshot-to-readmes-in-github-repository)
-along with a very brief caption:**
+2. **Install dependencies**
+```bash
+   pipenv install
+```
 
-<img width="1916" height="686" alt="image" src="https://github.com/user-attachments/assets/be863aaa-d60d-4bf2-91cf-6ba09693fc54" />
+3. **Set up environment variables**
 
-Client-side toxicity moderator: Used TensorFlow.js to run a lightweight ML model directly in the browser, analyzing user input as they type and flagging toxic or offensive language before submission.
+   Create a `.env` file in the root folder:
+```
+   DATABASE_URL=postgresql://your_db_url_here
+   FLASK_SECRET=your_secret_key
+   AUTH0_CLIENT_ID=your_auth0_client_id
+   AUTH0_CLIENT_SECRET=your_auth0_client_secret
+   AUTH0_DOMAIN=your_auth0_domain
+```
 
-<img width="1311" height="699" alt="image" src="https://github.com/user-attachments/assets/5aea2c11-025f-4a4c-b499-ac29fb4a765e" />
+4. **Set up the database**
+```bash
+   psql $DATABASE_URL -f schema.sql
+```
 
-Related clashes recommender: Implemented a tag-based similarity engine that fetches and displays arguments with overlapping or related topics to improve engagement and content discovery.
+5. **Run the app**
+```bash
+   pipenv run flask --app server run
+```
 
-<img width="1344" height="328" alt="Screenshot 2025-10-22 at 12 40 39 AM" src="https://github.com/user-attachments/assets/97c6b9ee-ecee-45e6-ad16-4d9e051e216e" />
+6. **Visit the app**
 
-Daily cron job for closures: Set up a scheduled background task that runs every night at 11:55 to automatically mark arguments as closed once their end date is reached, keeping data consistent.
+   Open your browser at `http://127.0.0.1:5000`
 
-<img width="1916" height="698" alt="image" src="https://github.com/user-attachments/assets/97408bed-f6bd-4f5f-902f-48a710a9983e" />
+## Details:
 
-Custom scoring algorithm: Designed a weighted formula that dynamically updates each argument’s score based on upvotes, downvotes to reflect community consensus accurately.
+**Toxicity Moderator** — TensorFlow.js runs a lightweight ML model in the browser, analyzing user input in real time and flagging toxic content before submission.
 
-## Mock-up 
+**Related Clashes** — Tag-based similarity engine fetches and displays clashes with overlapping topics to improve engagement and content discovery.
 
-There are a few tools for mock-ups. Paper prototypes (low-tech, but effective and cheap), Digital picture edition software (gimp / photoshop / etc.), or dedicated tools like moqups.com (I'm calling out moqups here in particular since it seems to strike the best balance between "easy-to-use" and "wants your money" -- the free teir isn't perfect, but it should be sufficient for our needs with a little "creative layout" to get around the page-limit)
+**Daily Cron Job** — Scheduled background task that runs every night at 11:55 PM to automatically close arguments once their end date is reached.
 
-In this space please either provide images (around 4) showing your prototypes, OR, a link to an online hosted mock-up tool like moqups.com
+**Scoring Algorithm** — Weighted formula that dynamically updates each argument's score based on upvotes and downvotes to reflect community consensus.
 
-
-**[Link to the Mock-ups](https://app.moqups.com/dijouBxvfcULxMFFAq7QwonypkzUq0su/view/page/a92f8b799)**
-
-Note: Please zoom in and out each page to view the full flow and there are 3 pages in total.
-
-
-## External Dependencies
-
-**Document integrations with 3rd Party code or services here.
-Please do not document required libraries. or libraries that are mentioned in the product requirements**
-
-* Library or service name: description of use
-* ...
-
-**If there's anything else you would like to disclose about how your project
-relied on external code, expertise, or anything else, please disclose that
-here:**
-
-...
